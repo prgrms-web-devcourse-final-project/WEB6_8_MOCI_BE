@@ -4,7 +4,7 @@ name: PR 자동화
 # 실행 조건: main 브랜치로 PR이 열렸을 때
 on:
   pull_request:
-    branches: [ main ]
+    branches: [ main, develop ]
     types: [ opened ]
 
 # 실행할 작업
