@@ -38,5 +38,5 @@ out/
 
 ### Custom ###
 db_dev.mv.db
-de_dev.trace.db
+db_dev.trace.db
 .env
