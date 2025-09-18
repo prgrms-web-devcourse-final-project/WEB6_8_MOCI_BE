@@ -1,0 +1,17 @@
+spring:
+  # MySQL Database 설정
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/(괄호 삭제 DB 이름 입력)?serverTimezone=Asia/Seoul&useSSL=false
+    username: 직접 설정
+    password: 직접 설정
+
+  # JPA 설정
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
