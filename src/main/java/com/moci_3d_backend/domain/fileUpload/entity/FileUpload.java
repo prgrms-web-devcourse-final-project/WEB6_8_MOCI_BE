@@ -1,8 +1,7 @@
 package com.moci_3d_backend.domain.fileUpload.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import com.moci_3d_backend.domain.archive.public_archive.entity.PublicArchive;
+import jakarta.persistence.*;
 import lombok.*;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
@@ -22,4 +21,8 @@ public class FileUpload {
     private String file_name;
     private String file_url;
     private String file_type;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "public_archive_id")
+    private PublicArchive publicArchive;
 }
