@@ -37,7 +37,10 @@ public class AiChatMessage {
     @JoinColumn(name = "room_id")
     private AiChatRoom room;
 
-    private Long senderId; // 사람이면 userId, AI면 null
+//    @ManyToOne(fetch =  FetchType.LAZY)
+//    @JoinColumn(name = "user_id") //사람이면 User, AI면 null
+//    private User sender;
+// 추후에 추가합니다 (유저와의 관계)
 
     @Enumerated(EnumType.STRING)
     @Column(name = "sender_type", length = 20, nullable = false)
