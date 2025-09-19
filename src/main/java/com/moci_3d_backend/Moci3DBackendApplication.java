@@ -10,6 +10,7 @@ public class Moci3DBackendApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(Moci3DBackendApplication.class, args);
+        System.out.println("Hello, Moci 3D Backend!");
     }
 
 }
