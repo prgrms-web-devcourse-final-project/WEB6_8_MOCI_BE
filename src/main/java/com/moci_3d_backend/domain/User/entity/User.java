@@ -18,35 +18,35 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id", unique = true)
+    @Column(name = "user_id", length = 11)
     private String userId;
 
-    @Column(name = "social_id")
+    @Column(name = "social_id", length = 100)
     private String socialId;
 
-    @Column(name = "login_type")
+    @Column(name = "login_type", length = 20)
     private String loginType;
 
-    @Column(name = "password")
+    @Column(name = "password", length = 255)
     private String password;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false, length = 50)
     private String name;
 
-    @Column(name = "email")
+    @Column(name = "email", length = 100)
     private String email;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "role")
+    @Column(name = "role", columnDefinition = "VARCHAR(20) DEFAULT 'USER'")
     private UserRole role;
 
-    @Column(name = "digital_level")
+    @Column(name = "digital_level", columnDefinition = "INTEGER DEFAULT 0")
     private Integer digitalLevel;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     public enum UserRole {
