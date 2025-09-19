@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class MentorChatMessage {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
@@ -19,7 +20,7 @@ public class MentorChatMessage {
 //    private User sender;
     @Column(columnDefinition = "TEXT")
     private String content;
-    private final boolean isAI = false;
+    private boolean isAI;
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name="attachment_id")
 //    private File attachment;

@@ -15,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 public class MentorChatRoom {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name="category",length = 255)
     private String category;
