@@ -38,6 +38,7 @@ public class AiChatRoom {
     private LocalDateTime lastMessageAt; //마지막 메시지 시간
 
 //    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "user_id")
 //    private User user;
 //추후에 추가합니다 (유저와의 관계)
 
