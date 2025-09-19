@@ -17,7 +17,7 @@ public class FileUpload {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
-    private int id;
+    private Long id;
 
     private String file_name;
     private String file_url;
