@@ -1,5 +1,7 @@
 package com.moci_3d_backend.domain.chat.ai.aiChatMessage.entity;
 
+import com.moci_3d_backend.domain.chat.ai.MessageStatus;
+import com.moci_3d_backend.domain.chat.ai.SenderType;
 import com.moci_3d_backend.domain.chat.ai.aiChatRoom.entity.AiChatRoom;
 import jakarta.persistence.*;
 import lombok.*;
@@ -54,7 +56,7 @@ public class AiChatMessage {
     private MessageStatus status; //메시지 상태 (예: SENT, DELIVERED, READ)
 
     public void markRead(LocalDateTime time) {
-        this.readAt = MessageStatus.READ;
+        this.status = MessageStatus.READ;
         this.readAt = time;
     }
 
