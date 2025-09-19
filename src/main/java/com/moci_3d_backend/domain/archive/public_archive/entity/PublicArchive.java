@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 public class PublicArchive {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(length = 255, nullable = false)
     private String title;
