@@ -1,10 +1,11 @@
 package com.moci_3d_backend.domain.user.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -18,38 +19,40 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id", length = 11)
+    @Column(name = "user_id", unique = true)
     private String userId;
 
-    @Column(name = "social_id", length = 100)
+    @Column(name = "social_id")
     private String socialId;
 
-    @Column(name = "login_type", length = 20)
+    @Column(name = "login_type")
     private String loginType;
 
-    @Column(name = "password", length = 255)
+    @Column(name = "password")
     private String password;
 
-    @Column(name = "name", nullable = false, length = 50)
+    @Column(name = "name")
     private String name;
 
-    @Column(name = "email", length = 100)
+    @Column(name = "email")
     private String email;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "role", columnDefinition = "VARCHAR(20) DEFAULT 'USER'")
+    @Column(name = "role")
     private UserRole role;
 
-    @Column(name = "digital_level", columnDefinition = "INTEGER DEFAULT 0")
+    @Column(name = "digital_level")
     private Integer digitalLevel;
 
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at", nullable = false)
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     public enum UserRole {
         USER, ADMIN, MENTOR
     }
 }
+
+
