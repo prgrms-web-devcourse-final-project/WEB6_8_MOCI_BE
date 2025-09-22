@@ -47,10 +47,7 @@ public class PublicArchiveMapper {
                 .title(archive.getTitle())
                 .category(archive.getCategory())
                 .subCategory(archive.getSubCategory())
-                .uploadedBy(PublicArchiveListResponse.PublicArchiveDto.UserDto.builder()
-                        .id(archive.getUploadedBy().getId())
-                        .name(archive.getUploadedBy().getName()) // User 엔티티에 getName()이 있다고 가정
-                        .build())
+                .uploadedBy(createSafeListUserDto(archive.getUploadedBy()))
                 .createdAt(archive.getUploadedAt())
                 .build();
     }
