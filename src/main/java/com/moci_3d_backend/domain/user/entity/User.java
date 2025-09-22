@@ -1,8 +1,8 @@
 package com.moci_3d_backend.domain.user.entity;
 
 import com.moci_3d_backend.domain.archive.public_archive.entity.PublicArchive;
-import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.entity.MentorChatRoom;
-import com.moci_3d_backend.domain.chat.ai.aiChatRoom.entity.AiChatRoom;
+// import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.entity.MentorChatRoom;
+// import com.moci_3d_backend.domain.chat.ai.aiChatRoom.entity.AiChatRoom;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,7 +25,7 @@ public class User {
     @Column(name = "user_id", length = 11)
     private String userId;
 
-    @Column(name = "social_id", length = 100)
+    @Column(name = "social_id", length = 50)
     private String socialId;
 
     @Column(name = "login_type", length = 20)
@@ -34,10 +34,10 @@ public class User {
     @Column(name = "password", length = 255)
     private String password;
 
-    @Column(name = "name", nullable = false, length = 50)
+    @Column(name = "name", nullable = false, length = 10)
     private String name;
 
-    @Column(name = "email", length = 100)
+    @Column(name = "email", length = 50)
     private String email;
 
     @Enumerated(EnumType.STRING)
@@ -53,22 +53,24 @@ public class User {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    // Entity관계 매핑
+    // 공개지료실
     @OneToMany(mappedBy = "uploadedBy", fetch = FetchType.LAZY)
     private List<PublicArchive> uploadedArchives;
     
-    멘토 참여 채팅방  
-    @OneToMany(mappedBy = "mentor", fetch = FetchType.LAZY)
-    private List<MentorChatRoom> mentorChatRooms;
+    // 멘토 참여 채팅방  
+    // @OneToMany(mappedBy = "mentor", fetch = FetchType.LAZY)
+    // private List<MentorChatRoom> mentorChatRooms;
     
     
-    멘티 참여 채팅방
-    @OneToMany(mappedBy = "mentee", fetch = FetchType.LAZY)
-    private List<MentorChatRoom> menteeChatRooms;
+    // 멘티 참여 채팅방
+    // @OneToMany(mappedBy = "mentee", fetch = FetchType.LAZY)
+    // private List<MentorChatRoom> menteeChatRooms;
     
     
-    AI 채팅방 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private List<AiChatRoom> aiChatRooms;
+    // AI 채팅방 
+    // @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    // private List<AiChatRoom> aiChatRooms;
 
     public enum UserRole {
         USER, ADMIN, MENTOR
