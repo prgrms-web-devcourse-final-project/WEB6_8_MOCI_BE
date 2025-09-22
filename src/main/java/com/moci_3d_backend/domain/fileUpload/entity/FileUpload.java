@@ -25,4 +25,10 @@ public class FileUpload {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "public_archive_id")
     private PublicArchive publicArchive;
+
+    public FileUpload(String file_name, String file_url, String file_type) {
+        this.file_name = file_name;
+        this.file_url = file_url;
+        this.file_type = file_type;
+    }
 }
