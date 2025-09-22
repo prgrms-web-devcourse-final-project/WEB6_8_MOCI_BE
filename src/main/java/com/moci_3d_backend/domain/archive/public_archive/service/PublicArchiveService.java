@@ -3,6 +3,7 @@ package com.moci_3d_backend.domain.archive.public_archive.service;
 import com.moci_3d_backend.domain.archive.public_archive.dto.PublicArchiveCreateRequest;
 import com.moci_3d_backend.domain.archive.public_archive.dto.PublicArchiveListResponse;
 import com.moci_3d_backend.domain.archive.public_archive.dto.PublicArchiveResponse;
+import com.moci_3d_backend.domain.archive.public_archive.dto.PublicArchiveUpdateRequest;
 import com.moci_3d_backend.domain.archive.public_archive.entity.PublicArchive;
 import com.moci_3d_backend.domain.archive.public_archive.mapper.PublicArchiveMapper;
 import com.moci_3d_backend.domain.archive.public_archive.repository.PublicArchiveRepository;
@@ -74,7 +75,7 @@ public class PublicArchiveService {
 
     // 교육 자료실 게시물 수정
     @Transactional
-    public PublicArchiveResponse updatePublicArchive(Long archiveId, PublicArchiveCreateRequest request) {
+    public PublicArchiveResponse updatePublicArchive(Long archiveId, PublicArchiveUpdateRequest request) {
         PublicArchive existingArchive = publicArchiveRepository.findById(archiveId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 ID의 공개 자료실 글을 찾을 수 없습니다: " + archiveId));
         if (request.getTitle() != null) existingArchive.setTitle(request.getTitle());
