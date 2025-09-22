@@ -68,7 +68,7 @@ public class PublicArchiveController {
         return RsData.of(201, "success to create public archive", response);
     }
 
-    @PutMapping("/admin/archives/public/{archiveId}")
+    @PutMapping("/admin/archive/public/{archiveId}")
     @PreAuthorize("hasRole('ADMIN')") // 관리자 권한 필요
     @Operation(summary = "[관리자] 교육 자료실 수정", description = "관리자만 교육자료실 글을 수정할 수 있습니다.")
     public RsData<PublicArchiveResponse> updatePublicArchive(
@@ -79,7 +79,7 @@ public class PublicArchiveController {
         return RsData.of(200, "success to update public archive", response);
     }
 
-    @DeleteMapping("/admin/archives/public/{archiveId}")
+    @DeleteMapping("/admin/archive/public/{archiveId}")
     @PreAuthorize("hasRole('ADMIN')") // 관리자 권한 필요
     @Operation(summary = "[관리자] 교육 자료실 삭제", description = "관리자만 교육자료실 글을 삭제할 수 있습니다.")
     public RsData<Void> deletePublicArchive
