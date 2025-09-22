@@ -52,7 +52,7 @@ public class User {
     private LocalDateTime updatedAt;
 
     // Entity관계 매핑
-    // 공개지료실
+    // 공개자료실
     @OneToMany(mappedBy = "uploadedBy", fetch = FetchType.LAZY)
     private List<PublicArchive> uploadedArchives;
     
