@@ -75,4 +75,10 @@ public class AiChatRoomController {
 
         return new AiChatRoomListDto(roomDtos, roomDtos.size());
     }
+
+    //TODO: 추후에 구현
+    //내 채팅방 목록 조회
+    //채탱방 수정
+    //채팅방 삭제
+
 }
