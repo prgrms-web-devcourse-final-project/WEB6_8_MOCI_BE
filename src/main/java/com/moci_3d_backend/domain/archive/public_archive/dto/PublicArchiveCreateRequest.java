@@ -1,21 +1,22 @@
 package com.moci_3d_backend.domain.archive.public_archive.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
+
 
 @Getter
-@Setter
+@Builder
 public class PublicArchiveCreateRequest {
 
     @NotBlank(message = "제목은 필수 입력 항목입니다.")
-    private String title;
+    private final String title;
 
-    private String description;
+    private final String description;
 
-    private String category;
+    private final String category;
 
-    private String subCategory;
+    private final String subCategory;
 
-    private Long fileId;
+    private final Long fileId;
 }

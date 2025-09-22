@@ -29,13 +29,13 @@ public class PublicArchive {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    // TODO: 카테고리, 서브카테고리 enum으로 변경 고려
     @Column(name = "category", length = 255)
     private String category;
 
     @Column(name = "sub_category", length = 255)
     private String subCategory;
 
-    // TODO: mappedBy는 files내 정의된 필드명으로 확인 및 수정할 것
     @OneToMany(mappedBy = "publicArchive",  cascade = CascadeType.ALL, orphanRemoval = true) // 글 삭제시 파일도 같이 삭제(고아 삭제)
     private List<FileUpload> fileUploads = new ArrayList<>();
 

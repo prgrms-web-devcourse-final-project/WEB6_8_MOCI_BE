@@ -1,5 +1,6 @@
 package com.moci_3d_backend.domain.archive.public_archive.dto;
 
+import com.moci_3d_backend.domain.fileUpload.dto.FileUploadDto;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -9,29 +10,20 @@ import java.time.LocalDateTime;
 @Builder
 public class PublicArchiveResponse {
 
-    private Long id;
-    private String title;
-    private String description;
-    private String category;
-    private String subCategory;
-    private FileDto file;
-    private UserDto uploadedBy;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-
-    // 내부 클래스 사용
-    @Getter
-    @Builder
-    public static class FileDto {
-        private Long id;
-        private String fileName;
-        private String url;
-    }
+    private final Long id;
+    private final String title;
+    private final String description;
+    private final String category;
+    private final String subCategory;
+    private final FileUploadDto file; // FileUploadDto 사용
+    private final UserDto uploadedBy;
+    private final LocalDateTime createdAt;
+    private final LocalDateTime updatedAt;
 
     @Getter
     @Builder
     public static class UserDto {
-        private Long id;
-        private String name;
+        private final Long id;
+        private final String name;
     }
 }
