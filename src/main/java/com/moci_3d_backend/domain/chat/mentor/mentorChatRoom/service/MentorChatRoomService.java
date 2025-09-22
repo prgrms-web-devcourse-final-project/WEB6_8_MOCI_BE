@@ -28,7 +28,7 @@ public class MentorChatRoomService {
         return mentorChatRoomDtoService.toMentorChatRoomResponsePage(mentorChatRoomPage);
     }
 
-    public boolean deleteMentorChatRoom(Long roomId, User user){
+    public void deleteMentorChatRoom(Long roomId, User user){
         MentorChatRoom mentorChatRoom = mentorChatRoomRepository.findByIdAndDeletedFalse(roomId).orElseThrow(
                 () -> new NoSuchElementException("No chat room found with id: " + roomId)
         );
@@ -36,6 +36,5 @@ public class MentorChatRoomService {
             throw new IllegalArgumentException("The user is not a mentee of the chat room");
         }
         mentorChatRoom.setDeleted(true);
-        return true;
     }
 }

@@ -52,7 +52,7 @@ public class MentorChatRoom {
 
     private LocalDateTime menteeLastAt;
 
-    @Setter()
+    @Setter
     private boolean deleted;
 
     @OneToMany(mappedBy = "room")

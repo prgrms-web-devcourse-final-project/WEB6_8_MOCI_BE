@@ -29,9 +29,7 @@ public class ApiV1MenteeChatRoomController {
 
     @GetMapping()
     public RsData<Page<MentorChatRoomResponse>> getMentorChatRooms(
-            @PageableDefault(size = 10, page = 0)Pageable pageable,
-            @RequestParam(value = "category", defaultValue = "") String category,
-            @RequestParam(value = "sub_category", defaultValue = "") String subCategory,
+            @PageableDefault(size = 10, page = 0) Pageable pageable,
             User user // 컴파일 에러 방지용
     ){
         // TODO 로그인한 회원의 정보를 가져와야함
