@@ -11,9 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserPasswordChangeRequest {
 
-    // ========================================
-    // 필수 필드 (보안상 반드시 확인)
-    // ========================================
     @NotBlank(message = "현재 비밀번호는 필수입니다")
     private String currentPassword;  // 현재 비밀번호
 

@@ -12,7 +12,6 @@ public class UserLoginResponse {
 
     private UserResponse user;      // 사용자 기본 정보
 
-    // === 정적 팩토리 메서드 ===
     public static UserLoginResponse from(User user) {
         return new UserLoginResponse(UserResponse.from(user));
     }
