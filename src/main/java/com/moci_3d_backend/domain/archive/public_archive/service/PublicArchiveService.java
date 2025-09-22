@@ -67,7 +67,7 @@ public class PublicArchiveService {
     @Transactional(readOnly = true)
     public PublicArchiveResponse getPublicArchive(Long archiveId) {
         PublicArchive archive = publicArchiveRepository.findById(archiveId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 ID의 공개 자료실 글을 찾을 수 없습니다." + archiveId));
+                .orElseThrow(() -> new EntityNotFoundException("해당 ID의 공개 자료실 글을 찾을 수 없습니다: " + archiveId));
 
         return publicArchiveMapper.toResponseDto(archive);
     }
@@ -76,7 +76,7 @@ public class PublicArchiveService {
     @Transactional
     public PublicArchiveResponse updatePublicArchive(Long archiveId, PublicArchiveCreateRequest request) {
         PublicArchive existingArchive = publicArchiveRepository.findById(archiveId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 ID의 공개 자료실 글을 찾을 수 없습니다." + archiveId));
+                .orElseThrow(() -> new EntityNotFoundException("해당 ID의 공개 자료실 글을 찾을 수 없습니다: " + archiveId));
         if (request.getTitle() != null) existingArchive.setTitle(request.getTitle());
         if (request.getDescription() != null) existingArchive.setDescription(request.getDescription());
         if (request.getCategory() != null) existingArchive.setCategory(request.getCategory());
@@ -89,7 +89,7 @@ public class PublicArchiveService {
     @Transactional
     public void deletePublicArchive(Long archiveId) {
         if (!publicArchiveRepository.existsById(archiveId)) {
-            throw new EntityNotFoundException("해당 ID의 공개 자료실 글을 찾을 수 없습니다." + archiveId);
+            throw new EntityNotFoundException("해당 ID의 공개 자료실 글을 찾을 수 없습니다: " + archiveId);
         }
         publicArchiveRepository.deleteById(archiveId);
     }
