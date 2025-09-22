@@ -8,7 +8,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockMultipartFile;
@@ -18,7 +17,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(FileUploadController.class)
+@SpringBootTest
+@AutoConfigureMockMvc(addFilters = false)
 @Transactional
 public class FileUploadControllerTest {
 
@@ -36,7 +36,7 @@ public class FileUploadControllerTest {
     void t1() throws Exception {
         MockMultipartFile mockFile =
                 new MockMultipartFile("uploadFile", "testFile.txt", "text/plain", "test".getBytes());
-        mockMvc.perform(multipart("/file")
+        mockMvc.perform(multipart("/api/v1/file")
                         .file(mockFile))
                 .andExpect(status().isOk())
                 .andExpect(content().string("파일 업로드 완료"));
