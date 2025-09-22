@@ -39,8 +39,4 @@ public class FileUploadService {
         return FileUploadDto.from(fileUploadRepository.save(fileUpload));
     }
 
-    public FileUpload save(FileUpload fileUpload) {
-        return fileUploadRepository.save(fileUpload);
-    }
-
 }
