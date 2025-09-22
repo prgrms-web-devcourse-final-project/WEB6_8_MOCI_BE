@@ -21,6 +21,14 @@ public class AiChatRoomDto {
     private String category;
 
     public AiChatRoomDto(AiChatRoom aiChatRoom) {
+        this.id = aiChatRoom.getId();
+        this.createdAt = aiChatRoom.getCreatedAt();
+        this.modifiedAt = aiChatRoom.getModifiedAt();
+        this.lastMessageAt = aiChatRoom.getLastMessageAt();
+        this.userId = aiChatRoom.getUser().getId();
+        this.title = aiChatRoom.getTitle();
+        this.status = aiChatRoom.isStatus();
+        this.category = aiChatRoom.getCategory();
 
     }
 }
