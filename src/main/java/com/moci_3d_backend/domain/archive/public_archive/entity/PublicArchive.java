@@ -1,7 +1,7 @@
 package com.moci_3d_backend.domain.archive.public_archive.entity;
 
-import com.moci_3d_backend.domain.user.entity.User;
 import com.moci_3d_backend.domain.fileUpload.entity.FileUpload;
+import com.moci_3d_backend.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
