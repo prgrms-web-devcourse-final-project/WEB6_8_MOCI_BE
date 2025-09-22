@@ -5,44 +5,25 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserDetailResponse {
     
-    private Long id;
-    private String userId;        // 마스킹 처리된 전화번호 (예: 010****5678)
-    private String name;
-    private String email;
-    private String loginType;
-    private User.UserRole role;
-    private Integer digitalLevel;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private Long id;              // 시스템 식별용 (내부 사용)
+    private String name;          // 유저이름 표시용
+    
+    // === 마이페이지 기능 관련 정보 ===
+    // 1. 유저이름 표시
+    // 2. 비밀번호 바꾸기 (별도 API)
+    // 3. 회원탈퇴하기 (별도 API)
     
     // === 정적 팩토리 메서드 ===
     public static UserDetailResponse from(User user) {
         return new UserDetailResponse(
             user.getId(),
-            maskUserId(user.getUserId()),  // 전화번호 마스킹
-            user.getName(),
-            user.getEmail(),
-            user.getLoginType(),
-            user.getRole(),
-            user.getDigitalLevel(),
-            user.getCreatedAt(),
-            user.getUpdatedAt()
+            user.getName()
         );
-    }
-    
-    // === 유틸리티 메서드 ===
-    private static String maskUserId(String userId) {
-        if (userId == null || userId.length() != 11) {
-            return null;
-        }
-        // 010****5678 형태로 마스킹
-        return userId.substring(0, 3) + "****" + userId.substring(7);
     }
 }

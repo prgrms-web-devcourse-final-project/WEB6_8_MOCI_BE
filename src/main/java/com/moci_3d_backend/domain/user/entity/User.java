@@ -5,16 +5,14 @@ import com.moci_3d_backend.domain.archive.public_archive.entity.PublicArchive;
 // import com.moci_3d_backend.domain.chat.ai.aiChatRoom.entity.AiChatRoom;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
 @Table(name = "users")
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {

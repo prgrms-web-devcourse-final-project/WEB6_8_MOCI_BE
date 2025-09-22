@@ -1,12 +1,12 @@
 package com.moci_3d_backend.global.rsData;
 
-public record RsData<T>(int code, String message, T data) {
+public record RsData<T>(String code, String message, T data) {
 
-    public static<T> RsData<T> of(int code, String message, T data) {
+    public static<T> RsData<T> of(String code, String message, T data) {
         return new RsData<>(code, message, data);
     }
-    public static<T> RsData<T> of(int code, String message) {
-        return new RsData<>(code,message, null);
+    public static<T> RsData<T> of(String code, String message) {
+        return new RsData<>(code, message, null);
     }
 
     //성공 편의 메소드
