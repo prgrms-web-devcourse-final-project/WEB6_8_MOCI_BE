@@ -4,7 +4,8 @@ gemini:
     url: ${GEMINI_API_URL}
 
 spring:
-
+  config:
+    import: optional:file:.env[.properties]
   profiles:
     active: dev
   jpa:
