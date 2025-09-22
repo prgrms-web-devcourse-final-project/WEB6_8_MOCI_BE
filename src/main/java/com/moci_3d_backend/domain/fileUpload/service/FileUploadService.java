@@ -21,7 +21,7 @@ public class FileUploadService {
     @Value("${file.dir}")
     private String filePath;
 
-    private FileUploadRepository fileUploadRepository;
+    private final FileUploadRepository fileUploadRepository;
 
     public FileUploadDto uploadFile(MultipartFile file) {
         String saveName = UUID.randomUUID()+"-"+file.getOriginalFilename();
