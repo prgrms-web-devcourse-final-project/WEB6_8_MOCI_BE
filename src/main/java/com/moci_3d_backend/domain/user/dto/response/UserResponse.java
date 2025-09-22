@@ -18,8 +18,7 @@ public class UserResponse {
     private User.UserRole role;
     private Integer digitalLevel;
     private LocalDateTime createdAt;
-    
-    // === 정적 팩토리 메서드 ===
+
     public static UserResponse from(User user) {
         return new UserResponse(
             user.getId(),

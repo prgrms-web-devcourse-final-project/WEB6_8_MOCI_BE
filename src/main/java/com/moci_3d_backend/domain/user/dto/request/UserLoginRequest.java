@@ -20,6 +20,4 @@ public class UserLoginRequest {
     
     // === 소셜 로그인 ===
     private String socialId;  // 암호화된 소셜 고유 ID
-    
-    // === 복잡한 검증은 Service 계층에서 처리 ===
 }

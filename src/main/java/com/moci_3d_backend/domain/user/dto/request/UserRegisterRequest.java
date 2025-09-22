@@ -13,7 +13,7 @@ import java.util.List;
 public class UserRegisterRequest {
     
     // ========================================
-    // 공통 필수 필드 (모든 회원가입에서 필수)
+    // 공통 필수
     // ========================================
     @NotNull(message = "로그인 타입은 필수입니다")
     @Pattern(regexp = "^(PHONE|KAKAO|NAVER)$", message = "지원하지 않는 로그인 타입입니다")
@@ -24,7 +24,7 @@ public class UserRegisterRequest {
     private List<Boolean> digitalLevelAnswers;
     
     // ========================================
-    // 조건부 필수 필드 (로그인 타입에 따라 달라짐)
+    // 조건부
     // ========================================
     @NotBlank(message = "실명은 필수입니다")
     private String name;
@@ -33,13 +33,13 @@ public class UserRegisterRequest {
     private String email;
     
     // ========================================
-    // 일반 회원가입 전용 필드
+    // 일반 회원가입
     // ========================================
     private String userId; // 전화번호
     private String password; // 비밀번호
     
     // ========================================
-    // 소셜 회원가입 전용 필드
+    // 소셜 회원가입
     // ========================================
     private String socialId; // 암호화된 소셜 고유 ID
 }
