@@ -1,9 +1,8 @@
-package com.moci_3d_backend.externel.ai.client;
+package com.moci_3d_backend.external.ai.client;
 
-import com.moci_3d_backend.externel.ai.dto.GeminiRequest;
-import com.moci_3d_backend.externel.ai.dto.GeminiResponse;
+import com.moci_3d_backend.external.ai.dto.GeminiRequest;
+import com.moci_3d_backend.external.ai.dto.GeminiResponse;
 import com.moci_3d_backend.global.exception.GeminiApiException;
-import com.moci_3d_backend.global.exception.ServiceException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

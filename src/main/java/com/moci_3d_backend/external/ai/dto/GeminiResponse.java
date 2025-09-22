@@ -1,4 +1,4 @@
-package com.moci_3d_backend.externel.ai.dto;
+package com.moci_3d_backend.external.ai.dto;
 
 
 import lombok.Builder;
