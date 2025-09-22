@@ -13,7 +13,7 @@ public class AiChatRoomDto {
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
     private LocalDateTime lastMessageAt;
-    private Long userId;
+    //private Long userId; 나중에 추가
 
     private String title;
     private boolean status;
@@ -25,7 +25,7 @@ public class AiChatRoomDto {
         this.createdAt = aiChatRoom.getCreatedAt();
         this.modifiedAt = aiChatRoom.getModifiedAt();
         this.lastMessageAt = aiChatRoom.getLastMessageAt();
-        this.userId = aiChatRoom.getUser().getId();
+        //this.userId = aiChatRoom.getUser().getId();
         this.title = aiChatRoom.getTitle();
         this.status = aiChatRoom.isStatus();
         this.category = aiChatRoom.getCategory();
