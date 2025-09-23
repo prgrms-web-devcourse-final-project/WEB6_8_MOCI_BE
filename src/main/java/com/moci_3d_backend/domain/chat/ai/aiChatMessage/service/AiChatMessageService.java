@@ -11,8 +11,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -36,5 +38,24 @@ public class AiChatMessageService {
 
         room.updateLastMessageAt(LocalDateTime.now());
         return message;
+    }
+
+    @Transactional(readOnly = true)
+    public List<AiChatMessage> listMessages(Long roomId) {
+        AiChatRoom room = aiChatRoomRepository.findById(roomId)
+                .orElseThrow(() -> new ServiceException(404, "존재하지 않는 AI 채팅방입니다."));
+
+        return aiChatMessageRepository.findByRoomIdOrderByIdAsc(roomId);
+
+    }
+
+    @Transactional
+    public AiChatMessage read(Long messageId,LocalDateTime readAt) {
+        AiChatMessage message = aiChatMessageRepository.findById(messageId)
+                .orElseThrow(() -> new ServiceException(404, "존재하지 않는 메시지입니다."));
+
+        message.markRead(readAt != null ? readAt : LocalDateTime.now());
+
+        return aiChatMessageRepository.save(message);
     }
 }

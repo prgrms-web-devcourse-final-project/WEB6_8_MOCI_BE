@@ -14,16 +14,15 @@ import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Validated
 @Tag(name = "AiChatMessageController", description = "AI 메시지 관리 엔드포인트")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/chat/ai/message")
+@RequestMapping("/api/v1/chat/ai/rooms")
 public class AiChatMessageController {
     private final AiChatMessageService aiChatMessageService;
 
@@ -41,7 +40,7 @@ public class AiChatMessageController {
                     AI 채팅방 메세지를 생성합니다.
                     프론트에서 메세지보낼때 roomId를 같이 넘겨야합니다
                     """)
-    @PostMapping
+    @PostMapping("/{roomId}/messages")
     @Transactional
     public RsData<AiChatMessageDto> createAiChatMessage(@RequestBody @Valid CreateAiChatMessageReqBody reqBody) {
         AiChatMessage chatMessage = aiChatMessageService.create(reqBody.roomId, reqBody.senderType, reqBody.content);
@@ -51,5 +50,30 @@ public class AiChatMessageController {
                 new AiChatMessageDto(chatMessage)
         );
     }
+
+    @Operation(summary = "AI 채팅방의 메시지 목록", description = "특정 방의 메세지목록")
+    @GetMapping("/{roomId}/messages")
+    public List<AiChatMessageDto> listByRoom(@PathVariable Long roomId) {
+
+        List<AiChatMessage> messages = aiChatMessageService.listMessages(roomId);
+        return messages.stream()
+                .map(AiChatMessageDto::new)
+                .toList();
+    }
+
+    @Operation(summary = "AI 채팅방에서 채팅 읽었는지 확인", description = "특정 메세지를 읽었는지 확인")
+    @PatchMapping("/{messageId}/read")
+    public RsData<AiChatMessageDto> markAsRead(@PathVariable Long messageId) {
+        AiChatMessage message = aiChatMessageService.read(messageId,null);
+
+        return new RsData<>(
+                200, "%d번 메시지를 읽음 처리했습니다.".formatted(message.getId()),
+                new AiChatMessageDto(message)
+        );
+    }
+
+
+
+
 
 }
