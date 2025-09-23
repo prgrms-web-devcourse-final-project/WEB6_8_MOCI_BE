@@ -56,7 +56,7 @@ public class AiChatMessageService {
         List<AiChatMessage> history = aiChatMessageRepository.findByRoomIdOrderByIdAsc(roomId);
         String prompt = buildPrompt(history);
 
-        // 잼민이 호출
+        // AI 호출
         String aiText = geminiClient.generateChatResponse(prompt);
 
         // Ai 메시지 저장
@@ -71,7 +71,10 @@ public class AiChatMessageService {
 
     private String buildPrompt(List<AiChatMessage> history) {
         //직전 대화 N개로 프롬프트 구성
-        int N = Math.max(0, history.size()-10);
+
+        final int DEFAULT_CONTEXT_SIZE = 10;
+
+        int N = Math.max(0, history.size()-DEFAULT_CONTEXT_SIZE);
         List<AiChatMessage> last = history.subList(N, history.size());
 
         String hist = last.stream()

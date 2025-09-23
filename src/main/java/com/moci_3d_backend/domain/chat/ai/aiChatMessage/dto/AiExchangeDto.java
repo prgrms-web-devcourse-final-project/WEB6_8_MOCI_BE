@@ -6,8 +6,8 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public class AiExchangeDto {
-    AiChatMessageDto userMessage;
-    AiChatMessageDto aiMessage;
+    private AiChatMessageDto userMessage;
+    private AiChatMessageDto aiMessage;
 
     public AiExchangeDto(AiChatMessageDto userMessage, AiChatMessageDto aiMessage) {
         this.userMessage = userMessage;
