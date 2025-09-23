@@ -12,6 +12,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ArchiveRequestStatusUpdateDto {
-    @NotNull(message = "상태는 필수입니다")
+    @NotNull(message = "상태는 필수입니다.")
     private RequestStatus status;
 }
