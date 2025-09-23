@@ -50,23 +50,6 @@ public class ArchiveRequest {
     private LocalDateTime updatedAt;
 
 
-    public enum RequestStatus {
-        PENDING("대기중"),
-        APPROVED("승인됨"),
-        REJECTED("거부됨");
-
-        private final String description;
-
-        RequestStatus(String description) {
-            this.description = description;
-        }
-
-        public String getDescription() {
-            return description;
-        }
-    }
-
-
     // 편의 메서드
     public void approve(User reviewer) {
         this.status = RequestStatus.APPROVED;
