@@ -52,10 +52,11 @@ public class AiChatMessage {
 
     //private Long attachmentId; //첨부파일 ID (추후에 추가할 수도 있어서 남겨둠)
 
+    @Enumerated(EnumType.STRING)
     private MessageStatus status; //메시지 상태 (예: SENT, DELIVERED, READ)
 
     public void markRead(LocalDateTime time) {
-        this.status = MessageStatus.읽음;
+        this.status = MessageStatus.READ;
         this.readAt = time;
     }
 

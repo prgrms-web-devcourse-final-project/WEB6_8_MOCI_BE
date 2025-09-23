@@ -5,7 +5,6 @@ import com.moci_3d_backend.domain.chat.ai.aiChatMessage.dto.AiExchangeDto;
 import com.moci_3d_backend.domain.chat.ai.aiChatMessage.entity.AiChatMessage;
 import com.moci_3d_backend.domain.chat.ai.aiChatMessage.enums.SenderType;
 import com.moci_3d_backend.domain.chat.ai.aiChatMessage.service.AiChatMessageService;
-import com.moci_3d_backend.domain.chat.ai.aiChatRoom.service.AiChatRoomService;
 import com.moci_3d_backend.global.rsData.RsData;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -74,16 +73,19 @@ public class AiChatMessageController {
     }
 
     public record AskAiRequest(
+            @NotNull Long roomId,
             @NotBlank String content
     ) {}
 
 
     @Operation(summary = "사람이 메시지 보내고, AI 응답까지 한 번에 받기(동기)")
     @PostMapping("/{roomId}/ask")
-    public RsData<AiExchangeDto> askAi(@PathVariable Long roomId, @RequestBody @Valid AskAiRequest req) {
+    public RsData<AiExchangeDto> askAi(@RequestBody @Valid AskAiRequest req) {
 
-        AiExchangeDto exchangeDto =
-
+        AiExchangeDto exchangeDto = aiChatMessageService.ask(req.roomId, req.content);
+        return new RsData<>(
+                200, "AI 응답을 받았습니다.",
+                exchangeDto);
 
     }
 
