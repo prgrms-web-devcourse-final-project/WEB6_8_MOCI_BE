@@ -1,6 +1,7 @@
 package com.moci_3d_backend.domain.chat.ai.aiChatMessage.controller;
 
 import com.moci_3d_backend.domain.chat.ai.aiChatMessage.dto.AiChatMessageDto;
+import com.moci_3d_backend.domain.chat.ai.aiChatMessage.dto.AiExchangeDto;
 import com.moci_3d_backend.domain.chat.ai.aiChatMessage.entity.AiChatMessage;
 import com.moci_3d_backend.domain.chat.ai.aiChatMessage.enums.SenderType;
 import com.moci_3d_backend.domain.chat.ai.aiChatMessage.service.AiChatMessageService;
@@ -71,6 +72,23 @@ public class AiChatMessageController {
                 new AiChatMessageDto(message)
         );
     }
+
+    public record AskAiRequest(
+            @NotBlank String content
+    ) {}
+
+
+    @Operation(summary = "사람이 메시지 보내고, AI 응답까지 한 번에 받기(동기)")
+    @PostMapping("/{roomId}/ask")
+    public RsData<AiExchangeDto> askAi(@PathVariable Long roomId, @RequestBody @Valid AskAiRequest req) {
+
+        AiExchangeDto exchangeDto =
+
+
+    }
+
+
+
 
 
 
