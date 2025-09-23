@@ -7,10 +7,10 @@ import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.entity.MentorChatRo
 import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.service.MentorChatRoomService;
 import com.moci_3d_backend.domain.fileUpload.entity.FileUpload;
 import com.moci_3d_backend.domain.fileUpload.repository.FileUploadRepository;
-import com.moci_3d_backend.domain.fileUpload.service.FileUploadService;
 import com.moci_3d_backend.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +20,7 @@ public class MentorChatMessageService {
     private final MentorChatRoomService mentorChatRoomService;
     private final FileUploadRepository fileUploadRepository;
 
+    @Transactional
     public void saveMentorChatMessage(ChatMessage message, User sender, Long roomId){
         MentorChatRoom mentorChatRoom = mentorChatRoomService.getMentorChatRoom(roomId, sender);
         FileUpload fileUpload = fileUploadRepository.findById(message.getAttachmentId()).orElse(null);
