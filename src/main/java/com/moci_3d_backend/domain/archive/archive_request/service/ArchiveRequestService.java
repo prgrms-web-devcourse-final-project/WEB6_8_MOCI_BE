@@ -35,11 +35,12 @@ public class ArchiveRequestService {
         user.setName("임시 유저");
         // 임시 사용 구간
 
-        ArchiveRequest archiveRequest = new ArchiveRequest();
-        archiveRequest.setUser(user);
-        archiveRequest.setTitle(createDto.getTitle());
-        archiveRequest.setDescription(createDto.getDescription());
-        archiveRequest.setStatus(RequestStatus.PENDING);
+        ArchiveRequest archiveRequest = ArchiveRequest.builder()
+                .user(user)
+                .title(createDto.getTitle())
+                .description(createDto.getDescription())
+                .status(RequestStatus.PENDING)
+                .build();
 
         ArchiveRequest savedRequest = archiveRequestRepository.save(archiveRequest);
         return archiveRequestMapper.toResponseDto(savedRequest);
