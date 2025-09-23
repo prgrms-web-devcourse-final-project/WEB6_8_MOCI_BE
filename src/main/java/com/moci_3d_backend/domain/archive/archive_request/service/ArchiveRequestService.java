@@ -29,7 +29,7 @@ public class ArchiveRequestService {
         // User user = userRepository.findById(userId)
         //         .orElseThrow(() -> new EntityNotFoundException("해당 id의 유저를 찾을 수 없습니다: " + userId));
 
-        // 임시 사용 구간
+        // TODO: 임시 사용 구간
         User user = new User();
         user.setId(userId);
         user.setName("임시 유저");
