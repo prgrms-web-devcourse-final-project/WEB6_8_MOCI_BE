@@ -27,7 +27,7 @@ public class ArchiveRequestService {
     public ArchiveRequestResponseDto createArchiveRequest(ArchiveRequestCreateDto createDto, Long userId) {
         // TODO: userReapository 구현 후 주석 해제
         // User user = userRepository.findById(userId)
-        //         .orElseThrow(() -> new entityNotFoundException("해당 id의 유저를 찾을 수 없습니다: " + userId));
+        //         .orElseThrow(() -> new EntityNotFoundException("해당 id의 유저를 찾을 수 없습니다: " + userId));
 
         // 임시 사용 구간
         User user = new User();
