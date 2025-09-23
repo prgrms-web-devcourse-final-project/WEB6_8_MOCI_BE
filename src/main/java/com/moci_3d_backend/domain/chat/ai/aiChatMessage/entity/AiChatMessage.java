@@ -50,7 +50,7 @@ public class AiChatMessage {
     @Lob
     private String content; //메시지 내용
 
-    private Long attachmentId; //첨부파일 ID (추후에 추가할 수도 있어서 남겨둠)
+    //private Long attachmentId; //첨부파일 ID (추후에 추가할 수도 있어서 남겨둠)
 
     private MessageStatus status; //메시지 상태 (예: SENT, DELIVERED, READ)
 
