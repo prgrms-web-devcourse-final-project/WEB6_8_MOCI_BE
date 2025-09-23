@@ -1,6 +1,7 @@
 package com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.entity;
 
 import com.moci_3d_backend.domain.chat.mentor.mentorChatMessage.entity.MentorChatMessage;
+import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.dto.CreateMentorChatRoom;
 import com.moci_3d_backend.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -24,10 +25,13 @@ public class MentorChatRoom {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name="title", length=255)
+    private String title;
+
     @Column(name="category",length = 255)
     private String category;
 
-    @Column(name="sub_category" ,length = 255)
+    @Column(name="sub_category" ,length = 255, nullable = true)
     private String subCategory;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -59,11 +63,19 @@ public class MentorChatRoom {
     List<MentorChatMessage> mentorChatMessageList;
 
 
-    public MentorChatRoom(String category, String subCategory, User mentee){
+    public MentorChatRoom(String category,  User mentee){
         this.category = category;
-        this.subCategory = subCategory;
         this.mentee = mentee;
         this.status = true;
+        this.menteeLastAt = LocalDateTime.now();
+        this.deleted = false;
+    }
+
+    public MentorChatRoom(CreateMentorChatRoom createMentorChatRoom, User mentee){
+        this.category = createMentorChatRoom.getCategory();
+        this.title = createMentorChatRoom.getTitle();
+        this.status = true;
+        this.mentee = mentee;
         this.menteeLastAt = LocalDateTime.now();
         this.deleted = false;
     }

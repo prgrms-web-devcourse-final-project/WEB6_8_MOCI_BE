@@ -1,39 +1,40 @@
 package com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.controller;
 
+import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.dto.CreateMentorChatRoom;
 import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.dto.MentorChatRoomResponse;
-import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.service.MentorChatRoomService;
+import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.service.MenteeChatRoomService;
 import com.moci_3d_backend.domain.user.entity.User;
 import com.moci_3d_backend.global.rsData.RsData;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/chat/mentee/room")
 @RequiredArgsConstructor
 public class ApiV1MenteeChatRoomController {
-    private final MentorChatRoomService mentorChatRoomService;
+    private final MenteeChatRoomService menteeChatRoomService;
 
     @PostMapping()
     public RsData<Void> createMentorChatRoom(
-            @RequestParam(value = "category", defaultValue = "") String category,
-            @RequestParam(value = "sub_category", defaultValue = "") String subCategory,
+            @RequestBody CreateMentorChatRoom createMentorChatRoom,
             User user // 컴파일 에러 방지용
     ) {
         // TODO 로그인한 회원의 정보를 가져와야함
-        mentorChatRoomService.createMentorChatRoom(category, subCategory, user);
+        menteeChatRoomService.createMenteeChatRoom(createMentorChatRoom, user);
         return RsData.of(201, "success to create chat room");
     }
 
     @GetMapping()
-    public RsData<Page<MentorChatRoomResponse>> getMentorChatRooms(
+    public RsData<List<MentorChatRoomResponse>> getMentorChatRooms(
             @PageableDefault(size = 10, page = 0) Pageable pageable,
             User user // 컴파일 에러 방지용
     ){
         // TODO 로그인한 회원의 정보를 가져와야함
-        Page<MentorChatRoomResponse> mentorChatRoomResponsePage = mentorChatRoomService.getMentorChatRooms(user, pageable);
+        List<MentorChatRoomResponse> mentorChatRoomResponsePage = menteeChatRoomService.getMenteeChatRooms(user);
         return RsData.of(200, "success to get chat rooms", mentorChatRoomResponsePage);
     }
 
@@ -43,7 +44,7 @@ public class ApiV1MenteeChatRoomController {
             User user // 컴파일 에러 방지용
     ){
         // TODO 로그인한 회원의 정보를 가져와야함
-        mentorChatRoomService.deleteMentorChatRoom(roomId, user);
+        menteeChatRoomService.deleteMenteeChatRoom(roomId, user);
         return RsData.of(200, "success to delete chat room");
     }
 }
