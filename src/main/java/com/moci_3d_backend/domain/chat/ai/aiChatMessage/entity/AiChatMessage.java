@@ -3,6 +3,7 @@ package com.moci_3d_backend.domain.chat.ai.aiChatMessage.entity;
 import com.moci_3d_backend.domain.chat.ai.aiChatMessage.enums.MessageStatus;
 import com.moci_3d_backend.domain.chat.ai.aiChatMessage.enums.SenderType;
 import com.moci_3d_backend.domain.chat.ai.aiChatRoom.entity.AiChatRoom;
+import com.moci_3d_backend.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -38,10 +39,9 @@ public class AiChatMessage {
     @JoinColumn(name = "room_id")
     private AiChatRoom room;
 
-//    @ManyToOne(fetch =  FetchType.LAZY)
-//    @JoinColumn(name = "user_id") //사람이면 User, AI면 null
-//    private User sender;
-// 추후에 추가합니다 (유저와의 관계)
+    @ManyToOne(fetch =  FetchType.LAZY)
+    @JoinColumn(name = "user_id") //사람이면 User, AI면 null
+    private User sender;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "sender_type", length = 20, nullable = false)
@@ -55,7 +55,7 @@ public class AiChatMessage {
     private MessageStatus status; //메시지 상태 (예: SENT, DELIVERED, READ)
 
     public void markRead(LocalDateTime time) {
-        this.status = MessageStatus.READ;
+        this.status = MessageStatus.읽음;
         this.readAt = time;
     }
 
