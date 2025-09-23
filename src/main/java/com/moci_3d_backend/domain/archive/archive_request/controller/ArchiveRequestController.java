@@ -97,7 +97,7 @@ public class ArchiveRequestController {
         return RsData.of(200, "자료 요청 상세 정보를 성공적으로 조회했습니다.", response);
     }
 
-    // 사용자별 자료 요청 목록 조회 (괸리자, 멘토)
+    // 사용자별 자료 요청 목록 조회 (관리자, 멘토)
     @GetMapping("/users/{userId}/archive-requests")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MENTOR')")
     @Operation(summary = "[관리자/멘토] 사용자별 자료 요청 목록 조회", description = "관리자와 멘토가 특정 사용자의 자료 요청 목록을 조회할 수 있습니다.")
