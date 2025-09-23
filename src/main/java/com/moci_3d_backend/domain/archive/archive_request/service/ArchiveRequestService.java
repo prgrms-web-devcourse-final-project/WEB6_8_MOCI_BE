@@ -152,6 +152,22 @@ public class ArchiveRequestService {
                 .build();
     }
 
+    // 상태별 자료 요청 목록 조회
+    @Transactional(readOnly = true)
+    public ArchiveRequestListResponseDto getArchiveRequestsByStatus(RequestStatus status, Pageable pageable) {
+        Page<ArchiveRequest> requestPage = archiveRequestRepository.findByStatus(status, pageable);
+
+        Page<ArchiveRequestListResponseDto.RequestSummaryDto> summaryPage =
+                requestPage.map(archiveRequestMapper::toSummaryDto);
+
+        return ArchiveRequestListResponseDto.builder()
+                .totalPages(summaryPage.getTotalPages())
+                .totalElements(summaryPage.getTotalElements())
+                .currentPage(summaryPage.getNumber())
+                .requests(summaryPage.getContent())
+                .build();
+    }
+
     // 대기중 요청 개수 조회
     @Transactional(readOnly = true)
     public long getPendingRequestCount() {
