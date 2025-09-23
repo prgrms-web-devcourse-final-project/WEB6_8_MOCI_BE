@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.NoSuchElementException;
 
@@ -18,6 +19,7 @@ public class MentorChatRoomService {
     private final MentorChatRoomRepository mentorChatRoomRepository;
     private final MentorChatRoomDtoService mentorChatRoomDtoService;
 
+    @Transactional
     public void createMentorChatRoom(String category, String subCategory, User mentee){
         MentorChatRoom mentorChatRoom = new MentorChatRoom(category, subCategory, mentee);
         mentorChatRoomRepository.save(mentorChatRoom);
@@ -28,6 +30,7 @@ public class MentorChatRoomService {
         return mentorChatRoomDtoService.toMentorChatRoomResponsePage(mentorChatRoomPage);
     }
 
+    @Transactional
     public void deleteMentorChatRoom(Long roomId, User user){
         MentorChatRoom mentorChatRoom = mentorChatRoomRepository.findByIdAndDeletedFalse(roomId).orElseThrow(
                 () -> new NoSuchElementException("No chat room found with id: " + roomId)
@@ -36,5 +39,15 @@ public class MentorChatRoomService {
             throw new IllegalArgumentException("The user is not a mentee of the chat room");
         }
         mentorChatRoom.setDeleted(true);
+    }
+
+    public MentorChatRoom getMentorChatRoom(Long roomId, User user){
+        MentorChatRoom mentorChatRoom =  mentorChatRoomRepository.findByIdAndDeletedFalse(roomId).orElseThrow(
+                () -> new NoSuchElementException("No chat room found with id: " + roomId)
+        );
+        if (!mentorChatRoom.getMentee().equals(user)){
+            throw new IllegalArgumentException("The user is not a mentee of the chat room");
+        }
+        return mentorChatRoom;
     }
 }
