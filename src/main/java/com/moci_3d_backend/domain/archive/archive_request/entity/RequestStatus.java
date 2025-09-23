@@ -35,6 +35,13 @@ public enum RequestStatus {
                 return requestStatus;
             }
         }
-        throw new IllegalArgumentException("Invalid RequestStatus: " + status);
+        // 유효하지 않은 값에 대한 예외 처리
+        String validValues = String.join(", ",
+                java.util.Arrays.stream(RequestStatus.values())
+                        .map(RequestStatus::name)
+                        .toArray(String[]::new));
+        throw new IllegalArgumentException(
+                String.format("Unknown RequestStatus: \"%s\". Valid values are: %s", status, validValues)
+        );
     }
 }
