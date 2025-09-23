@@ -1,13 +1,12 @@
 package com.moci_3d_backend.domain.chat.ai.aiChatMessage.entity;
 
-import com.moci_3d_backend.domain.chat.ai.MessageStatus;
-import com.moci_3d_backend.domain.chat.ai.SenderType;
+import com.moci_3d_backend.domain.chat.ai.aiChatMessage.enums.MessageStatus;
+import com.moci_3d_backend.domain.chat.ai.aiChatMessage.enums.SenderType;
 import com.moci_3d_backend.domain.chat.ai.aiChatRoom.entity.AiChatRoom;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
