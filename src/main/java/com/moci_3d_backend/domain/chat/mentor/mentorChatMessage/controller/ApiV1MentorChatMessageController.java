@@ -20,13 +20,11 @@ public class ApiV1MentorChatMessageController {
 
     @MessageMapping("send/{roomId}")
     public void sendMessage(
-            @DestinationVariable(value = "roomId") Long roomId,
             ChatMessage message,
-            Principal principal,
-            User user // 컴파일 에러 방지용
+            @DestinationVariable(value = "roomId") Long roomId
+//            ,Principal principal
     ) {
         // TODO Principal을 통해 User 객체를 얻어와야 함
         messagingTemplate.convertAndSend("/api/v1/chat/topic/%d".formatted(roomId), message);
-
     }
 }

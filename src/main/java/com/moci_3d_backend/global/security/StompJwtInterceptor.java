@@ -12,12 +12,14 @@ import org.springframework.stereotype.Component;
 public class StompJwtInterceptor implements ChannelInterceptor {
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
-        var accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
-        if (accessor == null){
-            return null;
-        }
-        String token = (String) accessor.getSessionAttributes().get("token");
+        // TODO accessToken을 사용한 로그인이 구현되면 주석해제
+//        var accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+//        if (accessor == null){
+//            return null;
+//        }
+//        String token = (String) accessor.getSessionAttributes().get("token");
         // TODO accessToken을 통해 유저의 정보 얻어내기
+
         return message;
     }
 }

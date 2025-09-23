@@ -29,18 +29,19 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
             WebSocketHandler wsHandler,
             Map<String, Object> attributes
     ) throws Exception {
-        ServletServerHttpRequest servletServerHttpRequest = (ServletServerHttpRequest)request;
-        HttpServletRequest servletRequest = servletServerHttpRequest.getServletRequest();
-        Optional<String> token = Arrays.stream(servletRequest.getCookies())
-                .filter((e)->e.getName().equals("accessToken"))
-                .map(e->e.getValue())
-                .findFirst();
-        if (token.isEmpty()) {
-            return false;
-        }
-        attributes.put("token", token.get());
+        // TODO accessToken을 사용한 로그인이 구현되면 주석 해제
+//        ServletServerHttpRequest servletServerHttpRequest = (ServletServerHttpRequest)request;
+//        HttpServletRequest servletRequest = servletServerHttpRequest.getServletRequest();
+//        Optional<String> token = Arrays.stream(servletRequest.getCookies())
+//                .filter((e)->e.getName().equals("accessToken"))
+//                .map(e->e.getValue())
+//                .findFirst();
+//        if (token.isEmpty()) {
+//            return false;
+//        }
+//        attributes.put("token", token.get());
 
-        return false;
+        return true;
     }
 
     @Override
