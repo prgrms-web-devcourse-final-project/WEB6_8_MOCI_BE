@@ -8,6 +8,7 @@ import com.moci_3d_backend.global.exception.ServiceException;
 import com.moci_3d_backend.global.rsData.RsData;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +37,7 @@ public class AiChatRoomController {
     @Operation(summary = "AI 채팅방 생성", description = "AI 채팅방을 생성합니다.")
     @PostMapping
     @Transactional
-    public RsData<AiChatRoomDto> createAiChatRoom(CreateAiRoomReqBody reqBody) {
+    public RsData<AiChatRoomDto> createAiChatRoom(@RequestBody @Valid CreateAiRoomReqBody reqBody) {
 
         AiChatRoom chatRoom = aiChatRoomService.create(reqBody.title, reqBody.category);
 
