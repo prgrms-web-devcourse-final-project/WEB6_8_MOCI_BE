@@ -39,10 +39,6 @@ public class AiChatRoomService {
 
         List<AiChatRoom> aiChatRooms = aiChatRoomRepository.findByUserIdOrderByLastMessageAtDesc(userId);
 
-        if(aiChatRooms.isEmpty()) {
-            throw new ServiceException(400,"사용자의 AI 채팅방이 존재하지 않습니다.");
-        }
-
         log.info("자기 자신의 AI 채팅방 조회 성공 총 {}개 조회함 ",aiChatRooms.size());
 
         return aiChatRooms;

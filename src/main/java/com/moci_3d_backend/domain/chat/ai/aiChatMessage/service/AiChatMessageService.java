@@ -151,6 +151,12 @@ public class AiChatMessageService {
         AiChatMessage message = aiChatMessageRepository.findById(messageId)
                 .orElseThrow(() -> new ServiceException(404, "존재하지 않는 메시지입니다."));
 
+        // 메시지가 해당 채팅방에 속하는지 검증
+        if (!message.getRoom().getId().equals(room.getId())) {
+            throw new ServiceException(400, "해당 메시지는 요청한 roomId에 속하지 않습니다.");
+        }
+
+
         aiChatMessageRepository.delete(message);
     }
 }
