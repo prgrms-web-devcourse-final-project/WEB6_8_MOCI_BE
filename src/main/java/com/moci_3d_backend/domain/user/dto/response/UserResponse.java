@@ -13,6 +13,8 @@ import java.time.LocalDateTime;
 public class UserResponse {
     
     private Long id;
+    private Integer userId;
+    private String socialId;
     private String name;
     private String email;
     private User.UserRole role;
@@ -22,6 +24,8 @@ public class UserResponse {
     public static UserResponse from(User user) {
         return new UserResponse(
             user.getId(),
+            user.getUserId(),
+            user.getSocialId(),
             user.getName(),
             user.getEmail(),
             user.getRole(),
