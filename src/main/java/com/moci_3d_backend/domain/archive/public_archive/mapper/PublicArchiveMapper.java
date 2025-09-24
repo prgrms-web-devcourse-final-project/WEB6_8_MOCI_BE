@@ -85,7 +85,7 @@ public class PublicArchiveMapper {
 
         return PublicArchiveListResponse.PublicArchiveDto.UserDto.builder()
                 .id(user.getId())
-                .name(user.getName() != null ? user.getName() : "이름없음") // name이 null인 경우 기본값
+                .name(user.getName() != null ? user.getName() : "이름 없음") // name이 null인 경우 기본값
                 .build();
     }
 }
