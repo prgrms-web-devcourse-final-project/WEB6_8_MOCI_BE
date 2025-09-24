@@ -7,9 +7,16 @@ import lombok.Getter;
 public class MentorChatRoomResponse {
     private Long id;
     private String title; // Chat Message 구현 후 추가
+    private Integer unread_count;
 
     public MentorChatRoomResponse(MentorChatRoom entity){
         this.id = entity.getId();
         this.title = entity.getTitle();
+        this.unread_count = 0;
+    }
+    public MentorChatRoomResponse(Long id, String title, Integer unread_count){
+        this.id = id;
+        this.title = title;
+        this.unread_count = unread_count;
     }
 }

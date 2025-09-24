@@ -6,7 +6,10 @@ import com.moci_3d_backend.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -28,6 +31,8 @@ public class MentorChatMessage {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="attachment_id", nullable = true)
     private FileUpload attachment;
+    @CreatedDate
+    private LocalDateTime createdAt;
 
     public MentorChatMessage(MentorChatRoom room, User sender, String content, FileUpload attachment){
         this.room = room;
