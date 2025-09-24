@@ -15,7 +15,7 @@ public class UserLoginRequest {
     private String loginType;
     
     // === 일반 로그인 ===
-    private Integer userId;    // 전화번호
+    private String userId;    // 전화번호
     private String password;  // 비밀번호
     
     // === 소셜 로그인 ===
