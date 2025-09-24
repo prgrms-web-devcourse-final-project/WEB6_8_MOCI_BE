@@ -12,6 +12,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -67,18 +68,45 @@ public class AiChatRoomController {
     @Operation( summary = "AI 채팅방 다건 조회", description = "AI 채탱방 모두 조회합니다.")
     @GetMapping
     @Transactional(readOnly = true)
-    public AiChatRoomListDto getAiChatRooms() {
+    public RsData<AiChatRoomListDto> getAiChatRooms() {
         List<AiChatRoom> aiChatRooms = aiChatRoomService.getRooms();
 
         List<AiChatRoomDto> roomDtos = aiChatRooms.stream()
                 .map(AiChatRoomDto::new)
                 .toList();
 
-        return new AiChatRoomListDto(roomDtos, roomDtos.size());
+        return new RsData<>(
+                200, "AI 채팅방 목록 조회에 성공했습니다.",
+                new AiChatRoomListDto(roomDtos, roomDtos.size())
+        );
     }
 
-    //TODO: 추후에 구현
-    //내 채팅방 목록 조회
+    @Operation( summary = "자기의 AI 채팅방 목록 조회", description = "자기자신의 채팅방 목록조회")
+    @GetMapping("/mine")
+    @Transactional(readOnly = true)
+    public RsData<AiChatRoomListDto> getMyAiChatRooms(
+            // TODO: 실제 구현시 @AuthenticationPrincipal 또는 SecurityContext에서 User 정보를 가져와야 함
+    ) {
+        //일단 유저가 없으니 주석
+//        if(user == null) {
+//            throw new ServiceException(401, "로그인이 필요합니다.");
+//        }
+//        Long userId = user.getId();
+
+        List<AiChatRoom> aiChatRooms = aiChatRoomService.getMyRooms(1L); // TODO: 실제 사용자 ID로 변경
+
+        List<AiChatRoomDto> roomDtos = aiChatRooms.stream()
+                .map(AiChatRoomDto::new)
+                .toList();
+
+        return new RsData<>(
+                200, "자신의 AI 채팅방 목록 조회에 성공했습니다.",
+                new AiChatRoomListDto(roomDtos, roomDtos.size())
+        );
+
+
+    }
+
     //채탱방 수정
     //채팅방 삭제
 
