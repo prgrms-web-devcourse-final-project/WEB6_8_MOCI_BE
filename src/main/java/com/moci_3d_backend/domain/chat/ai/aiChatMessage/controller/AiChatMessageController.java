@@ -61,14 +61,20 @@ public class AiChatMessageController {
                 .toList();
     }
 
-    @Operation(summary = "AI 채팅방에서 채팅 읽었는지 확인", description = "특정 메세지를 읽었는지 확인")
-    @PatchMapping("/{messageId}/read")
-    public RsData<AiChatMessageDto> markAsRead(@PathVariable Long messageId) {
-        AiChatMessage message = aiChatMessageService.read(messageId,null);
+
+    public record MarkReadUpToRequest(
+            @NotNull Long lastSeenMessageId
+    ) {}
+
+    @Operation(summary = "해당 방에서 lastSeenMessageId 까지 읽음 처리", description = "클라가 본 마지막 메시지 id를 보내면, 그 이하 메시지를 읽음 처리합니다.")
+    @PatchMapping("/{roomId}/read")
+    public RsData<List<AiChatMessageDto>> markAsRead(@PathVariable Long roomId,
+                                                     @RequestBody @Valid MarkReadUpToRequest req) {
+        List<AiChatMessageDto> dtoList = aiChatMessageService.markAsReadUpTo(roomId, req.lastSeenMessageId);
 
         return new RsData<>(
-                200, "%d번 메시지를 읽음 처리했습니다.".formatted(message.getId()),
-                new AiChatMessageDto(message)
+                200, "%d번 메세지까지 읽음 처리했습니다".formatted(req.lastSeenMessageId),
+                dtoList
         );
     }
 

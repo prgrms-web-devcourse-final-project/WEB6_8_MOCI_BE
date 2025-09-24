@@ -109,4 +109,22 @@ public class AiChatMessageService {
 
         return aiChatMessageRepository.save(message);
     }
+
+    @Transactional
+    public List<AiChatMessageDto> markAsReadUpTo(Long roomId, Long lastSeenMessageId) {
+        AiChatMessage last = aiChatMessageRepository.findById(lastSeenMessageId)
+                .orElseThrow(()-> new ServiceException(404,"lastSeenMessageId가 존재하지 않습니다."));
+        if(!last.getRoom().getId().equals(roomId)) {
+            throw new ServiceException(400, "해당 메세지는 요청한 roomId에 속하지 않습니다.");
+        }
+
+        List<AiChatMessage> toMark = aiChatMessageRepository.findByRoomIdAndIdLessThanEqualAndStatusNot(
+                roomId, lastSeenMessageId, MessageStatus.READ
+        );
+
+        return toMark.stream()
+                .map(m -> read(m.getId(), null))
+                .map(AiChatMessageDto::new)
+                .collect(Collectors.toList());
+    }
 }
