@@ -30,36 +30,38 @@ public class ArchiveRequestController {
     @PreAuthorize("hasRole('MENTOR')")
     @Operation(summary = "[멘토] 자료 요청 등록", description = "멘토가 자료 요청글을 등록합니다.")
     public RsData<ArchiveRequestResponseDto> createArchiveRequest(
-            @Valid @RequestBody ArchiveRequestCreateDto createDto
-            // TODO: 실제 구현시 @AuthenticationPrincipal 또는 SecurityContext에서 User추출)
+            @Valid @RequestBody ArchiveRequestCreateDto createDto,
+            // TODO 임시: 테스트용 userId 파라미터 (추후 @AuthenticationPrincipal 또는 SecurityContextHolder로 대체)
+            @RequestParam @Parameter(description = "임시 테스트용 멘토 ID") Long userId
     ) {
-        // TODO: 실제 사용자 ID 가져오기 (임시로 1L사용)
-        Long userId = 1L;
-
         ArchiveRequestResponseDto response = archiveRequestService.createArchiveRequest(createDto, userId);
         return RsData.of(201, "자료 요청글이 생성되었습니다.", response);
     }
 
+    // 자료 요청 수정 (멘토)
     @PutMapping("/archive-requests/{requestId}")
     @PreAuthorize("hasRole('MENTOR')")
     @Operation(summary = "[멘토] 자료 요청 수정", description = "멘토가 본인의 요청글을 수정합니다.")
-    // 자료 요청 수정 (멘토)
     public RsData<ArchiveRequestResponseDto> updateArchiveRequest(
             @PathVariable @Parameter(description = "수정할 요청글 ID", example = "1") Long requestId,
-            @Valid @RequestBody ArchiveRequestUpdateDto updateDto
+            @Valid @RequestBody ArchiveRequestUpdateDto updateDto,
+            // TODO 임시: 테스트용 userId 파라미터 (추후 본인 작성 글 확인용으로 사용)
+            @RequestParam @Parameter(description = "임시 테스트용 사용자 ID") Long userId
     ) {
-        ArchiveRequestResponseDto response = archiveRequestService.updateArchiveRequest(requestId, updateDto);
+        ArchiveRequestResponseDto response = archiveRequestService.updateArchiveRequestWithOwnerCheck(requestId, updateDto, userId);
         return RsData.of(200, "자료 요청글이 수정되었습니다.", response);
     }
 
-    // 자료 요청 삭제 (멘토)
+    // 자료 요청 삭제 (멘토 + 관리자)
     @DeleteMapping("/archive-requests/{requestId}")
-    @PreAuthorize("hasRole('MENTOR')")
-    @Operation(summary = "[멘토] 자료 요청 삭제", description = "멘토가 본인의 요청글을 삭제합니다.")
+    @PreAuthorize("hasRole('MENTOR') or hasRole('ADMIN')")
+    @Operation(summary = "[멘토/관리자] 자료 요청 삭제", description = "멘토가 본인의 글을, 관리자는 모든 글에대해 삭제할 권한이 있습니다.")
     public RsData<Void> deleteArchiveRequest(
-            @PathVariable @Parameter(description = "삭제할 요청글 ID", example = "1") Long requestId
+            @PathVariable @Parameter(description = "삭제할 요청글 ID", example = "1") Long requestId,
+            // 임시: 테스트용 userId 파라미터 (추후 본인 작성 글 확인용으로 사용)
+            @RequestParam @Parameter(description = "임시 테스트용 사용자 ID") Long userId
     ) {
-        archiveRequestService.deleteArchiveRequest(requestId);
+        archiveRequestService.deleteArchiveRequestWithPermissionCheck(requestId, userId);
         return RsData.of(200, "자료 요청글이 성공적으로 삭제되었습니다.");
     }
 
@@ -119,10 +121,10 @@ public class ArchiveRequestController {
     @Operation(summary = "[관리자] 자료 요청 상태 변경", description = "관리자가 자료 요청글의 상태를 변경합니다.")
     public RsData<ArchiveRequestResponseDto> updateArchiveRequestStatus(
             @PathVariable @Parameter(description = "상태를 변경할 요청글 ID", example = "1") Long requestId,
-            @Valid @RequestBody ArchiveRequestStatusUpdateDto statusUpdateDto
+            @Valid @RequestBody ArchiveRequestStatusUpdateDto statusUpdateDto,
+            // TODO 임시: 테스트용 userId 파라미터 (추후 @AuthenticationPrincipal 또는 SecurityContextHolder로 대체)
+            @RequestParam @Parameter(description = "임시 테스트용 관리자 ID") Long reviewerId
     ) {
-        // TODO: 실제 사용자 ID 가져오기 (임시로 2L사용)
-        Long reviewerId = 2L;
 
         ArchiveRequestResponseDto response = archiveRequestService.updateArchiveRequestStatus(requestId, statusUpdateDto, reviewerId);
 

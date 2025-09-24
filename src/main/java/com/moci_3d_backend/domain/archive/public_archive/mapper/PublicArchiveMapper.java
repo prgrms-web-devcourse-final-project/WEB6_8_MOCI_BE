@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class PublicArchiveMapper {
 
+    // PublicArchive 엔티티를 PublicArchiveResponse DTO로 변환
     public PublicArchiveResponse toResponseDto(PublicArchive archive) {
         if (archive == null) return null;
 
@@ -20,8 +21,7 @@ public class PublicArchiveMapper {
             fileDto = FileUploadDto.from(firstFile);
         }
 
-        // TODO: UserDto 구현되면 개선 (User 정보 추출)
-        PublicArchiveResponse.UserDto userDto = createSafeUserDto(archive.getUploadedBy());
+        PublicArchiveResponse.UserDto userDto = mapToUserDto(archive.getUploadedBy());
 
         return PublicArchiveResponse.builder()
                 .id(archive.getId())
@@ -36,42 +36,47 @@ public class PublicArchiveMapper {
                 .build();
     }
 
+    // PublicArchive 엔티티를 PublicArchiveListResponse의 PublicArchiveDto로 변환
     public PublicArchiveListResponse.PublicArchiveDto toListDto(PublicArchive archive) {
         if (archive == null) return null;
-
-        // TODO: UserDto 구현되면 개선 (User 정보 추출)
-        PublicArchiveResponse.UserDto userDto = createSafeUserDto(archive.getUploadedBy());
 
         return PublicArchiveListResponse.PublicArchiveDto.builder()
                 .id(archive.getId())
                 .title(archive.getTitle())
                 .category(archive.getCategory())
                 .subCategory(archive.getSubCategory())
-                .uploadedBy(createSafeListUserDto(archive.getUploadedBy()))
+                .uploadedBy(mapToListUserDto(archive.getUploadedBy()))
                 .createdAt(archive.getUploadedAt())
                 .build();
     }
-
-    // TODO: UserDto 구현되면 개선 (User 정보가 null일 때 대비)
-    // 안전한 UserDto 생성 메서드
-    private PublicArchiveResponse.UserDto createSafeUserDto(User user) {
+    
+    // User 엔티티를 PublicArchiveResponse의 UserDto로 변환
+    private PublicArchiveResponse.UserDto mapToUserDto(User user) {
         if (user == null) {
-            return null;
+            return PublicArchiveResponse.UserDto.builder()
+                    .id(null)
+                    .name("알 수 없음")
+                    .build();
         }
 
         return PublicArchiveResponse.UserDto.builder()
                 .id(user.getId())
+                .name(user.getName() != null ? user.getName() : "이름 없음") // name이 null인 경우 기본값
                 .build();
     }
 
-    // 안전한 ListUserDto 생성 메서드
-    private PublicArchiveListResponse.PublicArchiveDto.UserDto createSafeListUserDto(User user) {
+    // User 엔티티를 PublicArchiveListResponse.PublicArchiveDto.UserDto로 변환
+    private PublicArchiveListResponse.PublicArchiveDto.UserDto mapToListUserDto(User user) {
         if (user == null) {
-            return null;
+            return PublicArchiveListResponse.PublicArchiveDto.UserDto.builder()
+                    .id(null)
+                    .name("알 수 없음")
+                    .build();
         }
 
         return PublicArchiveListResponse.PublicArchiveDto.UserDto.builder()
                 .id(user.getId())
+                .name(user.getName() != null ? user.getName() : "이름 없음") // name이 null인 경우 기본값
                 .build();
     }
 }
