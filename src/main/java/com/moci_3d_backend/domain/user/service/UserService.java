@@ -1,6 +1,7 @@
 package com.moci_3d_backend.domain.user.service;
 
 import com.moci_3d_backend.domain.user.dto.request.UserLoginRequest;
+import com.moci_3d_backend.domain.user.dto.request.UserRegisterRequest;
 import com.moci_3d_backend.domain.user.dto.response.UserLoginResponse;
 import com.moci_3d_backend.domain.user.entity.User;
 import com.moci_3d_backend.domain.user.repository.UserRepository;
@@ -17,6 +18,11 @@ import java.util.Optional;
 public class UserService {
     
     private final UserRepository userRepository;
+    // === 회원가입 ===
+    @Transactional  // 트랜잭션 처리
+    public User register(UserRegisterRequest request) {
+        return userRepository.save(request.toEntity());
+    }
     
     // === 로그인 ===
     public UserLoginResponse login(UserLoginRequest request) {
@@ -43,7 +49,7 @@ public class UserService {
     }
     
     // === 사용자 조회 ===
-    public User findByUserId(Integer userId) {
+    public User findByUserId(String userId) {
         Optional<User> userOptional = userRepository.findByUserId(userId);
         
         if (userOptional.isEmpty()) {

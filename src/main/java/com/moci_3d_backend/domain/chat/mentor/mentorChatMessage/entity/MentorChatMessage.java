@@ -6,10 +6,12 @@ import com.moci_3d_backend.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @Getter
 @NoArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class MentorChatMessage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 public class UserController {
-    
+
     private final UserService userService;
     
     // === 사용자 조회 ===
     @GetMapping("/{userId}")
-    public ResponseEntity<RsData<UserResponse>> getUserInfo(@PathVariable Integer userId) {
+    public ResponseEntity<RsData<UserResponse>> getUserInfo(@PathVariable String userId) {
         User user = userService.findByUserId(userId);
         UserResponse response = UserResponse.from(user);
         return ResponseEntity.ok(RsData.successOf(response));

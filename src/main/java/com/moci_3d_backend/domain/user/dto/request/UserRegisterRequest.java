@@ -1,10 +1,12 @@
 package com.moci_3d_backend.domain.user.dto.request;
 
+import com.moci_3d_backend.domain.user.entity.User;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -35,11 +37,33 @@ public class UserRegisterRequest {
     // ========================================
     // 일반 회원가입
     // ========================================
-    private Integer userId; // 전화번호
+    private String userId; // 전화번호
     private String password; // 비밀번호
     
     // ========================================
     // 소셜 회원가입
     // ========================================
     private String socialId; // 암호화된 소셜 고유 ID
+    
+    // === DTO → Entity 변환 메서드 ===
+    public User toEntity() {
+        User user = new User();
+        
+        // 1. 기본 정보 설정
+        user.setUserId(this.userId);
+        user.setSocialId(this.socialId);
+        user.setLoginType(this.loginType);
+        user.setPassword(this.password);
+        user.setName(this.name);
+        user.setEmail(this.email);
+        
+        // 2. 기본값 설정 
+        user.setRole(User.UserRole.USER);  // 기본 역할: USER
+        user.setCreatedAt(LocalDateTime.now());  // 생성일시
+        user.setUpdatedAt(LocalDateTime.now());  // 수정일시
+        
+        // 디지털 레벨은 서비스에서 설정할 예정
+        
+        return user;
+    }
 }

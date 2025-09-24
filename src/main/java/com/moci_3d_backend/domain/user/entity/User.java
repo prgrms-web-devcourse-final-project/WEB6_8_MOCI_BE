@@ -4,10 +4,8 @@ import com.moci_3d_backend.domain.archive.public_archive.entity.PublicArchive;
 // import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.entity.MentorChatRoom;
 // import com.moci_3d_backend.domain.chat.ai.aiChatRoom.entity.AiChatRoom;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -17,13 +15,14 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "user_id")
-    private Integer userId;
+    private String userId;
 
     @Column(name = "social_id", length = 50)
     private String socialId;
