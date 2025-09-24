@@ -115,7 +115,7 @@ public class AiChatMessageService {
         AiChatMessage last = aiChatMessageRepository.findById(lastSeenMessageId)
                 .orElseThrow(()-> new ServiceException(404,"lastSeenMessageId가 존재하지 않습니다."));
         if(!last.getRoom().getId().equals(roomId)) {
-            throw new ServiceException(400, "해당 메세지는 요청한 rommId에 속하지 않습니다.");
+            throw new ServiceException(400, "해당 메세지는 요청한 roomId에 속하지 않습니다.");
         }
 
         List<AiChatMessage> toMark = aiChatMessageRepository.findByRoomIdAndIdLessThanEqualAndStatusNot(
