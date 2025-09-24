@@ -157,7 +157,7 @@ public class DevInitData {
 
         // 10. 일반 사용자 8
         User user8 = new User();
-        user8.setUserId("0101234567");
+        user8.setUserId("01012345670");
         user8.setLoginType("PHONE");
         user8.setPassword("password");
         user8.setName("송하늘");
