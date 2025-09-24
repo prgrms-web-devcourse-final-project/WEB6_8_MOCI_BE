@@ -142,4 +142,15 @@ public class AiChatMessageService {
         return aiChatMessageRepository.findByRoomIdAndContentLikeOrderByIdAsc(roomId, likeKeyword);
 
     }
+
+    @Transactional
+    public void delete(Long roomId, Long messageId) {
+        AiChatRoom room = aiChatRoomRepository.findById(roomId)
+                .orElseThrow(() -> new ServiceException(404, "존재하지 않는 AI 채팅방입니다."));
+
+        AiChatMessage message = aiChatMessageRepository.findById(messageId)
+                .orElseThrow(() -> new ServiceException(404, "존재하지 않는 메시지입니다."));
+
+        aiChatMessageRepository.delete(message);
+    }
 }

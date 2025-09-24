@@ -41,7 +41,6 @@ public class AiChatMessageController {
                     프론트에서 메세지보낼때 roomId를 같이 넘겨야합니다
                     """)
     @PostMapping("/{roomId}/messages")
-    @Transactional
     public RsData<AiChatMessageDto> createAiChatMessage(@RequestBody @Valid CreateAiChatMessageReqBody reqBody) {
         AiChatMessage chatMessage = aiChatMessageService.create(reqBody.roomId, reqBody.senderType, reqBody.content);
 
@@ -54,7 +53,8 @@ public class AiChatMessageController {
     public record AskAiRequest(
             @NotNull Long roomId,
             @NotBlank String content
-    ) {}
+    ) {
+    }
 
 
     @Operation(summary = "사람이 메시지 보내고, AI 응답까지 한 번에 받기(동기)")
@@ -100,7 +100,8 @@ public class AiChatMessageController {
 
     public record MarkReadUpToRequest(
             @NotNull Long lastSeenMessageId
-    ) {}
+    ) {
+    }
 
     @Operation(summary = "해당 방에서 lastSeenMessageId 까지 읽음 처리", description = "클라가 본 마지막 메시지 id를 보내면, 그 이하 메시지를 읽음 처리합니다.")
     @PatchMapping("/{roomId}/read")
@@ -114,9 +115,14 @@ public class AiChatMessageController {
         );
     }
 
+    @Operation(summary = "메시지 삭제", description = "채팅방 안에 특정 메시지를 삭제합니다.")
+    @DeleteMapping("/{roomId}/messages/{messageId}")
+    public RsData<Void> deleteMessage(@PathVariable Long roomId, @PathVariable Long messageId) {
+        aiChatMessageService.delete(roomId, messageId);
 
-
-
+        return new RsData<>(
+                200, "%d번 메시지를 삭제했습니다.".formatted(messageId), null);
+    }
 
 
 }
