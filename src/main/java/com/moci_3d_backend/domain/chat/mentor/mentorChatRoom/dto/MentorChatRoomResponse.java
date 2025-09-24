@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 public class MentorChatRoomResponse {
     private Long id;
-    private String title; // Chat Message 구현 후 추가
+    private String title;
     private Integer unread_count;
 
     public MentorChatRoomResponse(MentorChatRoom entity){

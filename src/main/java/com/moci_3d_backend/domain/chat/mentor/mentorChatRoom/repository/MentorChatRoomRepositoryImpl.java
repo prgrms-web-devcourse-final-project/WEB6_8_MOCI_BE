@@ -1,8 +1,11 @@
 package com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.repository;
 
 import com.moci_3d_backend.domain.chat.mentor.mentorChatMessage.entity.QMentorChatMessage;
+import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.dto.DetailMentorChatRoom;
 import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.dto.MentorChatRoomResponse;
 import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.entity.QMentorChatRoom;
+import com.moci_3d_backend.domain.user.entity.User;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -16,10 +19,27 @@ public class MentorChatRoomRepositoryImpl implements MentorChatRoomRepositoryCus
 
 
     @Override
-    public List<MentorChatRoomResponse> getMentorChatRooms() {
+    public List<MentorChatRoomResponse> getMentorChatRooms(User user, boolean isMentor) {
         QMentorChatRoom chatRoom = QMentorChatRoom.mentorChatRoom;
         QMentorChatMessage message = QMentorChatMessage.mentorChatMessage;
 
+        BooleanBuilder builder = new BooleanBuilder();
+        BooleanBuilder joinBuilder = new BooleanBuilder();
+        builder.and(chatRoom.deleted.isFalse());
+        joinBuilder.and(message.room.eq(chatRoom));
+
+        if (user != null){
+            if (isMentor){
+                builder.and(chatRoom.mentor.eq(user));
+                joinBuilder.and(message.createdAt.after(chatRoom.mentorLastAt));
+            }else{
+                builder.and(chatRoom.mentee.eq(user));
+                joinBuilder.and(message.createdAt.after(chatRoom.menteeLastAt));
+            }
+        }else{
+            // 만들어두긴 했지만 현재기준 안쓰임
+            builder.and(chatRoom.mentor.isNull());
+        }
 
         List<MentorChatRoomResponse> result =  jpaQueryFactory
                 .select(Projections.bean(MentorChatRoomResponse.class,
@@ -29,13 +49,11 @@ public class MentorChatRoomRepositoryImpl implements MentorChatRoomRepositoryCus
                 ))
                 .from(chatRoom)
                 .leftJoin(message).on(
-                        message.room.eq(chatRoom)
-                                .and(message.createdAt.after(chatRoom.mentorLastAt))
+                        joinBuilder
                 )
-                .where(chatRoom.deleted.eq(false))
+                .where(builder)
                 .groupBy(chatRoom.id)
                 .fetch();
         return result;
-
     }
 }

@@ -26,8 +26,7 @@ public class MenteeChatRoomService {
     }
 
     public List<MentorChatRoomResponse> getMenteeChatRooms(User mentee){
-        List<MentorChatRoom> mentorChatRoomPage = mentorChatRoomRepository.findByMenteeAndDeletedFalse(mentee);
-        return mentorChatRoomDtoService.toMentorChatRoomResponseList(mentorChatRoomPage);
+        return mentorChatRoomRepository.getMentorChatRooms(mentee, false);
     }
 
     @Transactional
