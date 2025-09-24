@@ -64,7 +64,7 @@ public class PublicArchiveMapper {
         if (user == null) {
             return PublicArchiveResponse.UserDto.builder()
                     .id(null)
-                    .name("알수없음")
+                    .name("알 수 없음")
                     .build();
         }
 
@@ -79,13 +79,13 @@ public class PublicArchiveMapper {
         if (user == null) {
             return PublicArchiveListResponse.PublicArchiveDto.UserDto.builder()
                     .id(null)
-                    .name("알수없음")
+                    .name("알 수 없음")
                     .build();
         }
 
         return PublicArchiveListResponse.PublicArchiveDto.UserDto.builder()
                 .id(user.getId())
-                .name(user.getName() != null ? user.getName() : "이름없음") // name이 null인 경우 기본값
+                .name(user.getName() != null ? user.getName() : "이름 없음") // name이 null인 경우 기본값
                 .build();
     }
 }
