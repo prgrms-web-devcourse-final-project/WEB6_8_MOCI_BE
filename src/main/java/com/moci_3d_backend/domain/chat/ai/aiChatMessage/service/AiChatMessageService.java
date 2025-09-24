@@ -130,4 +130,16 @@ public class AiChatMessageService {
                 .map(AiChatMessageDto::new)
                 .collect(Collectors.toList());
     }
+
+
+    @Transactional(readOnly = true)
+    public List<AiChatMessage> searchAll(Long roomId, String query) {
+        AiChatRoom room = aiChatRoomRepository.findById(roomId)
+                .orElseThrow(() -> new ServiceException(404, "존재하지 않는 AI 채팅방입니다,"));
+
+        String likeKeyword = "%" + query + "%";
+
+        return aiChatMessageRepository.findByRoomIdAndContentLikeOrderByIdAsc(roomId, likeKeyword);
+
+    }
 }

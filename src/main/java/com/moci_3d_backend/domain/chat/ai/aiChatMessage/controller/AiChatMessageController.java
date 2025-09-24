@@ -51,6 +51,23 @@ public class AiChatMessageController {
         );
     }
 
+    public record AskAiRequest(
+            @NotNull Long roomId,
+            @NotBlank String content
+    ) {}
+
+
+    @Operation(summary = "사람이 메시지 보내고, AI 응답까지 한 번에 받기(동기)")
+    @PostMapping("/{roomId}/ask")
+    public RsData<AiExchangeDto> askAi(@RequestBody @Valid AskAiRequest req) {
+
+        AiExchangeDto exchangeDto = aiChatMessageService.ask(req.roomId, req.content);
+        return new RsData<>(
+                200, "AI 응답을 받았습니다.",
+                exchangeDto);
+
+    }
+
     @Operation(summary = "AI 채팅방의 메시지 목록", description = "특정 방의 메세지목록")
     @GetMapping("/{roomId}/messages")
     public List<AiChatMessageDto> listByRoom(@PathVariable Long roomId) {
@@ -59,6 +76,25 @@ public class AiChatMessageController {
         return messages.stream()
                 .map(AiChatMessageDto::new)
                 .toList();
+    }
+
+    @Operation(
+            summary = "AI 채팅방의 메시지 검색조회(무페이징)",
+            description = "특정 방에서 query(예: '안녕')가 포함된 메시지들을 모두 반환합니다."
+    )
+    @GetMapping("/{roomId}/messages/search")
+    public RsData<List<AiChatMessageDto>> searchMessages(@PathVariable Long roomId, @RequestParam @NotBlank String query) {
+        List<AiChatMessage> messages = aiChatMessageService.searchAll(roomId, query);
+
+        List<AiChatMessageDto> dtoList = messages.stream()
+                .map(AiChatMessageDto::new)
+                .toList();
+
+        return new RsData<>(
+                200, "%d개의 메시지를 찾았습니다.".formatted(dtoList.size()), dtoList
+        );
+
+
     }
 
 
@@ -77,25 +113,6 @@ public class AiChatMessageController {
                 dtoList
         );
     }
-
-    public record AskAiRequest(
-            @NotNull Long roomId,
-            @NotBlank String content
-    ) {}
-
-
-    @Operation(summary = "사람이 메시지 보내고, AI 응답까지 한 번에 받기(동기)")
-    @PostMapping("/{roomId}/ask")
-    public RsData<AiExchangeDto> askAi(@RequestBody @Valid AskAiRequest req) {
-
-        AiExchangeDto exchangeDto = aiChatMessageService.ask(req.roomId, req.content);
-        return new RsData<>(
-                200, "AI 응답을 받았습니다.",
-                exchangeDto);
-
-    }
-
-
 
 
 
