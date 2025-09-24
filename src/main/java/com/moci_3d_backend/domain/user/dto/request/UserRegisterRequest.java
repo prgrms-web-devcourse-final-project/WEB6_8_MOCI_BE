@@ -35,7 +35,7 @@ public class UserRegisterRequest {
     // ========================================
     // 일반 회원가입
     // ========================================
-    private String userId; // 전화번호
+    private Integer userId; // 전화번호
     private String password; // 비밀번호
     
     // ========================================

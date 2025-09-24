@@ -5,14 +5,16 @@ import com.moci_3d_backend.domain.archive.public_archive.entity.PublicArchive;
 // import com.moci_3d_backend.domain.chat.ai.aiChatRoom.entity.AiChatRoom;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
 @Table(name = "users")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
@@ -20,8 +22,8 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id", length = 11, unique = true)
-    private String userId;
+    @Column(name = "user_id")
+    private Integer userId;
 
     @Column(name = "social_id", length = 50)
     private String socialId;
@@ -69,6 +71,27 @@ public class User {
     // AI 채팅방 
     // @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     // private List<AiChatRoom> aiChatRooms;
+
+    // === 비즈니스 메서드 ===
+    public void updateName(String name) {
+        this.name = name;
+    }
+    
+    public void updateEmail(String email) {
+        this.email = email;
+    }
+    
+    public void updatePassword(String password) {
+        this.password = password;
+    }
+    
+    public void updateDigitalLevel(Integer digitalLevel) {
+        this.digitalLevel = digitalLevel;
+    }
+    
+    public void updateRole(UserRole role) {
+        this.role = role;
+    }
 
     public enum UserRole {
         USER, ADMIN, MENTOR
