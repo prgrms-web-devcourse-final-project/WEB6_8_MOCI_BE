@@ -84,6 +84,9 @@ public class AiChatMessageService {
         String system = """
                 너는 친절한 한국인 AI 비서야.
                 사용자가 50대 노인이라고 생각하고 밝고 명확하게 한국어로 대답해줘.
+                사용자가 이해하기 쉽게 예시를 들어서 설명해줘.
+                짧고 굵게 대답해줘.
+                어르신이라고 표현하지 말아줘.
                 """;
 
         return system + "\n\n" + hist + "\n\nAI:";
@@ -126,5 +129,34 @@ public class AiChatMessageService {
                 .map(m -> read(m.getId(), null))
                 .map(AiChatMessageDto::new)
                 .collect(Collectors.toList());
+    }
+
+
+    @Transactional(readOnly = true)
+    public List<AiChatMessage> searchAll(Long roomId, String query) {
+        AiChatRoom room = aiChatRoomRepository.findById(roomId)
+                .orElseThrow(() -> new ServiceException(404, "존재하지 않는 AI 채팅방입니다,"));
+
+        String likeKeyword = "%" + query + "%";
+
+        return aiChatMessageRepository.findByRoomIdAndContentLikeOrderByIdAsc(roomId, likeKeyword);
+
+    }
+
+    @Transactional
+    public void delete(Long roomId, Long messageId) {
+        AiChatRoom room = aiChatRoomRepository.findById(roomId)
+                .orElseThrow(() -> new ServiceException(404, "존재하지 않는 AI 채팅방입니다."));
+
+        AiChatMessage message = aiChatMessageRepository.findById(messageId)
+                .orElseThrow(() -> new ServiceException(404, "존재하지 않는 메시지입니다."));
+
+        // 메시지가 해당 채팅방에 속하는지 검증
+        if (!message.getRoom().getId().equals(room.getId())) {
+            throw new ServiceException(400, "해당 메시지는 요청한 roomId에 속하지 않습니다.");
+        }
+
+
+        aiChatMessageRepository.delete(message);
     }
 }

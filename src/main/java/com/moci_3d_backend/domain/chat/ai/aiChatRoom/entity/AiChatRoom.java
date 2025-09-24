@@ -1,5 +1,6 @@
 package com.moci_3d_backend.domain.chat.ai.aiChatRoom.entity;
 
+import com.moci_3d_backend.domain.chat.ai.aiChatMessage.entity.AiChatMessage;
 import com.moci_3d_backend.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -10,6 +11,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -49,6 +52,9 @@ public class AiChatRoom {
 
     @Column(length = 50)
     private String category;
+
+    @OneToMany(mappedBy = "room", cascade = CascadeType.REMOVE,  orphanRemoval = true)
+    private List<AiChatMessage> messages = new ArrayList<>();
 
     public void updateTitle(String title) {
         this.title = title;
