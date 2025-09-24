@@ -5,6 +5,7 @@ import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.dto.DetailMentorCha
 import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.entity.MentorChatRoom;
 import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.repository.MentorChatRoomRepository;
 import com.moci_3d_backend.domain.user.entity.User;
+import com.moci_3d_backend.global.exception.ServiceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,14 +25,17 @@ public class MentorChatRoomService {
                 () -> new NoSuchElementException("No chat room found with id: " + roomId)
         );
         if (!mentorChatRoom.getMentor().equals(user)){
-            throw new IllegalArgumentException("The user is not a mentee of the chat room");
+            throw new IllegalArgumentException("The user is not a mentor of the chat room");
         }
         return mentorChatRoom;
     }
 
     @Transactional
     public void joinMentorChatRoom(Long roomId, User mentor) {
-        MentorChatRoom mentorChatRoom = getMentorChatRoom(roomId, mentor);
+        MentorChatRoom mentorChatRoom = mentorChatRoomRepository.findByIdAndDeletedFalse(roomId).orElse(null);
+        if (mentorChatRoom != null){
+            throw new ServiceException(400, "chat room already exists");
+        }
         mentorChatRoom.joinMentor(mentor);
     }
 
