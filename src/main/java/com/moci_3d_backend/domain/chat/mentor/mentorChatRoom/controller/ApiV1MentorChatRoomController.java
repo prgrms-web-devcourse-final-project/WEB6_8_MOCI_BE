@@ -19,12 +19,13 @@ public class ApiV1MentorChatRoomController {
 
     @PostMapping("/join/{roomId}")
     @PreAuthorize("hasRole('MENTOR')")
-    public void joinMentorChatRoom(
+    public RsData<Void> joinMentorChatRoom(
             @PathVariable(value = "roomId") Long roomId,
             User user // 컴파일 에러 방지용
     ){
         // TODO 로그인한 회원의 정보를 가져와야함
         mentorChatRoomService.joinMentorChatRoom(roomId, user);
+        return RsData.of(200, "success to join mentor chat room");
     }
 
     @GetMapping("/my-mentees")
@@ -32,14 +33,15 @@ public class ApiV1MentorChatRoomController {
     public RsData<List<MentorChatRoomResponse>> getMyMenteeChatRooms(
             User user // 컴파일 에러 방지용
     ){
-        var mentees = mentorChatRoomService.getMentorChatRooms(user);
+        // TODO 로그인한 회원의 정보를 가져와야함
+        List<MentorChatRoomResponse> mentees = mentorChatRoomService.getMentorChatRooms(user);
         return RsData.of(200, "success to load my mentee chat rooms", mentees);
     }
 
-    @GetMapping("/list")
+    @GetMapping("/non-mentor-list")
     @PreAuthorize("hasRole('MENTOR')")
     public RsData<List<DetailMentorChatRoom>> getMentorChatRooms(){
-        var chatRooms = mentorChatRoomService.getDetailMentorChatRooms();
+        List<DetailMentorChatRoom> chatRooms = mentorChatRoomService.getDetailMentorChatRooms();
         return RsData.of(200, "success to load chat rooms", chatRooms);
     }
 }
