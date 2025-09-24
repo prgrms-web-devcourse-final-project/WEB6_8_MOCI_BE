@@ -113,7 +113,6 @@ public class PublicArchiveService {
         // 유효한 파일 ID만 필터링 (null과 0 제거)
         List<Long> validFileIds = fileIds.stream()
                 .filter(id -> id != null && id > 0)
-                .distinct()  // 중복 제거
                 .toList();
 
         // 필터링 후에도 유효한 ID가 없으면 파일 없음으로 처리
