@@ -79,7 +79,7 @@ public class PublicArchiveMapper {
         if (user == null) {
             return PublicArchiveListResponse.PublicArchiveDto.UserDto.builder()
                     .id(null)
-                    .name("알수없음")
+                    .name("알 수 없음")
                     .build();
         }
 
