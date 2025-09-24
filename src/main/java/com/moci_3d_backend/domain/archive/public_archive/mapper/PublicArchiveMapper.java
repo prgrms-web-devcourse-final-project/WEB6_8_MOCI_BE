@@ -49,16 +49,7 @@ public class PublicArchiveMapper {
                 .createdAt(archive.getUploadedAt())
                 .build();
     }
-
-    // FileUpload 리스트에서 첫 번째 파일을 FileUploadDto로 변환
-    private FileUploadDto mapToFileDto(java.util.List<FileUpload> fileUploads) {
-        if (fileUploads == null || fileUploads.isEmpty()) {
-            return null;
-        }
-        FileUpload firstFile = fileUploads.get(0); // Assuming only one file is associated
-        return FileUploadDto.from(firstFile);
-    }
-
+    
     // User 엔티티를 PublicArchiveResponse의 UserDto로 변환
     private PublicArchiveResponse.UserDto mapToUserDto(User user) {
         if (user == null) {
