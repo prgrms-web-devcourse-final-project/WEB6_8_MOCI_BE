@@ -104,10 +104,18 @@ public class AiChatRoomController {
                 new AiChatRoomListDto(roomDtos, roomDtos.size())
         );
 
-
     }
 
-    //채탱방 수정
-    //채팅방 삭제
+    @Operation( summary = "AI 채팅방을 삭제 ", description = "AI 채팅방을 삭제합니다.")
+    @DeleteMapping("/{id}")
+    @Transactional
+    public RsData<Void> deleteAiChatRoom(@PathVariable long id) {// TODO: 실제 구현시 @AuthenticationPrincipal 또는 SecurityContext에서 User 정보를 가져와야 함
+//        if(user == null ) {
+//            throw new ServiceException(401, "로그인이 필요합니다.");
+//        }
+        aiChatRoomService.delete(id);
 
+        return new RsData<>(
+                200,"%d번 AI 채팅방이 삭제되었습니다.".formatted(id), null);
+    }
 }

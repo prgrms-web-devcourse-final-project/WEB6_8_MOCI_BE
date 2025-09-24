@@ -47,4 +47,12 @@ public class AiChatRoomService {
 
         return aiChatRooms;
     }
+
+    public void delete(long id) {
+
+        AiChatRoom aiChatRoom = aiChatRoomRepository.findById(id)
+                .orElseThrow(() -> new ServiceException(404, "존재하지 않는 AI 채팅방입니다."));
+
+        aiChatRoomRepository.delete(aiChatRoom);
+    }
 }
