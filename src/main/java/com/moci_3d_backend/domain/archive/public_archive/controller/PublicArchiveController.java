@@ -5,7 +5,6 @@ import com.moci_3d_backend.domain.archive.public_archive.dto.PublicArchiveListRe
 import com.moci_3d_backend.domain.archive.public_archive.dto.PublicArchiveResponse;
 import com.moci_3d_backend.domain.archive.public_archive.dto.PublicArchiveUpdateRequest;
 import com.moci_3d_backend.domain.archive.public_archive.service.PublicArchiveService;
-import com.moci_3d_backend.domain.user.entity.User;
 import com.moci_3d_backend.global.rsData.RsData;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -35,7 +34,10 @@ public class PublicArchiveController {
     @Operation(summary = "교육 자료실 목록 조회", description = "모든 사용자가 교육자료실 목록을 조회할 수 있습니다. (페이징)")
     public RsData<PublicArchiveListResponse> getPublicArchives(
             @PageableDefault(size = 10, sort = "uploadedAt", direction = Sort.Direction.DESC)
-            @Parameter(description = "페이징 정보 (기본: 10개씩, 최신순)") Pageable pageable
+            @Parameter(
+                    description = "페이징 정보 (기본: 10개씩, 최신순)",
+                    example = "{\n  \"page\": 0,\n  \"size\": 10,\n  \"sort\": \"uploadedAt\"\n}"
+            ) Pageable pageable
     ) {
         PublicArchiveListResponse response = publicArchiveService.getPublicArchives(pageable);
         return RsData.of(200, "success to get public archives", response);
@@ -61,10 +63,10 @@ public class PublicArchiveController {
     @Operation(summary = "[관리자] 교육 자료실 등록", description = "관리자만 교육자료실에 글을 등록할 수 있습니다.")
     public RsData<PublicArchiveResponse> createPublicArchive(
             @Valid @RequestBody PublicArchiveCreateRequest request,
-            // TODO: 실제 구현시 @AuthenticationPrincipal 또는 SecurityContext에서 User 정보를 가져와야 함
-            User user // 컴파일 에러 방지용
+            // TODO 임시: 테스트용 userId 파라미터 (추후 @AuthenticationPrincipal 또는 SecurityContextHolder로 대체)
+            @RequestParam @Parameter(description = "임시 테스트용 관리자 ID") Long userId
             ) {
-        PublicArchiveResponse response = publicArchiveService.createPublicArchive(request, user.getId());
+        PublicArchiveResponse response = publicArchiveService.createPublicArchive(request, userId);
         return RsData.of(201, "success to create public archive", response);
     }
 

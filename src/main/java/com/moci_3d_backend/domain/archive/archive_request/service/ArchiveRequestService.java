@@ -6,6 +6,7 @@ import com.moci_3d_backend.domain.archive.archive_request.entity.RequestStatus;
 import com.moci_3d_backend.domain.archive.archive_request.mapper.ArchiveRequestMapper;
 import com.moci_3d_backend.domain.archive.archive_request.repository.ArchiveRequestRepository;
 import com.moci_3d_backend.domain.user.entity.User;
+import com.moci_3d_backend.domain.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,21 +20,14 @@ public class ArchiveRequestService {
 
     private final ArchiveRequestRepository archiveRequestRepository;
     private final ArchiveRequestMapper archiveRequestMapper;
-    // TODO: User repository 주입 필요
-    // private final UserRepository userRepository;
+    private final UserRepository userRepository;
 
     // 자료 요청글 생성 (멘토용)
     @Transactional
     public ArchiveRequestResponseDto createArchiveRequest(ArchiveRequestCreateDto createDto, Long userId) {
-        // TODO: userReapository 구현 후 주석 해제
-        // User user = userRepository.findById(userId)
-        //         .orElseThrow(() -> new EntityNotFoundException("해당 id의 유저를 찾을 수 없습니다: " + userId));
 
-        // TODO: 임시 사용 구간
-        User user = new User();
-        user.setId(userId);
-        user.setName("임시 유저");
-        // 임시 사용 구간
+         User user = userRepository.findById(userId)
+                 .orElseThrow(() -> new EntityNotFoundException("해당 id의 유저를 찾을 수 없습니다: " + userId));
 
         ArchiveRequest archiveRequest = ArchiveRequest.builder()
                 .user(user)
@@ -73,9 +67,17 @@ public class ArchiveRequestService {
 
     // 자료 요청 수정 (제목, 설명)
     @Transactional
-    public ArchiveRequestResponseDto updateArchiveRequest(Long requestId, ArchiveRequestUpdateDto updateDto) {
+    public ArchiveRequestResponseDto updateArchiveRequestWithOwnerCheck(Long requestId, ArchiveRequestUpdateDto updateDto, Long userId) {
         ArchiveRequest archiveRequest = archiveRequestRepository.findById(requestId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 id의 자료 요청을 찾을 수 없습니다: " + requestId));
+
+        if (!isOwner(requestId, userId)) {
+            throw new IllegalStateException("본인이 작성한 글만 수정할 수 있습니다.");
+        }
+
+        if (!archiveRequest.isPending()) {
+            throw new IllegalStateException("완료된 요청은 수정할 수 없습니다.");
+        }
 
         // 수정 가능한 상태인지 확인(대기중일때만)
         if (!archiveRequest.isPending()) {
@@ -95,15 +97,8 @@ public class ArchiveRequestService {
         ArchiveRequest archiveRequest = archiveRequestRepository.findById(requestId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 id의 자료 요청을 찾을 수 없습니다: " + requestId));
 
-        // TODO: User repository 구현 후 주석 해제
-        // User reviewer = userRepository.findById(reviewerId)
-        //         .orElseThrow(() -> new EntityNotFoundException("해당 id의 검토자를 찾을 수 없습니다: " + reviewerId));
-
-        // 임시 사용 구간
-        User reviewer = new User();
-        reviewer.setId(reviewerId);
-        reviewer.setName("관리자");
-        // 임시 사용 구간
+         User reviewer = userRepository.findById(reviewerId)
+                 .orElseThrow(() -> new EntityNotFoundException("해당 id의 검토자를 찾을 수 없습니다: " + reviewerId));
 
         RequestStatus newStatus = statusUpdateDto.getStatus();
 
@@ -127,12 +122,27 @@ public class ArchiveRequestService {
 
     // 자료 요청 삭제
     @Transactional
-    public void deleteArchiveRequest(Long requestId) {
+    public void deleteArchiveRequestWithPermissionCheck(Long requestId, Long userId) {
         if (!archiveRequestRepository.existsById(requestId)) {
             throw new EntityNotFoundException("해당 id의 자료 요청을 찾을 수 없습니다: " + requestId);
         }
 
-        archiveRequestRepository.deleteById(requestId);
+        User user = userRepository.findById(userId)
+                        .orElseThrow(() -> new EntityNotFoundException("해당 id의 유저를 찾을 수 없습니다: " + userId));
+
+        if (user.getRole() == User.UserRole.ADMIN) {
+            // 관리자는 모든 요청글 삭제 가능
+            archiveRequestRepository.deleteById(requestId);
+            return;
+        }
+
+        if (user.getRole() == User.UserRole.MENTOR && isOwner(requestId, userId)) {
+            // 멘토는 본인이 작성한 요청글만 삭제 가능
+            archiveRequestRepository.deleteById(requestId);
+            return;
+        }
+
+        throw new IllegalStateException("삭제 권한이 없습니다. (관리자 또는 본인 작성 글만 가능)");
     }
 
 
@@ -172,5 +182,21 @@ public class ArchiveRequestService {
     @Transactional(readOnly = true)
     public long getPendingRequestCount() {
         return archiveRequestRepository.countByStatus(RequestStatus.PENDING);
+    }
+
+    // 본인 작성 글 여부 검증
+    @Transactional(readOnly = true)
+    public boolean isOwner(Long requestId, Long userId) {
+        ArchiveRequest archiveRequest = archiveRequestRepository.findById(requestId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 id의 자료 요청을 찾을 수 없습니다: " + requestId));
+        return archiveRequest.getUser().getId().equals(userId);
+    }
+
+    // 관리자 여부 검증
+    @Transactional(readOnly = true)
+    public boolean isAdmin(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 id의 유저를 찾을 수 없습니다: " + userId));
+        return user.getRole() == User.UserRole.ADMIN;
     }
 }
