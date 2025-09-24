@@ -1,7 +1,7 @@
 gemini:
   api:
-    key: ${GEMINI_API_KEY}
-    url: ${GEMINI_API_URL}
+    key: dummy_key_for_testing
+    url: http://localhost:8080
 
 spring:
   config:

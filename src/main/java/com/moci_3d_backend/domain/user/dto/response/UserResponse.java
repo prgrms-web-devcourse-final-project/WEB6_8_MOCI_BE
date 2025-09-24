@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class UserResponse {
     
     private Long id;
-    private Integer userId;
+    private String userId;
     private String socialId;
     private String name;
     private String email;
