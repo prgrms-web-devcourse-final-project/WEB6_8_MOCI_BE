@@ -1,8 +1,3 @@
-gemini:
-  api:
-    key: AIzaSyDJv4nEU4EOQEMYn6XfZzsEJDEaq8W7bP4
-    url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
-
 spring:
   # H2 Database 설정
   datasource:
