@@ -26,7 +26,7 @@ public class UserService {
         );
         
         if (userOptional.isEmpty()) {
-            throw new ServiceException(400, "전화번호 또는 비밀번호가 틀렸습니다.");
+            throw new ServiceException(400, "아이디 또는 비밀번호가 틀렸습니다.");
         }
         
         return UserLoginResponse.from(userOptional.get());
