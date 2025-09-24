@@ -6,10 +6,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface MentorChatRoomRepository extends JpaRepository<MentorChatRoom, Long> {
-    Page<MentorChatRoom> findByMenteeAndDeletedFalse(User mentee, Pageable pageable);
+    List<MentorChatRoom> findByMenteeAndDeletedFalse(User mentee);
+    List<MentorChatRoom> findByMentorNullAndDeletedFalse();
+    List<MentorChatRoom> findByMentorAndDeletedFalse(User mentor);
 
     Optional<MentorChatRoom> findByIdAndDeletedFalse(Long roomId);
 }
