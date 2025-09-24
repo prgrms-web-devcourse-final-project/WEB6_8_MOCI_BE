@@ -10,11 +10,11 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
     
     // === 로그인 ===
-    Optional<User> findByUserId(Integer userId);  // 전화번호로 사용자 찾기
+    Optional<User> findByUserId(Integer userId);  // userId(전화번호)로 사용자 찾기
     Optional<User> findBySocialId(String socialId);
-    Optional<User> findByUserIdAndPassword(Integer userId, String password);  // 전화번호 + 비밀번호 로그인
+    Optional<User> findByUserIdAndPassword(Integer userId, String password);  // userId(전화번호) + 비밀번호로 로그인
     
     // === 중복 체크 ===
-    boolean existsByUserId(Integer userId);  // 전화번호 중복 체크
+    boolean existsByUserId(Integer userId);  // userId(전화번호) 중복 체크
     boolean existsBySocialId(String socialId);
 }
