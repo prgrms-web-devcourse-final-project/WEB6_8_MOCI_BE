@@ -38,7 +38,7 @@ dependencies {
     implementation 'org.apache.httpcomponents.client5:httpclient5'
     implementation("me.paulschwarz:spring-dotenv:4.0.0")    // env 파일 자동 적용(Front와 협업 고려하여 추가)
 
-
+    implementation 'com.bucket4j:bucket4j_jdk17-core:8.14.0' //rate limit 관련
     implementation "com.querydsl:querydsl-jpa:${querydslVersion}:jakarta"
 
     compileOnly 'org.projectlombok:lombok'

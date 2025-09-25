@@ -28,6 +28,7 @@ public class AiChatMessageService {
     private final AiChatRoomRepository aiChatRoomRepository;
     private final AiChatMessageRepository aiChatMessageRepository;
     private final GeminiClient geminiClient;
+    private final AiChatMessageRateLimitService aiChatMessageRateLimitService;
 
 
     public AiChatMessage create(Long roomId, SenderType senderType, String content) {
@@ -49,6 +50,12 @@ public class AiChatMessageService {
 
     @Transactional
     public AiExchangeDto ask(Long roomId, String content) {
+
+        // 추정 토큰 수 아주 보수적,간단 추정
+        long tokensNeeded = Math.max(1, content.length());
+
+        aiChatMessageRateLimitService.checkRateLimitsOrThrow(1L, tokensNeeded); // TODO: userId 나중에 넣기
+
         // 사용자 메시지 저장
         AiChatMessage userMessage = create(roomId, SenderType.HUMAN, content);
 
