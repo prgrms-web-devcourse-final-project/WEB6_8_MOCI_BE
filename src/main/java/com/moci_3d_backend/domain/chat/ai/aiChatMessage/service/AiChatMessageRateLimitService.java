@@ -15,52 +15,50 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class AiChatMessageRateLimitService {
 
-    // rate limit 키-버켓 저장
-    private final ConcurrentHashMap<String, Bucket> reqBuckets = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<String, Bucket> tokenBuckets = new ConcurrentHashMap<>();
+    // 전역 버킷 ( 모든 사용자와 방에 적용)
+    private final Bucket globalRequestBucket = Bucket.builder()
+            .addLimit(l -> l.capacity(15) // RPM 15
+                    .refillGreedy(15, Duration.ofMinutes(1)))
+            .addLimit(l -> l.capacity(200) // RPD 200
+                    .refillIntervally(200, Duration.ofDays(1)))
+            .build();
 
-    // rpm tpm
-    private Bucket getRequestBucket(String key) {
-        return reqBuckets.computeIfAbsent(key, k ->
+    private final Bucket globalTokenBucket = Bucket.builder()
+            .addLimit(l -> l.capacity(1_000_000) // TPM 1,000,000
+                    .refillGreedy(1_000_000, Duration.ofMinutes(1)))
+            .build();
+
+    // 사용자 및 방별 버킷
+    private final ConcurrentHashMap<String, Bucket> userBuckets = new ConcurrentHashMap<>();
+
+    private Bucket getUserBucket(Long userId) {
+        return userBuckets.computeIfAbsent("u:" + userId, k ->
                 Bucket.builder()
-                        .addLimit(l -> l.capacity(30)
-                                .refillGreedy(30, java.time.Duration.ofMinutes(1))) // RPM 30
-                        .addLimit(l -> l.capacity(400)
-                                .refillIntervally(400, java.time.Duration.ofDays(1))) // RPD 400
+                        .addLimit(l -> l.capacity(10) // 유저당 RPM 10
+                                .refillGreedy(10, Duration.ofMinutes(1)))
+                        .addLimit(l -> l.capacity(200) // 유저당 RPD 200
+                                .refillIntervally(200, Duration.ofDays(1)))
                         .build()
         );
     }
 
-    // tpm
-    private Bucket getTokenBucket(String key) {
-        return tokenBuckets.computeIfAbsent(key, k ->
-                Bucket.builder()
-                        .addLimit(limit -> limit.capacity(1_000_000)
-                                .refillGreedy(1_000_000, Duration.ofMinutes(1)))
-                        .build()
-        );
-    }
-
-    private static String rateKey(Long userId, Long roomId) {
-        if (userId != null && roomId != null) return "u:" + userId + "|r:" + roomId;
-        if (userId != null) return "u:" + userId;
-        if (roomId != null) return "r:" + roomId;
-        return "global";
-    }
-
-    public void checkRateLimitsOrThrow(Long userId, Long roomId, long tokensNeeded) {
-        String key = rateKey(userId, roomId);
-
-        // 요청 카운트 제한
-        Bucket reqBucket = getRequestBucket(key);
-        if (!reqBucket.tryConsume(1)) {
-            throw new ServiceException(429, "요청 한도를 초과했습니다. 잠시 후 다시 시도해주세요.");
+    public void checkRateLimitsOrThrow(Long userId, long tokensNeeded) {
+       // 전역 요청 제한
+        if (!globalRequestBucket.tryConsume(1)) {
+            throw new ServiceException(429, "전역 요청 한도를 초과했습니다. 잠시 후 다시 시도해주세요.");
         }
 
-        // 토큰 제한
-        Bucket tokBucket = getTokenBucket(key);
-        if (!tokBucket.tryConsume(tokensNeeded)) {
-            throw new ServiceException(429, "토큰 한도를 초과했습니다. 잠시 후 다시 시도해주세요.");
+        // 전역 토큰 제한
+        if (!globalTokenBucket.tryConsume(tokensNeeded)) {
+            throw new ServiceException(429, "전역 토큰 한도를 초과했습니다. 잠시 후 다시 시도해주세요.");
+        }
+
+        // 사용자 보조 제한
+        if (userId != null) {
+            Bucket userBucket = getUserBucket(userId);
+            if (!userBucket.tryConsume(1)) {
+                throw new ServiceException(429, "해당 사용자의 요청 한도를 초과했습니다.");
+            }
         }
     }
 
