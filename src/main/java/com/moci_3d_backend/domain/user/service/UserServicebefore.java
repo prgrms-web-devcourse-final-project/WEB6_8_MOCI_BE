@@ -1,7 +1,6 @@
 package com.moci_3d_backend.domain.user.service;
 
 import com.moci_3d_backend.domain.user.dto.request.UserLoginRequest;
-import com.moci_3d_backend.domain.user.dto.request.UserRegisterRequest;
 import com.moci_3d_backend.domain.user.dto.response.UserLoginResponse;
 import com.moci_3d_backend.domain.user.entity.User;
 import com.moci_3d_backend.domain.user.repository.UserRepository;
@@ -19,23 +18,22 @@ import java.util.Optional;
 public class UserService {
     
     private final UserRepository userRepository;
-    // === 회원가입 ===
-    @Transactional  // 트랜잭션 처리
-    public User register(UserRegisterRequest request) {
-        return userRepository.save(request.toEntity());
-    }
     
     // === 로그인 ===
+
     public UserLoginResponse login(UserLoginRequest request) {
-        // 1. 사용자 찾기
+        // 1. 사용자 찾기 (userId로만)
         Optional<User> userOptional = userRepository.findByUserId(request.getUserId());
+        
         if (userOptional.isEmpty()) {
             throw new ServiceException(400, "아이디 또는 비밀번호가 틀렸습니다.");
         }
+        
         User user = userOptional.get();
         
         // 2. 비밀번호 검증 (BCrypt)
         boolean isPasswordMatch = PasswordUtil.matches(request.getPassword(), user.getPassword());
+        
         if (!isPasswordMatch) {
             throw new ServiceException(400, "아이디 또는 비밀번호가 틀렸습니다.");
         }
@@ -43,8 +41,18 @@ public class UserService {
         return UserLoginResponse.from(user);
     }
     
+    public UserLoginResponse socialLogin(String socialId) {
+        Optional<User> userOptional = userRepository.findBySocialId(socialId);
+        
+        if (userOptional.isEmpty()) {
+            throw new ServiceException(400, "소셜 로그인에 실패했습니다.");
+        }
+        
+        return UserLoginResponse.from(userOptional.get());
+    }
+    
     // === 사용자 조회 ===
-    public User findByUserId(String userId) {
+    public User findByUserId(Integer userId) {
         Optional<User> userOptional = userRepository.findByUserId(userId);
         
         if (userOptional.isEmpty()) {
