@@ -29,9 +29,12 @@ public class GeminiClient {
     @Value("${gemini.api.url}")
     private String apiUrl;
 
-    // 동시성 제한 설정 (최대 10개)
-    private final Semaphore permits = new Semaphore(10,true);
+    private static final int MAX_CONCURRENT_REQUESTS = 10;
     private static final long TIMEOUT_MS = 300;
+
+    // 동시성 제한 설정 (최대 10개)
+    private final Semaphore permits = new Semaphore(MAX_CONCURRENT_REQUESTS,true);
+
 
     public String generateChatResponse(String prompt) {
         boolean acquired = false;

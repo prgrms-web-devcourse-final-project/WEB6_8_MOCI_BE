@@ -1,8 +1,5 @@
 package com.moci_3d_backend.domain.chat.ai.aiChatMessage.service;
 
-import com.moci_3d_backend.domain.chat.ai.aiChatMessage.repository.AiChatMessageRepository;
-import com.moci_3d_backend.domain.chat.ai.aiChatRoom.repository.AiChatRoomRepository;
-import com.moci_3d_backend.external.ai.client.GeminiClient;
 import com.moci_3d_backend.global.exception.ServiceException;
 import io.github.bucket4j.Bucket;
 import lombok.RequiredArgsConstructor;
