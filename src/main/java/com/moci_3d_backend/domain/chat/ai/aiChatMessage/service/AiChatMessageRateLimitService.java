@@ -15,10 +15,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class AiChatMessageRateLimitService {
 
-    private final AiChatRoomRepository aiChatRoomRepository;
-    private final AiChatMessageRepository aiChatMessageRepository;
-    private final GeminiClient geminiClient;
-
     // rate limit 키-버켓 저장
     private final ConcurrentHashMap<String, Bucket> reqBuckets = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, Bucket> tokenBuckets = new ConcurrentHashMap<>();
@@ -52,7 +48,7 @@ public class AiChatMessageRateLimitService {
         return "global";
     }
 
-    private void checkRateLimitsOrThrow(Long userId, Long roomId, long tokensNeeded) {
+    public void checkRateLimitsOrThrow(Long userId, Long roomId, long tokensNeeded) {
         String key = rateKey(userId, roomId);
 
         // 요청 카운트 제한

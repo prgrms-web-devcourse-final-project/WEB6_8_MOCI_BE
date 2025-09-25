@@ -36,7 +36,7 @@ public class GeminiRequest {
                                 ))
                                 .build()
                 ))
-                .generationConfig(Map.of(   // 👉 출력 설정 추가
+                .generationConfig(Map.of(   // 출력 설정 추가
                         "maxOutputTokens", 512,
                         "temperature", 0.4
                 ))
