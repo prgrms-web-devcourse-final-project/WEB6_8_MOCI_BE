@@ -4,12 +4,14 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Builder
 // JSON 형태로 만들어 -> Gemini에게 보낼 요청
 public class GeminiRequest {
     private List<Content> contents;
+    private Map<String, Object> generationConfig;
 
     @Getter
     @Builder
@@ -33,6 +35,10 @@ public class GeminiRequest {
                                                 .build()
                                 ))
                                 .build()
+                ))
+                .generationConfig(Map.of(   // 👉 출력 설정 추가
+                        "maxOutputTokens", 512,
+                        "temperature", 0.4
                 ))
                 .build();
     }
