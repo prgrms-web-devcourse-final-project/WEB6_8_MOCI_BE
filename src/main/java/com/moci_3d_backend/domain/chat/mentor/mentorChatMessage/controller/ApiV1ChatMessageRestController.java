@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/chat")
+@RequestMapping("/api/v1/chat/mentor/message")
 @RequiredArgsConstructor
 @Tag(name="채팅 메시지", description = "채팅 메시지 중 HTTP 관련 API")
 public class ApiV1ChatMessageRestController {
