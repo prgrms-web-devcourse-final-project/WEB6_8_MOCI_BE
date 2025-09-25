@@ -29,20 +29,23 @@ public class AiChatMessageController {
     //TODO: 로그인한 사용자가없음
 
     public record CreateAiChatMessageReqBody(
-            @NotNull Long roomId,
             @NotNull SenderType senderType,
             @NotBlank String content
     ) {
     }
 
-    @Operation(summary = "AI 채팅방 메세지 생성",
+    @Operation(summary = "AI 채팅방 메세지 생성(그냥 테스트 용 ai 호출없음)",
             description = """
                     AI 채팅방 메세지를 생성합니다.
-                    프론트에서 메세지보낼때 roomId를 같이 넘겨야합니다
+                    URL 경로 변수로 roomId를 받고,
+                    프론트에서는 roomId를 Path로 넘기고 content만 body에 담아보냅니다.
                     """)
     @PostMapping("/{roomId}/messages")
-    public RsData<AiChatMessageDto> createAiChatMessage(@RequestBody @Valid CreateAiChatMessageReqBody reqBody) {
-        AiChatMessage chatMessage = aiChatMessageService.create(reqBody.roomId, reqBody.senderType, reqBody.content);
+    public RsData<AiChatMessageDto> createAiChatMessage(
+            @PathVariable Long roomId,
+            @RequestBody @Valid CreateAiChatMessageReqBody reqBody
+    ) {
+        AiChatMessage chatMessage = aiChatMessageService.create(roomId, reqBody.senderType, reqBody.content);
 
         return new RsData<>(
                 200, "%d번 메시지가 생성되었습니다.".formatted(chatMessage.getId()),
@@ -51,17 +54,21 @@ public class AiChatMessageController {
     }
 
     public record AskAiRequest(
-            @NotNull Long roomId,
             @NotBlank String content
     ) {
     }
 
-
-    @Operation(summary = "사람이 메시지 보내고, AI 응답까지 한 번에 받기(동기)")
+    @Operation(summary = "사람이 메시지 보내고, AI 응답까지 한 번에 받기(동기)",
+            description = """
+                    사람이 메시지를 보내고, AI의 응답까지 한 번에 받습니다.
+                    URL 경로 변수로 roomId를 받고,
+                    프론트에서는 roomId를 Path로 넘기고 content만 body에 담아보냅니다.
+                    """)
     @PostMapping("/{roomId}/ask")
-    public RsData<AiExchangeDto> askAi(@RequestBody @Valid AskAiRequest req) {
+    public RsData<AiExchangeDto> askAi(@PathVariable Long roomId,
+                                       @RequestBody @Valid AskAiRequest req) {
 
-        AiExchangeDto exchangeDto = aiChatMessageService.ask(req.roomId, req.content);
+        AiExchangeDto exchangeDto = aiChatMessageService.ask(roomId, req.content);
         return new RsData<>(
                 200, "AI 응답을 받았습니다.",
                 exchangeDto);
