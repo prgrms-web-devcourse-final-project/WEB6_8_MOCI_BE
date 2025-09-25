@@ -11,10 +11,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     
     // === 로그인 ===
     Optional<User> findByUserId(String userId);  // userId(전화번호)로 사용자 찾기
-    Optional<User> findBySocialId(String socialId);
-    Optional<User> findByUserIdAndPassword(String userId, String password);  // userId(전화번호) + 비밀번호로 로그인
     
     // === 중복 체크 ===
     boolean existsByUserId(String userId);  // userId(전화번호) 중복 체크
-    boolean existsBySocialId(String socialId);
 }

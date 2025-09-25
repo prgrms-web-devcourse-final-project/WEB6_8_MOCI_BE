@@ -2,10 +2,12 @@ package com.moci_3d_backend.domain.user.dto.request;
 
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserLoginRequest {
@@ -17,7 +19,4 @@ public class UserLoginRequest {
     // === 일반 로그인 ===
     private String userId;    // 전화번호
     private String password;  // 비밀번호
-    
-    // === 소셜 로그인 ===
-    private String socialId;  // 암호화된 소셜 고유 ID
 }
