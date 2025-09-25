@@ -35,7 +35,6 @@ public class ApiV1MenteeChatRoomController {
     @GetMapping()
     @Operation(summary = "[멘티] 채팅방을 조회합니다.", description = "멘티가 참여한 채팅방을 조회합니다.")
     public RsData<List<MentorChatRoomResponse>> getMenteeChatRooms(
-            @PageableDefault(size = 10, page = 0) Pageable pageable,
             User user // 컴파일 에러 방지용
     ){
         // TODO 로그인한 회원의 정보를 가져와야함

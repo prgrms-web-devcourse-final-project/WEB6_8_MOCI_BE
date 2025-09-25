@@ -21,7 +21,8 @@ public class SecurityConfig {
                 // 모든 요청 허용
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/",
+                                "/*",
+                                "/_next/**",
                                 "/favicon.ico",
                                 "/h2-console/**",
                                 "/swagger-ui/**",

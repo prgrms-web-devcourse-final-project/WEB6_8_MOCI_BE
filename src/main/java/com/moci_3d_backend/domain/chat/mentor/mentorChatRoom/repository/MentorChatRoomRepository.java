@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;
 
-public interface MentorChatRoomRepository extends JpaRepository<MentorChatRoom, Long> {
+public interface MentorChatRoomRepository extends JpaRepository<MentorChatRoom, Long>, MentorChatRoomRepositoryCustom {
     List<MentorChatRoom> findByMenteeAndDeletedFalse(User mentee);
     List<MentorChatRoom> findByMentorNullAndDeletedFalse();
     List<MentorChatRoom> findByMentorAndDeletedFalse(User mentor);

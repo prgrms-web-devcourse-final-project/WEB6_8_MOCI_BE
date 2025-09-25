@@ -46,7 +46,6 @@ public class MentorChatRoomService {
     }
 
     public List<MentorChatRoomResponse> getMentorChatRooms(User mentor){
-        List<MentorChatRoom> mentorChatRoomList = mentorChatRoomRepository.findByMentorAndDeletedFalse(mentor);
-        return mentorChatRoomDtoService.toMentorChatRoomResponseList(mentorChatRoomList);
+        return mentorChatRoomRepository.getMentorChatRooms(mentor, true);
     }
 }
