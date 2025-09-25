@@ -4,6 +4,7 @@ import com.moci_3d_backend.domain.archive.public_archive.dto.PublicArchiveCreate
 import com.moci_3d_backend.domain.archive.public_archive.dto.PublicArchiveListResponse;
 import com.moci_3d_backend.domain.archive.public_archive.dto.PublicArchiveResponse;
 import com.moci_3d_backend.domain.archive.public_archive.dto.PublicArchiveUpdateRequest;
+import com.moci_3d_backend.domain.archive.public_archive.entity.ArchiveCategory;
 import com.moci_3d_backend.domain.archive.public_archive.entity.PublicArchive;
 import com.moci_3d_backend.domain.archive.public_archive.mapper.PublicArchiveMapper;
 import com.moci_3d_backend.domain.archive.public_archive.repository.PublicArchiveRepository;

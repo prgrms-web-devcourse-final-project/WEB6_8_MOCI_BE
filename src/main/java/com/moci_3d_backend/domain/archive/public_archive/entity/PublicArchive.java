@@ -29,9 +29,9 @@ public class PublicArchive {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    // TODO: 카테고리, 서브카테고리 enum으로 변경 고려
-    @Column(name = "category", length = 255)
-    private String category;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "category", length = 50)
+    private ArchiveCategory category;
 
     @Column(name = "sub_category", length = 255)
     private String subCategory;

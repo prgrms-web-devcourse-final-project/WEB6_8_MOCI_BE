@@ -13,7 +13,7 @@ public class PublicArchiveResponse {
     private final Long id;
     private final String title;
     private final String description;
-    private final String category;
+    private final String category; // Enum 자체 반환
     private final String subCategory;
     private final FileUploadDto file; // FileUploadDto 사용
     private final UserDto uploadedBy;
