@@ -30,10 +30,4 @@ public class AuthController {
         UserLoginResponse response = userService.login(request);
         return ResponseEntity.ok(RsData.successOf(response));
     }
-    
-    @PostMapping("/social-login")
-    public ResponseEntity<RsData<UserLoginResponse>> socialLogin(@RequestParam String socialId) {
-        UserLoginResponse response = userService.socialLogin(socialId);
-        return ResponseEntity.ok(RsData.successOf(response));
-    }
 }
