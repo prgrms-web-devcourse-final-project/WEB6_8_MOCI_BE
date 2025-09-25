@@ -8,6 +8,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface ArchiveRequestRepository extends JpaRepository<ArchiveRequest, Long> {
 
@@ -38,4 +40,6 @@ public interface ArchiveRequestRepository extends JpaRepository<ArchiveRequest, 
 
     // 특정 사용자의 요청 개수 (Entity 필드명 user 사용)
     long countByUser(User user);
+
+    List<ArchiveRequest> user(User user);
 }

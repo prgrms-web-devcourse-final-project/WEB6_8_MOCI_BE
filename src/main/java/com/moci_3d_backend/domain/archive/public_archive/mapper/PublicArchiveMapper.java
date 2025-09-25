@@ -27,11 +27,11 @@ public class PublicArchiveMapper {
                 .id(archive.getId())
                 .title(archive.getTitle())
                 .description(archive.getDescription())
-                .category(archive.getCategory())
+                .category(archive.getCategory() != null ? archive.getCategory().name() : null)
                 .subCategory(archive.getSubCategory())
                 .file(fileDto)
                 .uploadedBy(userDto)
-                .createdAt(archive.getUploadedAt())
+                .createdAt(archive.getCreatedAt())
                 .updatedAt(archive.getUpdatedAt())
                 .build();
     }
@@ -43,10 +43,10 @@ public class PublicArchiveMapper {
         return PublicArchiveListResponse.PublicArchiveDto.builder()
                 .id(archive.getId())
                 .title(archive.getTitle())
-                .category(archive.getCategory())
+                .category(archive.getCategory() != null ? archive.getCategory().name() : null)
                 .subCategory(archive.getSubCategory())
                 .uploadedBy(mapToListUserDto(archive.getUploadedBy()))
-                .createdAt(archive.getUploadedAt())
+                .createdAt(archive.getCreatedAt())
                 .build();
     }
     

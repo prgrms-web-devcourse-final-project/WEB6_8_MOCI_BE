@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
-@Tag(name = "교육 자료실", description = "교육 자료실 관련 API")
+@Tag(name = "교육 자료실", description = "교육 자료실 관련 API (현재 인증인가 미구현으로 **수동으로 userId를 넣어야 합니다**(구현시 수정예정)")
 public class PublicArchiveController {
 
     private final PublicArchiveService publicArchiveService;
@@ -33,10 +33,10 @@ public class PublicArchiveController {
     @GetMapping("/archive/public")
     @Operation(summary = "교육 자료실 목록 조회", description = "모든 사용자가 교육자료실 목록을 조회할 수 있습니다. (페이징)")
     public RsData<PublicArchiveListResponse> getPublicArchives(
-            @PageableDefault(size = 10, sort = "uploadedAt", direction = Sort.Direction.DESC)
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
             @Parameter(
                     description = "페이징 정보 (기본: 10개씩, 최신순)",
-                    example = "{\n  \"page\": 0,\n  \"size\": 10,\n  \"sort\": \"uploadedAt\"\n}"
+                    example = "{\n  \"page\": 0,\n  \"size\": 10,\n  \"sort\": \"createdAt\"\n}"
             ) Pageable pageable
     ) {
         PublicArchiveListResponse response = publicArchiveService.getPublicArchives(pageable);
@@ -60,7 +60,8 @@ public class PublicArchiveController {
 
     @PostMapping("/admin/archive/public")
     @PreAuthorize("hasRole('ADMIN')") // 관리자 권한 필요
-    @Operation(summary = "[관리자] 교육 자료실 등록", description = "관리자만 교육자료실에 글을 등록할 수 있습니다.")
+    @Operation(summary = "[관리자] 교육 자료실 등록", description = "관리자만 교육자료실에 글을 등록할 수 있습니다.\n" +
+            "현재 플로우: 프론트에서 텍스트 및 파일**(선택사항 & 파일 첨부시 파일 업로드API먼저 호출 필요)** -> 양식에 맞게 본 API호출 -> DB저장")
     public RsData<PublicArchiveResponse> createPublicArchive(
             @Valid @RequestBody PublicArchiveCreateRequest request,
             // TODO 임시: 테스트용 userId 파라미터 (추후 @AuthenticationPrincipal 또는 SecurityContextHolder로 대체)
@@ -75,9 +76,11 @@ public class PublicArchiveController {
     @Operation(summary = "[관리자] 교육 자료실 수정", description = "관리자만 교육자료실 글을 수정할 수 있습니다.")
     public RsData<PublicArchiveResponse> updatePublicArchive(
             @PathVariable @Parameter(description = "수정할 자료실 ID") Long archiveId,
-            @Valid @RequestBody PublicArchiveUpdateRequest request
+            @Valid @RequestBody PublicArchiveUpdateRequest request,
+            // 임시: 테스트용 userId 파라미터 (추후 본인 작성 글 확인용으로 사용)
+            @RequestParam @Parameter(description = "임시 테스트용 관리자 ID", example = "1") Long userId
             ) {
-        PublicArchiveResponse response = publicArchiveService.updatePublicArchive(archiveId, request);
+        PublicArchiveResponse response = publicArchiveService.updatePublicArchive(archiveId, request, userId);
         return RsData.of(200, "success to update public archive", response);
     }
 
@@ -85,8 +88,10 @@ public class PublicArchiveController {
     @PreAuthorize("hasRole('ADMIN')") // 관리자 권한 필요
     @Operation(summary = "[관리자] 교육 자료실 삭제", description = "관리자만 교육자료실 글을 삭제할 수 있습니다.")
     public RsData<Void> deletePublicArchive
-            (@PathVariable @Parameter(description = "삭제할 자료실 ID") Long archiveId) {
-        publicArchiveService.deletePublicArchive(archiveId);
+            (@PathVariable @Parameter(description = "삭제할 자료실 ID") Long archiveId,
+             // 임시: 테스트용 userId 파라미터 (추후 본인 작성 글 확인용으로 사용)
+             @RequestParam @Parameter(description = "임시 테스트용 관리자 ID", example = "1") Long userId) {
+        publicArchiveService.deletePublicArchive(archiveId, userId);
         return RsData.of(200, "success to delete public archive");
     }
 }

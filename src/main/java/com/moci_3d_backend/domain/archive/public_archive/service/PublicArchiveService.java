@@ -35,9 +35,12 @@ public class PublicArchiveService {
     // 교육 자료실 게시물 생성
     @Transactional
     public PublicArchiveResponse createPublicArchive(PublicArchiveCreateRequest request, Long userId) {
-
+        // 권한 확인 (관리자)
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 ID의 사용자를 찾을 수 없습니다." + userId));
+                        .orElseThrow(() -> new EntityNotFoundException("해당 ID의 사용자를 찾을 수 없습니다." + userId));
+                if (!User.UserRole.ADMIN.equals(user.getRole())) {
+                    throw new IllegalStateException("관리자 권한이 필요합니다.");
+                }
 
         PublicArchive newArchive = new PublicArchive();
         newArchive.setTitle(request.getTitle());
@@ -74,7 +77,13 @@ public class PublicArchiveService {
 
     // 교육 자료실 게시물 수정
     @Transactional
-    public PublicArchiveResponse updatePublicArchive(Long archiveId, PublicArchiveUpdateRequest request) {
+    public PublicArchiveResponse updatePublicArchive(Long archiveId, PublicArchiveUpdateRequest request, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 ID의 사용자를 찾을 수 없습니다." + userId));
+        if (!User.UserRole.ADMIN.equals(user.getRole())) {
+            throw new IllegalStateException("관리자 권한이 필요합니다.");
+        }
+
         PublicArchive existingArchive = publicArchiveRepository.findById(archiveId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 ID의 교육 자료실 글을 찾을 수 없습니다: " + archiveId));
         if (request.getTitle() != null) existingArchive.setTitle(request.getTitle());
@@ -87,7 +96,13 @@ public class PublicArchiveService {
 
     // 교육 자료실 게시물 삭제
     @Transactional
-    public void deletePublicArchive(Long archiveId) {
+    public void deletePublicArchive(Long archiveId, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 ID의 사용자를 찾을 수 없습니다." + userId));
+        if (!User.UserRole.ADMIN.equals(user.getRole())) {
+            throw new IllegalStateException("관리자 권한이 필요합니다.");
+        }
+
         if (!publicArchiveRepository.existsById(archiveId)) {
             throw new EntityNotFoundException("해당 ID의 교육 자료실 글을 찾을 수 없습니다: " + archiveId);
         }

@@ -18,9 +18,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
-@Tag(name = "자료 요청 게시판", description = "자료 요청 게시판 관련 API")
+@Tag(name = "자료 요청 게시판", description = "자료 요청 게시판 관련 API (현재 인증인가 미구현으로 **수동으로 userId를 넣어야 합니다**(구현시 수정예정)")
 public class ArchiveRequestController {
-
+    //TODO**매우중요**: 인증 인가 구현시 Long userId 부분 제거 및 @AuthenticationPrincipal 또는 SecurityContextHolder로 대체
     private final ArchiveRequestService archiveRequestService;
 
     // === Mentor API (멘토 권한 필요) ===
@@ -32,7 +32,7 @@ public class ArchiveRequestController {
     public RsData<ArchiveRequestResponseDto> createArchiveRequest(
             @Valid @RequestBody ArchiveRequestCreateDto createDto,
             // TODO 임시: 테스트용 userId 파라미터 (추후 @AuthenticationPrincipal 또는 SecurityContextHolder로 대체)
-            @RequestParam @Parameter(description = "임시 테스트용 멘토 ID") Long userId
+            @RequestParam @Parameter(description = "임시 테스트용 멘토 ID", example = "2") Long userId
     ) {
         ArchiveRequestResponseDto response = archiveRequestService.createArchiveRequest(createDto, userId);
         return RsData.of(201, "자료 요청글이 생성되었습니다.", response);
@@ -46,7 +46,7 @@ public class ArchiveRequestController {
             @PathVariable @Parameter(description = "수정할 요청글 ID", example = "1") Long requestId,
             @Valid @RequestBody ArchiveRequestUpdateDto updateDto,
             // TODO 임시: 테스트용 userId 파라미터 (추후 본인 작성 글 확인용으로 사용)
-            @RequestParam @Parameter(description = "임시 테스트용 사용자 ID") Long userId
+            @RequestParam @Parameter(description = "임시 테스트용 멘토 ID", example = "2") Long userId
     ) {
         ArchiveRequestResponseDto response = archiveRequestService.updateArchiveRequestWithOwnerCheck(requestId, updateDto, userId);
         return RsData.of(200, "자료 요청글이 수정되었습니다.", response);
@@ -58,8 +58,8 @@ public class ArchiveRequestController {
     @Operation(summary = "[멘토/관리자] 자료 요청 삭제", description = "멘토가 본인의 글을, 관리자는 모든 글에대해 삭제할 권한이 있습니다.")
     public RsData<Void> deleteArchiveRequest(
             @PathVariable @Parameter(description = "삭제할 요청글 ID", example = "1") Long requestId,
-            // 임시: 테스트용 userId 파라미터 (추후 본인 작성 글 확인용으로 사용)
-            @RequestParam @Parameter(description = "임시 테스트용 사용자 ID") Long userId
+            // TODO 임시: 테스트용 userId 파라미터 (추후 본인 작성 글 확인용으로 사용)
+            @RequestParam @Parameter(description = "임시 테스트용 멘토 or 관리자 ID", example = "2") Long userId
     ) {
         archiveRequestService.deleteArchiveRequestWithPermissionCheck(requestId, userId);
         return RsData.of(200, "자료 요청글이 성공적으로 삭제되었습니다.");
@@ -74,15 +74,18 @@ public class ArchiveRequestController {
     @Operation(summary = "[관리자/멘토] 자료 요청 목록 조회", description = "관리자와 멘토가 자료 요청 목록을 조회할 수 있습니다.")
     public RsData<ArchiveRequestListResponseDto> getArchiveRequests(
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
-            @Parameter(description = "페이징 정보 (기본: 10개씩, 최신순)") Pageable pageable,
-            @RequestParam(required = false) @Parameter(description = "상태 필터 (PENDING, APPROVED, REJECTED)") RequestStatus status
-    ) {
+            @Parameter(description = "페이징 정보 (기본: 10개씩, 최신순)",
+                    example = "{\n  \"page\": 0,\n  \"size\": 10,\n  \"sort\": \"createdAt\"\n}"
+            ) Pageable pageable,
+            @RequestParam(required = false) @Parameter(description = "상태 필터 (PENDING, APPROVED, REJECTED)") RequestStatus status,
+            // 임시: 테스트용 userId 파라미터 (추후 본인 작성 글 확인용으로 사용)
+            @RequestParam @Parameter(description = "임시 테스트용 관리자, 멘토 ID") Long userId) {
         ArchiveRequestListResponseDto response;
 
         if (status != null) {
-            response = archiveRequestService.getArchiveRequestsByStatus(status, pageable);
+            response = archiveRequestService.getArchiveRequestsByStatus(status, pageable, userId);
         } else {
-            response = archiveRequestService.getArchiveRequests(pageable);
+            response = archiveRequestService.getArchiveRequests(pageable, userId);
         }
 
         return RsData.of(200, "자료 요청 목록을 성공적으로 조회했습니다.", response);
@@ -93,22 +96,27 @@ public class ArchiveRequestController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('MENTOR')")
     @Operation(summary = "[관리자/멘토] 자료 요청 상세 조회", description = "관리자와 멘토가 자료 요청 상세 정보를 조회할 수 있습니다.")
     public RsData<ArchiveRequestResponseDto> getArchiveRequest(
-            @PathVariable @Parameter(description = "조회할 요청 ID") Long requestId
+            @PathVariable @Parameter(description = "조회할 요청글 ID") Long requestId,
+            // 임시: 테스트용 userId 파라미터 (추후 본인 작성 글 확인용으로 사용)
+            @RequestParam @Parameter(description = "임시 테스트용 관리자, 멘토 ID") Long userId
     ) {
-        ArchiveRequestResponseDto response = archiveRequestService.getArchiveRequest(requestId);
+        ArchiveRequestResponseDto response = archiveRequestService.getArchiveRequest(requestId, userId);
         return RsData.of(200, "자료 요청 상세 정보를 성공적으로 조회했습니다.", response);
     }
 
     // 사용자별 자료 요청 목록 조회 (관리자, 멘토)
     @GetMapping("/users/{userId}/archive-requests")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MENTOR')")
-    @Operation(summary = "[관리자/멘토] 사용자별 자료 요청 목록 조회", description = "관리자와 멘토가 특정 사용자의 자료 요청 목록을 조회할 수 있습니다.")
+    @Operation(summary = "[관리자/멘토] 사용자별(멘토) 자료 요청 목록 조회", description = "관리자와 멘토가 특정 사용자(멘토)의 자료 요청 목록을 조회할 수 있습니다.")
     public RsData<ArchiveRequestListResponseDto> getUserArchiveRequestByUser(
-            @PathVariable @Parameter(description = "사용자 ID", example = "1") Long userId,
+            @PathVariable @Parameter(description = "조회할 멘토 ID", example = "2") Long userId,
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
-            @Parameter(description = "페이징 정보 (기본: 10개씩, 최신순)") Pageable pageable
+            @Parameter(description = "페이징 정보 (기본: 10개씩, 최신순)", example = "{\n  \"page\": 0,\n  \"size\": 10,\n  \"sort\": \"createdAt\"\n}"
+            ) Pageable pageable,
+            // 임시: 테스트용 userId 파라미터 (추후 본인 작성 글 확인용으로 사용)
+            @RequestParam @Parameter(description = "임시 테스트용 관리자, 멘토 ID", example = "1") Long reviewerId
     ) {
-        ArchiveRequestListResponseDto response = archiveRequestService.getArchiveRequestsByUser(userId, pageable);
+        ArchiveRequestListResponseDto response = archiveRequestService.getArchiveRequestsByUser(userId, pageable, reviewerId);
         return RsData.of(200, "사용자별 자료 요청 목록을 성공적으로 조회했습니다.", response);
     }
 
@@ -123,7 +131,7 @@ public class ArchiveRequestController {
             @PathVariable @Parameter(description = "상태를 변경할 요청글 ID", example = "1") Long requestId,
             @Valid @RequestBody ArchiveRequestStatusUpdateDto statusUpdateDto,
             // TODO 임시: 테스트용 userId 파라미터 (추후 @AuthenticationPrincipal 또는 SecurityContextHolder로 대체)
-            @RequestParam @Parameter(description = "임시 테스트용 관리자 ID") Long reviewerId
+            @RequestParam @Parameter(description = "임시 테스트용 관리자 ID", example = "1") Long reviewerId
     ) {
 
         ArchiveRequestResponseDto response = archiveRequestService.updateArchiveRequestStatus(requestId, statusUpdateDto, reviewerId);
@@ -141,8 +149,11 @@ public class ArchiveRequestController {
     @GetMapping("/archive-requests/pending/count")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "[관리자] 대기중인 자료 요청 개수 조회", description = "관리자가 대기중인 자료 요청글의 개수를 조회합니다.")
-    public RsData<Long> getPendingRequestCount() {
-        long count = archiveRequestService.getPendingRequestCount();
+    public RsData<Long> getPendingRequestCount(
+            // 임시: 테스트용 userId 파라미터 (추후 본인 작성 글 확인용으로 사용)
+            @RequestParam @Parameter(description = "임시 테스트용 관리자 ID", example = "1") Long userId
+    ) {
+        long count = archiveRequestService.getPendingRequestCount(userId);
         return RsData.of(200, "대기중인 자료 요청 개수를 성공적으로 조회했습니다.", count);
     }
 }

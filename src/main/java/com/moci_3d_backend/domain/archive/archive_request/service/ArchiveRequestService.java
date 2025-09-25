@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class ArchiveRequestService {
+public class ArchiveRequestService { // TODO**매우중요**: 인증 인가 구현시 Long userId 부분 제거 및 @AuthenticationPrincipal 또는 SecurityContextHolder로 대체
 
     private final ArchiveRequestRepository archiveRequestRepository;
     private final ArchiveRequestMapper archiveRequestMapper;
@@ -25,9 +25,10 @@ public class ArchiveRequestService {
     // 자료 요청글 생성 (멘토용)
     @Transactional
     public ArchiveRequestResponseDto createArchiveRequest(ArchiveRequestCreateDto createDto, Long userId) {
-
          User user = userRepository.findById(userId)
                  .orElseThrow(() -> new EntityNotFoundException("해당 id의 유저를 찾을 수 없습니다: " + userId));
+
+         validateMentorPermission(userId);
 
         ArchiveRequest archiveRequest = ArchiveRequest.builder()
                 .user(user)
@@ -40,9 +41,12 @@ public class ArchiveRequestService {
         return archiveRequestMapper.toResponseDto(savedRequest);
     }
 
-    // 자료 요청 목록 조회 (페이징)
+    // 자료 요청 목록 조회 (페이징, 관리자, 멘토)
     @Transactional(readOnly = true)
-    public ArchiveRequestListResponseDto getArchiveRequests(Pageable pageable) {
+    public ArchiveRequestListResponseDto getArchiveRequests(Pageable pageable, Long userId) {
+
+        validateMentorOrAdminPermission(userId);
+
         Page<ArchiveRequest> requestPage = archiveRequestRepository.findAll(pageable);
 
         Page<ArchiveRequestListResponseDto.RequestSummaryDto> summaryPage =
@@ -58,9 +62,11 @@ public class ArchiveRequestService {
 
     // 자료 요청 상세 조회
     @Transactional(readOnly = true)
-    public ArchiveRequestResponseDto getArchiveRequest(Long requestId) {
+    public ArchiveRequestResponseDto getArchiveRequest(Long requestId, Long userId) {
         ArchiveRequest archiveRequest = archiveRequestRepository.findById(requestId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 id의 자료 요청을 찾을 수 없습니다: " + requestId));
+
+        validateMentorOrAdminPermission(userId);
 
         return archiveRequestMapper.toResponseDto(archiveRequest);
     }
@@ -70,6 +76,8 @@ public class ArchiveRequestService {
     public ArchiveRequestResponseDto updateArchiveRequestWithOwnerCheck(Long requestId, ArchiveRequestUpdateDto updateDto, Long userId) {
         ArchiveRequest archiveRequest = archiveRequestRepository.findById(requestId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 id의 자료 요청을 찾을 수 없습니다: " + requestId));
+
+        validateMentorPermission(userId);
 
         if (!isOwner(requestId, userId)) {
             throw new IllegalStateException("본인이 작성한 글만 수정할 수 있습니다.");
@@ -94,6 +102,9 @@ public class ArchiveRequestService {
     @Transactional
     public ArchiveRequestResponseDto updateArchiveRequestStatus(
             Long requestId, ArchiveRequestStatusUpdateDto statusUpdateDto, Long reviewerId) {
+
+        validateAdminPermission(reviewerId);
+
         ArchiveRequest archiveRequest = archiveRequestRepository.findById(requestId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 id의 자료 요청을 찾을 수 없습니다: " + requestId));
 
@@ -123,6 +134,9 @@ public class ArchiveRequestService {
     // 자료 요청 삭제
     @Transactional
     public void deleteArchiveRequestWithPermissionCheck(Long requestId, Long userId) {
+
+        validateMentorOrAdminPermission(userId);
+
         if (!archiveRequestRepository.existsById(requestId)) {
             throw new EntityNotFoundException("해당 id의 자료 요청을 찾을 수 없습니다: " + requestId);
         }
@@ -148,7 +162,10 @@ public class ArchiveRequestService {
 
     // 사용자별 자료 요청 목록 조회
     @Transactional(readOnly = true)
-    public ArchiveRequestListResponseDto getArchiveRequestsByUser(Long userId, Pageable pageable) {
+    public ArchiveRequestListResponseDto getArchiveRequestsByUser(Long userId, Pageable pageable, Long reviewerId) {
+
+        validateMentorOrAdminPermission(reviewerId);
+
         Page<ArchiveRequest> requestpage = archiveRequestRepository.findByUserId(userId, pageable);
 
         Page<ArchiveRequestListResponseDto.RequestSummaryDto> summaryPage =
@@ -164,7 +181,10 @@ public class ArchiveRequestService {
 
     // 상태별 자료 요청 목록 조회
     @Transactional(readOnly = true)
-    public ArchiveRequestListResponseDto getArchiveRequestsByStatus(RequestStatus status, Pageable pageable) {
+    public ArchiveRequestListResponseDto getArchiveRequestsByStatus(RequestStatus status, Pageable pageable, Long userId) {
+
+        validateMentorOrAdminPermission(userId);
+
         Page<ArchiveRequest> requestPage = archiveRequestRepository.findByStatus(status, pageable);
 
         Page<ArchiveRequestListResponseDto.RequestSummaryDto> summaryPage =
@@ -180,10 +200,13 @@ public class ArchiveRequestService {
 
     // 대기중 요청 개수 조회
     @Transactional(readOnly = true)
-    public long getPendingRequestCount() {
+    public long getPendingRequestCount(Long userId) {
+        validateMentorOrAdminPermission(userId);
         return archiveRequestRepository.countByStatus(RequestStatus.PENDING);
     }
 
+
+    //==== 권한 검증 메서드들 =====//
     // 본인 작성 글 여부 검증
     @Transactional(readOnly = true)
     public boolean isOwner(Long requestId, Long userId) {
@@ -192,11 +215,36 @@ public class ArchiveRequestService {
         return archiveRequest.getUser().getId().equals(userId);
     }
 
-    // 관리자 여부 검증
+    // 멘토 권한 확인
     @Transactional(readOnly = true)
-    public boolean isAdmin(Long userId) {
+    public void validateMentorPermission(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 id의 유저를 찾을 수 없습니다: " + userId));
-        return user.getRole() == User.UserRole.ADMIN;
+
+        if (user.getRole() != User.UserRole.MENTOR) {
+            throw new IllegalStateException("멘토만 접근 가능합니다.");
+        }
+    }
+
+    // 관리자 권한 확인
+    @Transactional(readOnly = true)
+    public void validateAdminPermission(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 id의 유저를 찾을 수 없습니다: " + userId));
+
+        if (user.getRole() != User.UserRole.ADMIN) {
+            throw new IllegalStateException("관리자만 접근 가능합니다.");
+        }
+    }
+
+    // 멘토 또는 관리자 권한 확인
+    @Transactional(readOnly = true)
+    public void validateMentorOrAdminPermission(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 id의 유저를 찾을 수 없습니다: " + userId));
+
+        if (user.getRole() != User.UserRole.MENTOR && user.getRole() != User.UserRole.ADMIN) {
+            throw new IllegalStateException("멘토 또는 관리자만 접근 가능합니다.");
+        }
     }
 }
