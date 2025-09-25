@@ -30,14 +30,14 @@ public class UserService {
         // 1. 사용자 찾기
         Optional<User> userOptional = userRepository.findByUserId(request.getUserId());
         if (userOptional.isEmpty()) {
-            throw new ServiceException(400, "아이디 또는 비밀번호가 틀렸습니다.");
+            throw new ServiceException(400, "아이디가 올바르지 않습니다.");
         }
         User user = userOptional.get();
         
         // 2. 비밀번호 검증 (BCrypt)
         boolean isPasswordMatch = PasswordUtil.matches(request.getPassword(), user.getPassword());
         if (!isPasswordMatch) {
-            throw new ServiceException(400, "아이디 또는 비밀번호가 틀렸습니다.");
+            throw new ServiceException(400, "비밀번호가 틀렸습니다.");
         }
         
         return UserLoginResponse.from(user);
