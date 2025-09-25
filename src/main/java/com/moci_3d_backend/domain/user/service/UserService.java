@@ -59,7 +59,7 @@ public class UserService {
     // === 로그인 ===
     public UserLoginResponse login(UserLoginRequest request) {
 
-        // 1. UserId 검증증
+        // 1. UserId 검증
         Optional<User> userOptional = userRepository.findByUserId(request.getUserId());
         if (userOptional.isEmpty()) {
             throw new ServiceException(400, "'아이디 또는 비밀번호가 틀렸습니다.'");
