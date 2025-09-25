@@ -15,17 +15,26 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class AiChatMessageRateLimitService {
 
+    // 전역
+    private static final int GLOBAL_RPM = 15;
+    private static final int GLOBAL_RPD = 200;
+    private static final long GLOBAL_TPM = 1_000_000;
+    // 사용자
+    private static final int USER_RPM = 10;
+    private static final int USER_RPD = 200;
+
+
     // 전역 버킷 ( 모든 사용자와 방에 적용)
     private final Bucket globalRequestBucket = Bucket.builder()
-            .addLimit(l -> l.capacity(15) // RPM 15
-                    .refillGreedy(15, Duration.ofMinutes(1)))
-            .addLimit(l -> l.capacity(200) // RPD 200
-                    .refillIntervally(200, Duration.ofDays(1)))
+            .addLimit(l -> l.capacity(GLOBAL_RPM) // RPM 15
+                    .refillGreedy(GLOBAL_RPM, Duration.ofMinutes(1)))
+            .addLimit(l -> l.capacity(GLOBAL_RPD) // RPD 200
+                    .refillIntervally(GLOBAL_RPD, Duration.ofDays(1)))
             .build();
 
     private final Bucket globalTokenBucket = Bucket.builder()
-            .addLimit(l -> l.capacity(1_000_000) // TPM 1,000,000
-                    .refillGreedy(1_000_000, Duration.ofMinutes(1)))
+            .addLimit(l -> l.capacity(GLOBAL_TPM) // TPM 1,000,000
+                    .refillGreedy(GLOBAL_TPM, Duration.ofMinutes(1)))
             .build();
 
     // 사용자 및 방별 버킷
@@ -34,10 +43,10 @@ public class AiChatMessageRateLimitService {
     private Bucket getUserBucket(Long userId) {
         return userBuckets.computeIfAbsent("u:" + userId, k ->
                 Bucket.builder()
-                        .addLimit(l -> l.capacity(10) // 유저당 RPM 10
-                                .refillGreedy(10, Duration.ofMinutes(1)))
-                        .addLimit(l -> l.capacity(200) // 유저당 RPD 200
-                                .refillIntervally(200, Duration.ofDays(1)))
+                        .addLimit(l -> l.capacity(USER_RPM) // 유저당 RPM 10
+                                .refillGreedy(USER_RPM, Duration.ofMinutes(1)))
+                        .addLimit(l -> l.capacity(USER_RPD) // 유저당 RPD 200
+                                .refillIntervally(USER_RPD, Duration.ofDays(1)))
                         .build()
         );
     }
