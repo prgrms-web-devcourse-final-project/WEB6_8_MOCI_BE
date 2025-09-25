@@ -3,6 +3,9 @@ package com.moci_3d_backend.global.initData;
 import com.moci_3d_backend.domain.archive.archive_request.entity.ArchiveRequest;
 import com.moci_3d_backend.domain.archive.archive_request.entity.RequestStatus;
 import com.moci_3d_backend.domain.archive.archive_request.repository.ArchiveRequestRepository;
+import com.moci_3d_backend.domain.archive.public_archive.entity.ArchiveCategory;
+import com.moci_3d_backend.domain.archive.public_archive.entity.PublicArchive;
+import com.moci_3d_backend.domain.archive.public_archive.repository.PublicArchiveRepository;
 import com.moci_3d_backend.domain.user.entity.User;
 import com.moci_3d_backend.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +18,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 
 @Configuration
 @Profile("dev")
@@ -26,12 +30,14 @@ public class DevInitData {
 
     private final UserRepository userRepository;
     private final ArchiveRequestRepository archiveRequestRepository;
+    private final PublicArchiveRepository publicArchiveRepository;
 
     @Bean
     ApplicationRunner devInitDataApplicationRunner() {
         return args -> {
             self.memberInit();
             self.archiveRequestInit();
+            self.publicArchiveInit();
         };
     }
 
@@ -295,6 +301,94 @@ public class DevInitData {
                 .status(RequestStatus.PENDING)
                 .build();
         archiveRequestRepository.save(request6);
+    }
+
+    @Transactional
+    public void publicArchiveInit() {
+        if (publicArchiveRepository.count() > 0) {
+            return;
+        }
+
+        // 관리자 사용자 조회 (ID 1번)
+        User admin = userRepository.findById(1L).orElse(null);
+        if (admin == null) {
+            return; // 관리자가 없으면 교육 자료실 생성 중단
+        }
+
+        // === 교육 자료실 예시 데이터 생성 (3개) ===
+
+        // 1. 카카오톡 사용법 가이드
+        PublicArchive archive1 = new PublicArchive();
+        archive1.setTitle("카카오톡 기본 사용법 완벽 가이드");
+        archive1.setDescription("시니어를 위한 카카오톡 사용법을 단계별로 설명한 교육 자료입니다.\n\n" +
+                "📱 포함 내용:\n" +
+                "• 카카오톡 앱 설치 및 회원가입 방법\n" +
+                "• 친구 추가하기 (QR코드, 전화번호, ID 검색)\n" +
+                "• 메시지 보내기와 받기\n" +
+                "• 사진, 동영상 전송하는 방법\n" +
+                "• 음성메시지 보내기\n" +
+                "• 그룹 채팅방 만들기\n" +
+                "• 카카오톡 설정 변경하기\n" +
+                "• 알림 설정 및 차단 기능\n\n" +
+                "💡 특징:\n" +
+                "- 큰 글씨와 스크린샷으로 쉽게 이해\n" +
+                "- 단계별 상세 설명\n" +
+                "- 자주 묻는 질문(FAQ) 포함");
+        archive1.setCategory(ArchiveCategory.KAKAO_TALK);
+        archive1.setSubCategory("기본 사용법");
+        archive1.setUploadedBy(admin);
+        archive1.setFileUploads(Collections.emptyList()); // 파일 없음
+        publicArchiveRepository.save(archive1);
+
+        // 2. KTX 온라인 예매 가이드
+        PublicArchive archive2 = new PublicArchive();
+        archive2.setTitle("KTX 온라인 예매 쉽게 하기");
+        archive2.setDescription("집에서 편리하게 KTX 기차표를 예매하는 방법을 알려드립니다.\n\n" +
+                "🚄 주요 내용:\n" +
+                "• 코레일톡 앱 다운로드 및 설치\n" +
+                "• 회원가입과 본인인증 과정\n" +
+                "• 출발역과 도착역 선택하기\n" +
+                "• 날짜와 시간 설정하기\n" +
+                "• 좌석 종류별 특징 (일반실, 특실)\n" +
+                "• 온라인 결제 방법 (카드, 간편결제)\n" +
+                "• 예매 확인 및 모바일 승차권 사용법\n" +
+                "• 예매 취소와 변경 방법\n\n" +
+                "💳 결제 방법:\n" +
+                "- 신용카드, 체크카드\n" +
+                "- 카카오페이, 네이버페이\n" +
+                "- 페이코, 삼성페이\n\n" +
+                "❗ 주의사항과 유용한 팁도 함께 제공합니다.");
+        archive2.setCategory(ArchiveCategory.KTX);
+        archive2.setSubCategory("온라인 예매");
+        archive2.setUploadedBy(admin);
+        archive2.setFileUploads(Collections.emptyList()); // 파일 없음
+        publicArchiveRepository.save(archive2);
+
+        // 3. 유튜브 시청 방법 가이드
+        PublicArchive archive3 = new PublicArchive();
+        archive3.setTitle("유튜브로 즐기는 동영상 세상");
+        archive3.setDescription("유튜브를 활용해서 다양한 영상을 시청하고 즐기는 방법을 소개합니다.\n\n" +
+                "📺 학습 내용:\n" +
+                "• 유튜브 앱 설치 및 첫 화면 익히기\n" +
+                "• 영상 검색하는 다양한 방법\n" +
+                "• 재생, 일시정지, 되감기 조작법\n" +
+                "• 음량 조절과 화면 크기 변경\n" +
+                "• 자막 켜기/끄기 설정\n" +
+                "• 좋아하는 채널 구독하기\n" +
+                "• 재생목록 만들고 관리하기\n" +
+                "• 시청 기록 확인하기\n\n" +
+                "🎯 추천 채널 소개:\n" +
+                "• 건강 정보 채널\n" +
+                "• 요리 레시피 채널\n" +
+                "• 뉴스 및 시사 채널\n" +
+                "• 여행 정보 채널\n" +
+                "• 취미 활동 채널\n\n" +
+                "📱 스마트폰과 태블릿 양쪽 사용법 모두 설명드립니다.");
+        archive3.setCategory(ArchiveCategory.YOUTUBE);
+        archive3.setSubCategory("기본 시청법");
+        archive3.setUploadedBy(admin);
+        archive3.setFileUploads(Collections.emptyList()); // 파일 없음
+        publicArchiveRepository.save(archive3);
     }
 
 }
