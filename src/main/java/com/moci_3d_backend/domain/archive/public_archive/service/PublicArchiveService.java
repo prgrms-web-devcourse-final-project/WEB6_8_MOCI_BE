@@ -1,9 +1,6 @@
 package com.moci_3d_backend.domain.archive.public_archive.service;
 
-import com.moci_3d_backend.domain.archive.public_archive.dto.PublicArchiveCreateRequest;
-import com.moci_3d_backend.domain.archive.public_archive.dto.PublicArchiveListResponse;
-import com.moci_3d_backend.domain.archive.public_archive.dto.PublicArchiveResponse;
-import com.moci_3d_backend.domain.archive.public_archive.dto.PublicArchiveUpdateRequest;
+import com.moci_3d_backend.domain.archive.public_archive.dto.*;
 import com.moci_3d_backend.domain.archive.public_archive.entity.PublicArchive;
 import com.moci_3d_backend.domain.archive.public_archive.mapper.PublicArchiveMapper;
 import com.moci_3d_backend.domain.archive.public_archive.repository.PublicArchiveRepository;
@@ -61,7 +58,7 @@ public class PublicArchiveService {
     public PublicArchiveListResponse getPublicArchives(Pageable pageable) {
         Page<PublicArchive> entityPage = publicArchiveRepository.findAll(pageable);
 
-        Page<PublicArchiveListResponse.PublicArchiveDto> dtoPage = entityPage.map(publicArchiveMapper::toListDto);
+        Page<PublicArchiveListItemDto> dtoPage = entityPage.map(publicArchiveMapper::toListItemDto);
 
         return new PublicArchiveListResponse(dtoPage);
     }
