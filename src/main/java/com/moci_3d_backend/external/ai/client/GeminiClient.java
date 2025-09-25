@@ -3,6 +3,7 @@ package com.moci_3d_backend.external.ai.client;
 import com.moci_3d_backend.external.ai.dto.GeminiRequest;
 import com.moci_3d_backend.external.ai.dto.GeminiResponse;
 import com.moci_3d_backend.global.exception.GeminiApiException;
+import com.moci_3d_backend.global.exception.ServiceException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,6 +11,9 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 
 @Slf4j
@@ -25,8 +29,19 @@ public class GeminiClient {
     @Value("${gemini.api.url}")
     private String apiUrl;
 
+    // 동시성 제한 설정 (최대 10개)
+    private final Semaphore permits = new Semaphore(10,true);
+    private static final long TIMEOUT_MS = 300;
+
     public String generateChatResponse(String prompt) {
+        boolean acquired = false;
+
         try {
+            acquired = permits.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            if (!acquired) {
+                throw new ServiceException(503,"AI가 혼잡합니다. 잠시 후 다시 시도해주세요.");
+            }
+
             GeminiRequest request = GeminiRequest.of(prompt);
 
             // 요청 헤더 설정
@@ -59,6 +74,10 @@ public class GeminiClient {
         } catch (Exception e) {
             log.error("Gemini API 호출 중 오류 발생", e);
             throw new GeminiApiException("Gemini API 연결 실패: " + e.getMessage());
+        } finally {
+            if (acquired) {
+                permits.release();
+            }
         }
     }
 
