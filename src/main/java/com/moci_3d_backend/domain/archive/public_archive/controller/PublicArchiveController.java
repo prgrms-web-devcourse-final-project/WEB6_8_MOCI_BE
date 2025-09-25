@@ -33,10 +33,10 @@ public class PublicArchiveController {
     @GetMapping("/archive/public")
     @Operation(summary = "교육 자료실 목록 조회", description = "모든 사용자가 교육자료실 목록을 조회할 수 있습니다. (페이징)")
     public RsData<PublicArchiveListResponse> getPublicArchives(
-            @PageableDefault(size = 10, sort = "uploadedAt", direction = Sort.Direction.DESC)
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
             @Parameter(
                     description = "페이징 정보 (기본: 10개씩, 최신순)",
-                    example = "{\n  \"page\": 0,\n  \"size\": 10,\n  \"sort\": \"uploadedAt\"\n}"
+                    example = "{\n  \"page\": 0,\n  \"size\": 10,\n  \"sort\": \"createdAt\"\n}"
             ) Pageable pageable
     ) {
         PublicArchiveListResponse response = publicArchiveService.getPublicArchives(pageable);

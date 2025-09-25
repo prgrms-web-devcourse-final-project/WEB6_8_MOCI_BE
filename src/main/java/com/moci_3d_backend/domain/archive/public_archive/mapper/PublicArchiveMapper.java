@@ -31,7 +31,7 @@ public class PublicArchiveMapper {
                 .subCategory(archive.getSubCategory())
                 .file(fileDto)
                 .uploadedBy(userDto)
-                .createdAt(archive.getUploadedAt())
+                .createdAt(archive.getCreatedAt())
                 .updatedAt(archive.getUpdatedAt())
                 .build();
     }
@@ -46,7 +46,7 @@ public class PublicArchiveMapper {
                 .category(archive.getCategory() != null ? archive.getCategory().name() : null)
                 .subCategory(archive.getSubCategory())
                 .uploadedBy(mapToListUserDto(archive.getUploadedBy()))
-                .createdAt(archive.getUploadedAt())
+                .createdAt(archive.getCreatedAt())
                 .build();
     }
     

@@ -45,7 +45,7 @@ public class PublicArchive {
 
     @CreationTimestamp
     @Column(updatable = false)
-    private LocalDateTime uploadedAt;
+    private LocalDateTime createdAt;
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
