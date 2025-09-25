@@ -6,6 +6,7 @@ import com.moci_3d_backend.domain.user.dto.response.UserLoginResponse;
 import com.moci_3d_backend.domain.user.entity.User;
 import com.moci_3d_backend.domain.user.repository.UserRepository;
 import com.moci_3d_backend.global.exception.ServiceException;
+import com.moci_3d_backend.global.util.PasswordUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,26 +27,20 @@ public class UserService {
     
     // === 로그인 ===
     public UserLoginResponse login(UserLoginRequest request) {
-        Optional<User> userOptional = userRepository.findByUserIdAndPassword(
-            request.getUserId(), 
-            request.getPassword()
-        );
-        
+        // 1. 사용자 찾기
+        Optional<User> userOptional = userRepository.findByUserId(request.getUserId());
         if (userOptional.isEmpty()) {
-            throw new ServiceException(400, "아이디 또는 비밀번호가 틀렸습니다.");
+            throw new ServiceException(400, "'아이디 또는 비밀번호가 틀렸습니다.'");
+        }
+        User user = userOptional.get();
+        
+        // 2. 비밀번호 검증 (BCrypt)
+        boolean isPasswordMatch = PasswordUtil.matches(request.getPassword(), user.getPassword());
+        if (!isPasswordMatch) {
+            throw new ServiceException(400, "'아이디 또는 비밀번호가 틀렸습니다.'");
         }
         
-        return UserLoginResponse.from(userOptional.get());
-    }
-    
-    public UserLoginResponse socialLogin(String socialId) {
-        Optional<User> userOptional = userRepository.findBySocialId(socialId);
-        
-        if (userOptional.isEmpty()) {
-            throw new ServiceException(400, "소셜 로그인에 실패했습니다.");
-        }
-        
-        return UserLoginResponse.from(userOptional.get());
+        return UserLoginResponse.from(user);
     }
     
     // === 사용자 조회 ===
