@@ -20,7 +20,7 @@ import java.util.List;
 public class ApiV1MentorChatRoomController {
     private final MentorChatRoomService mentorChatRoomService;
 
-    @PostMapping("/join/{roomId}")
+    @PutMapping("/join/{roomId}")
     @PreAuthorize("hasRole('MENTOR')")
     @Operation(summary = "[멘토] 채팅방 입장", description = "멘토가 채팅방에 입장합니다.")
     public RsData<Void> joinMentorChatRoom(
@@ -48,6 +48,14 @@ public class ApiV1MentorChatRoomController {
     @Operation(summary = "[멘토] 입장하지 않은 채팅방을 조회합니다.", description = "멘토가 입장하지 않은 채팅방을 조회합니다.")
     public RsData<List<DetailMentorChatRoom>> getMentorChatRooms(){
         List<DetailMentorChatRoom> chatRooms = mentorChatRoomService.getDetailMentorChatRooms();
+        return RsData.of(200, "success to load chat rooms", chatRooms);
+    }
+
+    @GetMapping("/all")
+    @PreAuthorize("hasRole('MENTOR')")
+    @Operation(summary = "[멘토] 전체 채팅방을 조회합니다.", description = "모든 채팅방을 조회합니다.")
+    public RsData<List<DetailMentorChatRoom>> getAllChatRooms(){
+        List<DetailMentorChatRoom> chatRooms = mentorChatRoomService.getAllMentorChatRooms();
         return RsData.of(200, "success to load chat rooms", chatRooms);
     }
 }
