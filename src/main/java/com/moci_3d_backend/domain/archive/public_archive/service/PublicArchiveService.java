@@ -1,9 +1,6 @@
 package com.moci_3d_backend.domain.archive.public_archive.service;
 
-import com.moci_3d_backend.domain.archive.public_archive.dto.PublicArchiveCreateRequest;
-import com.moci_3d_backend.domain.archive.public_archive.dto.PublicArchiveListResponse;
-import com.moci_3d_backend.domain.archive.public_archive.dto.PublicArchiveResponse;
-import com.moci_3d_backend.domain.archive.public_archive.dto.PublicArchiveUpdateRequest;
+import com.moci_3d_backend.domain.archive.public_archive.dto.*;
 import com.moci_3d_backend.domain.archive.public_archive.entity.PublicArchive;
 import com.moci_3d_backend.domain.archive.public_archive.mapper.PublicArchiveMapper;
 import com.moci_3d_backend.domain.archive.public_archive.repository.PublicArchiveRepository;
@@ -11,6 +8,7 @@ import com.moci_3d_backend.domain.fileUpload.entity.FileUpload;
 import com.moci_3d_backend.domain.fileUpload.repository.FileUploadRepository;
 import com.moci_3d_backend.domain.user.entity.User;
 import com.moci_3d_backend.domain.user.repository.UserRepository;
+import com.moci_3d_backend.global.util.KoreanTextAnalyzer;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -61,7 +59,7 @@ public class PublicArchiveService {
     public PublicArchiveListResponse getPublicArchives(Pageable pageable) {
         Page<PublicArchive> entityPage = publicArchiveRepository.findAll(pageable);
 
-        Page<PublicArchiveListResponse.PublicArchiveDto> dtoPage = entityPage.map(publicArchiveMapper::toListDto);
+        Page<PublicArchiveListItemDto> dtoPage = entityPage.map(publicArchiveMapper::toListItemDto);
 
         return new PublicArchiveListResponse(dtoPage);
     }
@@ -73,6 +71,41 @@ public class PublicArchiveService {
                 .orElseThrow(() -> new EntityNotFoundException("해당 ID의 교육 자료실 글을 찾을 수 없습니다: " + archiveId));
 
         return publicArchiveMapper.toResponseDto(archive);
+    }
+
+    // 교육 자료실 검색 (KOMORAN 형태소 분석 적용)
+    @Transactional(readOnly = true)
+    public PublicArchiveListResponse searchPublicArchives(String keyword, Pageable pageable) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return getPublicArchives(pageable);
+        }
+
+        // KOMORAN으로 명사 추출
+        List<String> nouns = KoreanTextAnalyzer.extractNouns(keyword);
+        
+        // 명사가 없으면 원본 키워드로 검색 (영어, 숫자 등)
+        if (nouns.isEmpty()) {
+            String[] keywords = keyword.trim().split("\\s+");
+            Page<PublicArchive> entityPage = keywords.length == 1 ?
+                    publicArchiveRepository.searchByKeyword(keywords[0], pageable) :
+                    publicArchiveRepository.searchByKeywords(keywords, pageable);
+            
+            Page<PublicArchiveListItemDto> dtoPage = entityPage.map(publicArchiveMapper::toListItemDto);
+            return new PublicArchiveListResponse(dtoPage);
+        }
+
+        Page<PublicArchive> entityPage;
+
+        if (nouns.size() == 1) {
+            // 단일 명사
+            entityPage = publicArchiveRepository.searchByKeyword(nouns.get(0), pageable);
+        } else {
+            // 여러 명사 (QueryDSL)
+            entityPage = publicArchiveRepository.searchByKeywords(nouns.toArray(new String[0]), pageable);
+        }
+
+        Page<PublicArchiveListItemDto> dtoPage = entityPage.map(publicArchiveMapper::toListItemDto);
+        return new PublicArchiveListResponse(dtoPage);
     }
 
     // 교육 자료실 게시물 수정

@@ -201,7 +201,7 @@ public class ArchiveRequestService { // TODO**매우중요**: 인증 인가 구�
     // 대기중 요청 개수 조회
     @Transactional(readOnly = true)
     public long getPendingRequestCount(Long userId) {
-        validateMentorOrAdminPermission(userId);
+        validateAdminPermission(userId);
         return archiveRequestRepository.countByStatus(RequestStatus.PENDING);
     }
 

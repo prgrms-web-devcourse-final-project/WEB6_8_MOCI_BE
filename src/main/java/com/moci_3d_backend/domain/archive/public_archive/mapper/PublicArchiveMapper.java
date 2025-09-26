@@ -1,27 +1,32 @@
 package com.moci_3d_backend.domain.archive.public_archive.mapper;
 
-import com.moci_3d_backend.domain.archive.public_archive.dto.PublicArchiveListResponse;
+import com.moci_3d_backend.domain.archive.public_archive.dto.PublicArchiveListItemDto;
 import com.moci_3d_backend.domain.archive.public_archive.dto.PublicArchiveResponse;
+import com.moci_3d_backend.domain.archive.public_archive.dto.PublicArchiveUserDto;
 import com.moci_3d_backend.domain.archive.public_archive.entity.PublicArchive;
 import com.moci_3d_backend.domain.fileUpload.dto.FileUploadDto;
-import com.moci_3d_backend.domain.fileUpload.entity.FileUpload;
 import com.moci_3d_backend.domain.user.entity.User;
 import org.springframework.stereotype.Component;
+
+import java.util.Collections;
+import java.util.List;
 
 @Component
 public class PublicArchiveMapper {
 
-    // PublicArchive 엔티티를 PublicArchiveResponse DTO로 변환
+    // PublicArchive 엔티티를 PublicArchiveResponse DTO로 변환 (상세 조회용)
     public PublicArchiveResponse toResponseDto(PublicArchive archive) {
         if (archive == null) return null;
 
-        FileUploadDto fileDto = null;
+        // 모든 파일 처리
+        List<FileUploadDto> fileDtos = Collections.emptyList();
         if (archive.getFileUploads() != null && !archive.getFileUploads().isEmpty()) {
-            FileUpload firstFile = archive.getFileUploads().get(0);
-            fileDto = FileUploadDto.from(firstFile);
+            fileDtos = archive.getFileUploads().stream()
+                    .map(FileUploadDto::from)
+                    .toList();
         }
 
-        PublicArchiveResponse.UserDto userDto = mapToUserDto(archive.getUploadedBy());
+        PublicArchiveUserDto userDto = mapToUserDto(archive.getUploadedBy());
 
         return PublicArchiveResponse.builder()
                 .id(archive.getId())
@@ -29,54 +34,43 @@ public class PublicArchiveMapper {
                 .description(archive.getDescription())
                 .category(archive.getCategory() != null ? archive.getCategory().name() : null)
                 .subCategory(archive.getSubCategory())
-                .file(fileDto)
+                .files(fileDtos)
                 .uploadedBy(userDto)
                 .createdAt(archive.getCreatedAt())
                 .updatedAt(archive.getUpdatedAt())
                 .build();
     }
 
-    // PublicArchive 엔티티를 PublicArchiveListResponse의 PublicArchiveDto로 변환
-    public PublicArchiveListResponse.PublicArchiveDto toListDto(PublicArchive archive) {
+    // PublicArchive 엔티티를 PublicArchiveListItemDto로 변환 (목록 조회용)
+    public PublicArchiveListItemDto toListItemDto(PublicArchive archive) {
         if (archive == null) return null;
 
-        return PublicArchiveListResponse.PublicArchiveDto.builder()
+        // 첫 번째 이미지만 (썸네일)
+        FileUploadDto thumbnail = null;
+        if (archive.getFileUploads() != null && !archive.getFileUploads().isEmpty()) {
+            thumbnail = FileUploadDto.from(archive.getFileUploads().get(0));
+        }
+
+        return PublicArchiveListItemDto.builder()
                 .id(archive.getId())
                 .title(archive.getTitle())
-                .category(archive.getCategory() != null ? archive.getCategory().name() : null)
-                .subCategory(archive.getSubCategory())
-                .uploadedBy(mapToListUserDto(archive.getUploadedBy()))
+                .thumbnail(thumbnail)
                 .createdAt(archive.getCreatedAt())
                 .build();
     }
     
-    // User 엔티티를 PublicArchiveResponse의 UserDto로 변환
-    private PublicArchiveResponse.UserDto mapToUserDto(User user) {
+    // User 엔티티를 PublicArchiveUserDto로 변환
+    private PublicArchiveUserDto mapToUserDto(User user) {
         if (user == null) {
-            return PublicArchiveResponse.UserDto.builder()
+            return PublicArchiveUserDto.builder()
                     .id(null)
                     .name("알 수 없음")
                     .build();
         }
 
-        return PublicArchiveResponse.UserDto.builder()
+        return PublicArchiveUserDto.builder()
                 .id(user.getId())
-                .name(user.getName() != null ? user.getName() : "이름 없음") // name이 null인 경우 기본값
-                .build();
-    }
-
-    // User 엔티티를 PublicArchiveListResponse.PublicArchiveDto.UserDto로 변환
-    private PublicArchiveListResponse.PublicArchiveDto.UserDto mapToListUserDto(User user) {
-        if (user == null) {
-            return PublicArchiveListResponse.PublicArchiveDto.UserDto.builder()
-                    .id(null)
-                    .name("알 수 없음")
-                    .build();
-        }
-
-        return PublicArchiveListResponse.PublicArchiveDto.UserDto.builder()
-                .id(user.getId())
-                .name(user.getName() != null ? user.getName() : "이름 없음") // name이 null인 경우 기본값
+                .name(user.getName() != null ? user.getName() : "이름 없음")
                 .build();
     }
 }
