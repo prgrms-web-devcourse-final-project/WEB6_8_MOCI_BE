@@ -48,4 +48,9 @@ public class MentorChatRoomService {
     public List<MentorChatRoomResponse> getMentorChatRooms(User mentor){
         return mentorChatRoomRepository.getMentorChatRooms(mentor, true);
     }
+
+    public List<DetailMentorChatRoom> getAllMentorChatRooms(){
+        List<MentorChatRoom> mentorChatRoomList = mentorChatRoomRepository.findAll();
+        return mentorChatRoomDtoService.toDetailMentorChatRoomList(mentorChatRoomList);
+    }
 }
