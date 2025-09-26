@@ -315,80 +315,222 @@ public class DevInitData {
             return; // 관리자가 없으면 교육 자료실 생성 중단
         }
 
-        // === 교육 자료실 예시 데이터 생성 (3개) ===
+        // === 카카오톡 ===
+        // 1. 카카오톡 설치 및 가입
+        PublicArchive kakao1 = new PublicArchive();
+        kakao1.setTitle("카카오톡 설치 및 가입하기");
+        kakao1.setDescription("스마트폰에 카카오톡 앱을 설치하고 회원가입하는 방법을 단계별로 안내합니다.");
+        kakao1.setCategory(ArchiveCategory.KAKAO_TALK);
+        kakao1.setSubCategory("설치와 가입");
+        kakao1.setUploadedBy(admin);
+        kakao1.setFileUploads(Collections.emptyList());
+        publicArchiveRepository.save(kakao1);
 
-        // 1. 카카오톡 사용법 가이드
-        PublicArchive archive1 = new PublicArchive();
-        archive1.setTitle("카카오톡 기본 사용법 완벽 가이드");
-        archive1.setDescription("시니어를 위한 카카오톡 사용법을 단계별로 설명한 교육 자료입니다.\n\n" +
-                "📱 포함 내용:\n" +
-                "• 카카오톡 앱 설치 및 회원가입 방법\n" +
-                "• 친구 추가하기 (QR코드, 전화번호, ID 검색)\n" +
-                "• 메시지 보내기와 받기\n" +
-                "• 사진, 동영상 전송하는 방법\n" +
-                "• 음성메시지 보내기\n" +
-                "• 그룹 채팅방 만들기\n" +
-                "• 카카오톡 설정 변경하기\n" +
-                "• 알림 설정 및 차단 기능\n\n" +
-                "💡 특징:\n" +
-                "- 큰 글씨와 스크린샷으로 쉽게 이해\n" +
-                "- 단계별 상세 설명\n" +
-                "- 자주 묻는 질문(FAQ) 포함");
-        archive1.setCategory(ArchiveCategory.KAKAO_TALK);
-        archive1.setSubCategory("기본 사용법");
-        archive1.setUploadedBy(admin);
-        archive1.setFileUploads(Collections.emptyList()); // 파일 없음
-        publicArchiveRepository.save(archive1);
+        // 2. 친구 추가
+        PublicArchive kakao2 = new PublicArchive();
+        kakao2.setTitle("카카오톡 친구 추가하기");
+        kakao2.setDescription("전화번호, QR코드, ID로 친구를 추가하는 다양한 방법을 설명합니다.");
+        kakao2.setCategory(ArchiveCategory.KAKAO_TALK);
+        kakao2.setSubCategory("친구 관리");
+        kakao2.setUploadedBy(admin);
+        kakao2.setFileUploads(Collections.emptyList());
+        publicArchiveRepository.save(kakao2);
 
-        // 2. KTX 온라인 예매 가이드
-        PublicArchive archive2 = new PublicArchive();
-        archive2.setTitle("KTX 온라인 예매 쉽게 하기");
-        archive2.setDescription("집에서 편리하게 KTX 기차표를 예매하는 방법을 알려드립니다.\n\n" +
-                "🚄 주요 내용:\n" +
-                "• 코레일톡 앱 다운로드 및 설치\n" +
-                "• 회원가입과 본인인증 과정\n" +
-                "• 출발역과 도착역 선택하기\n" +
-                "• 날짜와 시간 설정하기\n" +
-                "• 좌석 종류별 특징 (일반실, 특실)\n" +
-                "• 온라인 결제 방법 (카드, 간편결제)\n" +
-                "• 예매 확인 및 모바일 승차권 사용법\n" +
-                "• 예매 취소와 변경 방법\n\n" +
-                "💳 결제 방법:\n" +
-                "- 신용카드, 체크카드\n" +
-                "- 카카오페이, 네이버페이\n" +
-                "- 페이코, 삼성페이\n\n" +
-                "❗ 주의사항과 유용한 팁도 함께 제공합니다.");
-        archive2.setCategory(ArchiveCategory.KTX);
-        archive2.setSubCategory("온라인 예매");
-        archive2.setUploadedBy(admin);
-        archive2.setFileUploads(Collections.emptyList()); // 파일 없음
-        publicArchiveRepository.save(archive2);
+        // 3. 메시지 보내기
+        PublicArchive kakao3 = new PublicArchive();
+        kakao3.setTitle("카카오톡 메시지 보내고 받기");
+        kakao3.setDescription("친구에게 텍스트 메시지를 보내고 확인하는 기본 방법을 알려드립니다.");
+        kakao3.setCategory(ArchiveCategory.KAKAO_TALK);
+        kakao3.setSubCategory("메시지");
+        kakao3.setUploadedBy(admin);
+        kakao3.setFileUploads(Collections.emptyList());
+        publicArchiveRepository.save(kakao3);
 
-        // 3. 유튜브 시청 방법 가이드
-        PublicArchive archive3 = new PublicArchive();
-        archive3.setTitle("유튜브로 즐기는 동영상 세상");
-        archive3.setDescription("유튜브를 활용해서 다양한 영상을 시청하고 즐기는 방법을 소개합니다.\n\n" +
-                "📺 학습 내용:\n" +
-                "• 유튜브 앱 설치 및 첫 화면 익히기\n" +
-                "• 영상 검색하는 다양한 방법\n" +
-                "• 재생, 일시정지, 되감기 조작법\n" +
-                "• 음량 조절과 화면 크기 변경\n" +
-                "• 자막 켜기/끄기 설정\n" +
-                "• 좋아하는 채널 구독하기\n" +
-                "• 재생목록 만들고 관리하기\n" +
-                "• 시청 기록 확인하기\n\n" +
-                "🎯 추천 채널 소개:\n" +
-                "• 건강 정보 채널\n" +
-                "• 요리 레시피 채널\n" +
-                "• 뉴스 및 시사 채널\n" +
-                "• 여행 정보 채널\n" +
-                "• 취미 활동 채널\n\n" +
-                "📱 스마트폰과 태블릿 양쪽 사용법 모두 설명드립니다.");
-        archive3.setCategory(ArchiveCategory.YOUTUBE);
-        archive3.setSubCategory("기본 시청법");
-        archive3.setUploadedBy(admin);
-        archive3.setFileUploads(Collections.emptyList()); // 파일 없음
-        publicArchiveRepository.save(archive3);
+        // 4. 사진 및 동영상 전송
+        PublicArchive kakao4 = new PublicArchive();
+        kakao4.setTitle("카카오톡으로 사진과 동영상 보내기");
+        kakao4.setDescription("스마트폰에 저장된 사진이나 동영상을 친구에게 보내는 방법을 설명합니다.");
+        kakao4.setCategory(ArchiveCategory.KAKAO_TALK);
+        kakao4.setSubCategory("메시지");
+        kakao4.setUploadedBy(admin);
+        kakao4.setFileUploads(Collections.emptyList());
+        publicArchiveRepository.save(kakao4);
+
+        // === KTX 예매 ===
+        // 1. 코레일톡 설치 및 회원가입
+        PublicArchive ktx1 = new PublicArchive();
+        ktx1.setTitle("코레일톡 앱 설치 및 회원가입");
+        ktx1.setDescription("KTX 예매를 위한 코레일톡 앱을 설치하고 회원가입하는 과정을 안내합니다.");
+        ktx1.setCategory(ArchiveCategory.KTX);
+        ktx1.setSubCategory("설치와 가입");
+        ktx1.setUploadedBy(admin);
+        ktx1.setFileUploads(Collections.emptyList());
+        publicArchiveRepository.save(ktx1);
+
+        // 2. 기차표 예매하기
+        PublicArchive ktx2 = new PublicArchive();
+        ktx2.setTitle("KTX 기차표 예매하기");
+        ktx2.setDescription("코레일톡 앱으로 출발지와 도착지를 선택하고 원하는 시간의 기차표를 예매하는 방법을 설명합니다.");
+        ktx2.setCategory(ArchiveCategory.KTX);
+        ktx2.setSubCategory("예매");
+        ktx2.setUploadedBy(admin);
+        ktx2.setFileUploads(Collections.emptyList());
+        publicArchiveRepository.save(ktx2);
+
+        // 3. 결제하기
+        PublicArchive ktx3 = new PublicArchive();
+        ktx3.setTitle("KTX 예매 결제하기");
+        ktx3.setDescription("예매한 기차표를 신용카드나 간편결제로 결제하는 방법을 안내합니다.");
+        ktx3.setCategory(ArchiveCategory.KTX);
+        ktx3.setSubCategory("예매");
+        ktx3.setUploadedBy(admin);
+        ktx3.setFileUploads(Collections.emptyList());
+        publicArchiveRepository.save(ktx3);
+
+        // 4. 모바일 승차권 확인
+        PublicArchive ktx4 = new PublicArchive();
+        ktx4.setTitle("KTX 모바일 승차권 확인 및 사용법");
+        ktx4.setDescription("결제가 완료된 모바일 승차권을 확인하고, 기차에 탑승할 때 사용하는 방법을 설명합니다.");
+        ktx4.setCategory(ArchiveCategory.KTX);
+        ktx4.setSubCategory("승차권");
+        ktx4.setUploadedBy(admin);
+        ktx4.setFileUploads(Collections.emptyList());
+        publicArchiveRepository.save(ktx4);
+
+
+        // === 유튜브 ===
+        // 1. 유튜브 설치 및 둘러보기
+        PublicArchive youtube1 = new PublicArchive();
+        youtube1.setTitle("유튜브 앱 설치 및 둘러보기");
+        youtube1.setDescription("유튜브 앱을 설치하고, 첫 화면의 다양한 메뉴들을 살펴보는 방법을 안내합니다.");
+        youtube1.setCategory(ArchiveCategory.YOUTUBE);
+        youtube1.setSubCategory("기본 사용법");
+        youtube1.setUploadedBy(admin);
+        youtube1.setFileUploads(Collections.emptyList());
+        publicArchiveRepository.save(youtube1);
+
+        // 2. 동영상 검색하기
+        PublicArchive youtube2 = new PublicArchive();
+        youtube2.setTitle("유튜브에서 동영상 검색하기");
+        youtube2.setDescription("보고 싶은 동영상을 키워드로 검색하고 찾는 방법을 설명합니다.");
+        youtube2.setCategory(ArchiveCategory.YOUTUBE);
+        youtube2.setSubCategory("검색");
+        youtube2.setUploadedBy(admin);
+        youtube2.setFileUploads(Collections.emptyList());
+        publicArchiveRepository.save(youtube2);
+
+        // 3. 동영상 재생 및 제어
+        PublicArchive youtube3 = new PublicArchive();
+        youtube3.setTitle("유튜브 동영상 재생 및 제어하기");
+        youtube3.setDescription("동영상을 재생하고, 일시정지, 빨리감기, 음량 조절 등 재생을 제어하는 방법을 알려드립니다.");
+        youtube3.setCategory(ArchiveCategory.YOUTUBE);
+        youtube3.setSubCategory("재생");
+        youtube3.setUploadedBy(admin);
+        youtube3.setFileUploads(Collections.emptyList());
+        publicArchiveRepository.save(youtube3);
+
+        // 4. 채널 구독과 좋아요
+        PublicArchive youtube4 = new PublicArchive();
+        youtube4.setTitle("유튜브 채널 구독과 좋아요");
+        youtube4.setDescription("마음에 드는 채널을 구독하고, 재미있게 본 동영상에 '좋아요'를 누르는 방법을 설명합니다.");
+        youtube4.setCategory(ArchiveCategory.YOUTUBE);
+        youtube4.setSubCategory("구독과 좋아요");
+        youtube4.setUploadedBy(admin);
+        youtube4.setFileUploads(Collections.emptyList());
+        publicArchiveRepository.save(youtube4);
+
+        // === 시외버스 예매 ===
+        // 1. 시외버스 예매 앱 설치 및 가입
+        PublicArchive bus1 = new PublicArchive();
+        bus1.setTitle("시외버스 예매 앱 설치 및 가입");
+        bus1.setDescription("시외버스 예매를 위한 '버스타고' 앱을 설치하고 회원가입하는 방법을 안내합니다.");
+        bus1.setCategory(ArchiveCategory.INTERCITY_BUS);
+        bus1.setSubCategory("설치와 가입");
+        bus1.setUploadedBy(admin);
+        bus1.setFileUploads(Collections.emptyList());
+        publicArchiveRepository.save(bus1);
+
+        // 2. 시외버스 노선 및 시간표 조회
+        PublicArchive bus2 = new PublicArchive();
+        bus2.setTitle("시외버스 노선 및 시간표 조회");
+        bus2.setDescription("가고 싶은 지역의 버스 노선과 시간표를 확인하는 방법을 설명합니다.");
+        bus2.setCategory(ArchiveCategory.INTERCITY_BUS);
+        bus2.setSubCategory("조회");
+        bus2.setUploadedBy(admin);
+        bus2.setFileUploads(Collections.emptyList());
+        publicArchiveRepository.save(bus2);
+
+        // 3. 시외버스 좌석 선택 및 예매
+        PublicArchive bus3 = new PublicArchive();
+        bus3.setTitle("시외버스 좌석 선택 및 예매");
+        bus3.setDescription("원하는 버스편의 좌석을 선택하고 예매하는 과정을 안내합니다.");
+        bus3.setCategory(ArchiveCategory.INTERCITY_BUS);
+        bus3.setSubCategory("예매");
+        bus3.setUploadedBy(admin);
+        bus3.setFileUploads(Collections.emptyList());
+        publicArchiveRepository.save(bus3);
+
+        // === 배달의민족 ===
+        // 1. 배달의민족 앱 설치 및 주소 설정
+        PublicArchive baemin1 = new PublicArchive();
+        baemin1.setTitle("배달의민족 앱 설치 및 주소 설정");
+        baemin1.setDescription("배달의민족 앱을 설치하고, 음식을 받을 주소를 설정하는 방법을 설명합니다.");
+        baemin1.setCategory(ArchiveCategory.BAEMIN);
+        baemin1.setSubCategory("설치와 설정");
+        baemin1.setUploadedBy(admin);
+        baemin1.setFileUploads(Collections.emptyList());
+        publicArchiveRepository.save(baemin1);
+
+        // 2. 배달의민족 음식점 및 메뉴 탐색
+        PublicArchive baemin2 = new PublicArchive();
+        baemin2.setTitle("배달의민족 음식점 및 메뉴 탐색");
+        baemin2.setDescription("주변 음식점을 찾아보고, 원하는 메뉴를 선택하는 방법을 안내합니다.");
+        baemin2.setCategory(ArchiveCategory.BAEMIN);
+        baemin2.setSubCategory("탐색");
+        baemin2.setUploadedBy(admin);
+        baemin2.setFileUploads(Collections.emptyList());
+        publicArchiveRepository.save(baemin2);
+
+        // 3. 배달의민족 주문 및 결제
+        PublicArchive baemin3 = new PublicArchive();
+        baemin3.setTitle("배달의민족 주문 및 결제");
+        baemin3.setDescription("선택한 메뉴를 주문하고, 다양한 방법으로 결제하는 과정을 설명합니다.");
+        baemin3.setCategory(ArchiveCategory.BAEMIN);
+        baemin3.setSubCategory("주문과 결제");
+        baemin3.setUploadedBy(admin);
+        baemin3.setFileUploads(Collections.emptyList());
+        publicArchiveRepository.save(baemin3);
+
+        // === 쿠팡 ===
+        // 1. 쿠팡 앱 설치 및 회원가입
+        PublicArchive coupang1 = new PublicArchive();
+        coupang1.setTitle("쿠팡 앱 설치 및 회원가입");
+        coupang1.setDescription("쿠팡 앱을 설치하고 로켓배송을 이용하기 위해 회원가입하는 방법을 안내합니다.");
+        coupang1.setCategory(ArchiveCategory.COUPANG);
+        coupang1.setSubCategory("설치와 가입");
+        coupang1.setUploadedBy(admin);
+        coupang1.setFileUploads(Collections.emptyList());
+        publicArchiveRepository.save(coupang1);
+
+        // 2. 쿠팡 상품 검색 및 상세 정보 확인
+        PublicArchive coupang2 = new PublicArchive();
+        coupang2.setTitle("쿠팡 상품 검색 및 상세 정보 확인");
+        coupang2.setDescription("사고 싶은 물건을 검색하고, 상품의 상세 정보와 다른 사람들의 후기를 확인하는 방법을 설명합니다.");
+        coupang2.setCategory(ArchiveCategory.COUPANG);
+        coupang2.setSubCategory("검색");
+        coupang2.setUploadedBy(admin);
+        coupang2.setFileUploads(Collections.emptyList());
+        publicArchiveRepository.save(coupang2);
+
+        // 3. 쿠팡 장바구니 담기 및 주문
+        PublicArchive coupang3 = new PublicArchive();
+        coupang3.setTitle("쿠팡 장바구니 담기 및 주문");
+        coupang3.setDescription("원하는 상품을 장바구니에 담고, 배송지와 결제 정보를 입력하여 주문하는 과정을 안내합니다.");
+        coupang3.setCategory(ArchiveCategory.COUPANG);
+        coupang3.setSubCategory("주문");
+        coupang3.setUploadedBy(admin);
+        coupang3.setFileUploads(Collections.emptyList());
+        publicArchiveRepository.save(coupang3);
     }
 
 }
