@@ -34,7 +34,7 @@ public class MentorChatRoomService {
     public void joinMentorChatRoom(Long roomId, User mentor) {
         MentorChatRoom mentorChatRoom = mentorChatRoomRepository.findByIdAndDeletedFalse(roomId).orElse(null);
         if (mentorChatRoom == null){
-            throw new ServiceException(400, "chat room not exist");
+            throw new ServiceException(400, "chat room does not exist");
         }
         mentorChatRoom.joinMentor(mentor);
     }
