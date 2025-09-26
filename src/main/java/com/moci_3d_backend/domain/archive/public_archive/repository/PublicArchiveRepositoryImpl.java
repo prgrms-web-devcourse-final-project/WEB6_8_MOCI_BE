@@ -58,10 +58,11 @@ public class PublicArchiveRepositoryImpl implements PublicArchiveRepositoryCusto
         List<PublicArchive> results = query.fetch();
         
         // 전체 개수 조회
-        long total = queryFactory
-                .selectFrom(archive)
+        Long total = queryFactory
+                .select(archive.count())
+                .from(archive)
                 .where(builder)
-                .fetchCount();
+                .fetchOne();
         
         return new PageImpl<>(results, pageable, total);
     }

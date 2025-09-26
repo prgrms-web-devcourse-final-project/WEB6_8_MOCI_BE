@@ -16,14 +16,13 @@ import java.util.stream.Collectors;
 public class KoreanTextAnalyzer {
     
     private static final Komoran komoran = new Komoran(DEFAULT_MODEL.LIGHT);
-    
     /**
      * 텍스트에서 명사만 추출 (검색용)
-     * 
+     *
      * @param text 분석할 텍스트
      * @return 추출된 명사 리스트 (2글자 이상만 포함)
      */
-    public static List<String> extractNouns(String text) {
+    public static synchronized List<String> extractNouns(String text) {
         if (text == null || text.trim().isEmpty()) {
             return new ArrayList<>();
         }
