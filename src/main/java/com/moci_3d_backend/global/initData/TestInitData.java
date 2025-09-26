@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Profile;
 
+// 이 파일은 삭제해야하지 않을까요?
 @Configuration
 @Profile("test")
 @RequiredArgsConstructor
