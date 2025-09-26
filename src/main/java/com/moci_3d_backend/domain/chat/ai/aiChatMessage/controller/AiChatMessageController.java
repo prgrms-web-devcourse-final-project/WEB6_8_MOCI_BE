@@ -14,6 +14,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -69,7 +70,7 @@ public class AiChatMessageController {
                     URL 경로 변수로 roomId를 받고,
                     프론트에서는 roomId를 Path로 넘기고 content만 body에 담아보냅니다.
                     """)
-    @PostMapping("/{roomId}/ask")
+    @PostMapping(value = "/{roomId}/ask", produces = MediaType.APPLICATION_JSON_VALUE)
     public RsData<AiExchangeDto> askAi(@PathVariable Long roomId,
                                        @RequestBody @Valid AskAiRequest req) {
 
