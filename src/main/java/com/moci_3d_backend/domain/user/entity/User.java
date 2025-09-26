@@ -3,8 +3,12 @@ package com.moci_3d_backend.domain.user.entity;
 import com.moci_3d_backend.domain.archive.public_archive.entity.PublicArchive;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Entity
@@ -91,6 +95,21 @@ public class User {
 
     public void updateRole(UserRole role) {
         this.role = role;
+    }
+
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return getAuthoritiesAsStringList()
+                .stream()
+                .map(SimpleGrantedAuthority::new)
+                .toList();
+    }
+
+    private List<String> getAuthoritiesAsStringList() {
+        List<String> authorities = new ArrayList<>();
+
+        authorities.add("ROLE_" + this.role.name());
+
+        return authorities;
     }
 
     public enum UserRole {

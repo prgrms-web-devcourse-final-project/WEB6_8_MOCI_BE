@@ -1,19 +1,27 @@
 package com.moci_3d_backend.global.security;
 
+import com.moci_3d_backend.global.rsData.RsData;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 import java.util.List;
 
+import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
+
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
+    private final CustomAuthenticationFilter customAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -28,23 +36,68 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui.html",
+                                "/swagger-ui/**",
                                 "/swagger-resources/**",
+                                "/v3/api-docs/**", // OPEN API 문서의 JSON 버전
                                 "/webjars/**",
-                                "/api/v1/**",// API 테스트용으로 모두 허용. 차후 필수로 변경 필요.
+                                "/actuator/**", // 헬스체크, 무중단배포에 필요
                                 "/api/v1/file/**"
                         ).permitAll()
-                        .anyRequest().denyAll()
+                        .requestMatchers(HttpMethod.GET, "/api/*/archive/public/**")
+                        .permitAll()
+                        .requestMatchers("/api/*/auth/login", "/api/*/auth/register", "/api/*/auth/token")
+                        .permitAll()
+                        .anyRequest().authenticated()
                 )
 
                 // CSRF 비활성화 (H2 콘솔 사용 위해 필요)
-                .csrf(csrf -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
 
                 // H2 콘솔 사용 허용
-                .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
+                .headers(headers ->
+                        headers.frameOptions(
+                                HeadersConfigurer.FrameOptionsConfig::sameOrigin
+                        )
+                )
 
                 // 기본 인증 비활성화
-                .httpBasic(httpBasic -> httpBasic.disable())
-                .formLogin(formLogin -> formLogin.disable());
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable)
+                .addFilterBefore(customAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(STATELESS))
+                .exceptionHandling(
+                        exceptionHandling -> exceptionHandling
+                                .authenticationEntryPoint(
+                                        (request, response, authException) -> {
+                                            response.setContentType("application/json;charset=UTF-8");
+
+                                            response.setStatus(401);
+                                            response.getWriter().write(
+                                                    """
+                                                            {
+                                                                "code": "401",
+                                                                "msg": "로그인이 필요합니다."
+                                                            }
+                                                            """.stripIndent().trim()
+                                            );
+                                        }
+                                )
+                                .accessDeniedHandler(
+                                        (request, response, accessDeniedException) -> {
+                                            response.setContentType("application/json;charset=UTF-8");
+
+                                            response.setStatus(403);
+                                            response.getWriter().write(
+                                                    """
+                                                            {
+                                                                "code": "403",
+                                                                "msg": "권한이 없습니다."
+                                                            }
+                                                            """.stripIndent().trim()
+                                            );
+                                        }
+                                )
+                );
 
         return http.build();
     }
