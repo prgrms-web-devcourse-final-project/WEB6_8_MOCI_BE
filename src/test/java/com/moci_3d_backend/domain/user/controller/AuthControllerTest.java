@@ -68,10 +68,15 @@ public class AuthControllerTest {
 
         resultActions.andExpect(
                 result -> {
-                    Cookie apiKeyCookie = result.getResponse().getCookie("refreshToken");
-                    assertThat(apiKeyCookie.getValue()).isEqualTo(user.getRefreshToken());
-                    assertThat(apiKeyCookie.getPath()).isEqualTo("/");
-                    assertThat(apiKeyCookie.getAttribute("HttpOnly")).isEqualTo("true");
+                    Cookie accessTokenCookie = result.getResponse().getCookie("accessToken");
+                    assertThat(accessTokenCookie.getValue()).isNotEmpty();
+                    assertThat(accessTokenCookie.getPath()).isEqualTo("/");
+                    assertThat(accessTokenCookie.getAttribute("HttpOnly")).isEqualTo("true");
+
+                    Cookie refreshTokenCookie = result.getResponse().getCookie("refreshToken");
+                    assertThat(refreshTokenCookie.getValue()).isEqualTo(user.getRefreshToken());
+                    assertThat(refreshTokenCookie.getPath()).isEqualTo("/");
+                    assertThat(refreshTokenCookie.getAttribute("HttpOnly")).isEqualTo("true");
                 }
         );
     }

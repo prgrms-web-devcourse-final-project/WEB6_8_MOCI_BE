@@ -41,12 +41,14 @@ public class AuthController {
     // === 로그인 ===
     @PostMapping("/token")
     public ResponseEntity<RsData<UserCreateTokenResponse>> token(@RequestBody UserLoginRequest request) {
-        UserLoginResponse response = userService.login(request);
-        UserCreateTokenResponse tokenResponse = UserCreateTokenResponse.from(response.getUser());
+        User user = userService.auth(request);
 
-        String refreshToken = response.getUser().getRefreshToken();
+        String refreshToken = user.getRefreshToken();
 
+        rq.setCookie("accessToken", userService.genAccessToken(user));
         rq.setCookie("refreshToken", refreshToken);
+
+        UserCreateTokenResponse tokenResponse = UserCreateTokenResponse.from(user);
 
         return ResponseEntity.ok(RsData.successOf(tokenResponse));
     }
