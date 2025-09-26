@@ -30,8 +30,13 @@ public class FileUploadService {
             // 절대 경로로 자동 변환 + 디렉토리 자동 생성
             File uploadDir = new File(filePath).getAbsoluteFile();
             if (!uploadDir.exists()) {
-                uploadDir.mkdirs();
-                log.info("업로드 디렉토리 생성: {}", uploadDir.getAbsolutePath());
+                boolean created = uploadDir.mkdirs();
+                if (created) {
+                    log.info("업로드 디렉토리 생성: {}", uploadDir.getAbsolutePath());
+                } else if (!uploadDir.exists()) {
+                    log.error("업로드 디렉토리 생성 실패: {}", uploadDir.getAbsolutePath());
+                    throw new RuntimeException("업로드 디렉토리 생성 실패: " + uploadDir.getAbsolutePath());
+                }
             }
 
             File localFile = new File(uploadDir, saveName);
