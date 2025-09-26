@@ -72,6 +72,20 @@ public class PublicArchiveService {
         return publicArchiveMapper.toResponseDto(archive);
     }
 
+    // 교육 자료실 검색 (title, description)
+    @Transactional(readOnly = true)
+    public PublicArchiveListResponse searchPublicArchives(String keyword, Pageable pageable) {
+        // 키워드가 없으면 전체 조회
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return getPublicArchives(pageable);
+        }
+
+        Page<PublicArchive> entityPage = publicArchiveRepository.searchByKeyword(keyword.trim(), pageable);
+        Page<PublicArchiveListItemDto> dtoPage = entityPage.map(publicArchiveMapper::toListItemDto);
+
+        return new PublicArchiveListResponse(dtoPage);
+    }
+
     // 교육 자료실 게시물 수정
     @Transactional
     public PublicArchiveResponse updatePublicArchive(Long archiveId, PublicArchiveUpdateRequest request, Long userId) {

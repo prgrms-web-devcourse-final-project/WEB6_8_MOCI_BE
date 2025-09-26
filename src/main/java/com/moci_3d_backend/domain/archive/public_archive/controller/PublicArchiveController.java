@@ -31,15 +31,31 @@ public class PublicArchiveController {
 
     // 교육 자료실 목록 조회 (페이징)
     @GetMapping("/archive/public")
-    @Operation(summary = "교육 자료실 목록 조회", description = "모든 사용자가 교육자료실 목록을 조회할 수 있습니다. (페이징)")
+    @Operation(summary = "교육 자료실 목록 조회", description = "모든 사용자가 교육자료실 목록을 조회할 수 있습니다. (페이징)\n\n" +
+       "** 검색 기능: **\n" +
+    "- keyword 파라미터를 추가하면 title과 description에서 검색합니다. \n" +
+    "- keyword가 없으면 전체 목록을 반환합니다. (하위 호환성 유지)")
     public RsData<PublicArchiveListResponse> getPublicArchives(
+            @RequestParam(required = false)
+            @Parameter(
+                    description = "검색 키워드 (선택사항, title 또는 description에서 검색)",
+                    example = "카카오톡"
+            ) String keyword,
+
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
             @Parameter(
                     description = "페이징 정보 (기본: 10개씩, 최신순)",
                     example = "{\n  \"page\": 0,\n  \"size\": 10,\n  \"sort\": \"createdAt\"\n}"
             ) Pageable pageable
     ) {
-        PublicArchiveListResponse response = publicArchiveService.getPublicArchives(pageable);
+        // 키워드가 있으면 검색, 없으면 전체 조회 (하위 호환성 유지)
+        PublicArchiveListResponse response;
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            response = publicArchiveService.searchPublicArchives(keyword, pageable);
+        } else {
+            response = publicArchiveService.getPublicArchives(pageable);
+        }
+
         return RsData.of(200, "success to get public archives", response);
     }
 
