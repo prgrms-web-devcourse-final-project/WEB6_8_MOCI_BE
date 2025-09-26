@@ -531,6 +531,97 @@ public class DevInitData {
         coupang3.setUploadedBy(admin);
         coupang3.setFileUploads(Collections.emptyList());
         publicArchiveRepository.save(coupang3);
+
+        // === 카카오톡 추가 기능 ===
+        // 5. 보이스톡 / 페이스톡
+        PublicArchive kakao5 = new PublicArchive();
+        kakao5.setTitle("카카오톡 보이스톡/페이스톡 사용하기");
+        kakao5.setDescription("데이터를 사용하여 친구와 무료로 음성통화(보이스톡) 또는 영상통화(페이스톡)하는 방법을 안내합니다. 친구 프로필이나 채팅방에서 전화기 아이콘을 눌러 시작할 수 있습니다.");
+        kakao5.setCategory(ArchiveCategory.KAKAO_TALK);
+        kakao5.setSubCategory("통화 기능");
+        kakao5.setUploadedBy(admin);
+        kakao5.setFileUploads(Collections.emptyList());
+        publicArchiveRepository.save(kakao5);
+
+        // 6. 프로필 꾸미기
+        PublicArchive kakao6 = new PublicArchive();
+        kakao6.setTitle("카카오톡 프로필 꾸미기");
+        kakao6.setDescription("프로필 사진과 배경사진, 상태메시지를 변경하여 나를 표현하는 방법을 설명합니다. 친구들에게 내 소식을 알리고 개성을 표현해보세요.");
+        kakao6.setCategory(ArchiveCategory.KAKAO_TALK);
+        kakao6.setSubCategory("프로필");
+        kakao6.setUploadedBy(admin);
+        kakao6.setFileUploads(Collections.emptyList());
+        publicArchiveRepository.save(kakao6);
+
+        // 7. 친구 관리 (차단, 숨김)
+        PublicArchive kakao7 = new PublicArchive();
+        kakao7.setTitle("카카오톡 친구 관리하기 (차단, 숨김)");
+        kakao7.setDescription("원치 않는 메시지를 받지 않도록 친구를 차단하거나, 친구 목록에서 보이지 않게 숨기는 방법을 안내합니다. 설정 메뉴에서 관리할 수 있습니다.");
+        kakao7.setCategory(ArchiveCategory.KAKAO_TALK);
+        kakao7.setSubCategory("친구 관리");
+        kakao7.setUploadedBy(admin);
+        kakao7.setFileUploads(Collections.emptyList());
+        publicArchiveRepository.save(kakao7);
+
+        // 8. 이모티콘 사용법
+        PublicArchive kakao8 = new PublicArchive();
+        kakao8.setTitle("카카오톡 이모티콘 구매하고 사용하기");
+        kakao8.setDescription("대화를 더 재미있게 만들어주는 이모티콘을 이모티콘 스토어에서 구매하거나 친구에게 선물하는 방법을 설명합니다. 다양한 이모티콘으로 감정을 표현해보세요.");
+        kakao8.setCategory(ArchiveCategory.KAKAO_TALK);
+        kakao8.setSubCategory("메시지");
+        kakao8.setUploadedBy(admin);
+        kakao8.setFileUploads(Collections.emptyList());
+        publicArchiveRepository.save(kakao8);
+
+        // 9. 카카오톡 채널
+        PublicArchive kakao9 = new PublicArchive();
+        kakao9.setTitle("카카오톡 채널 추가하고 소식 받기");
+        kakao9.setDescription("좋아하는 브랜드나 언론사의 카카오톡 채널을 추가하고, 할인 정보나 새로운 소식을 메시지로 받아보는 방법을 안내합니다.");
+        kakao9.setCategory(ArchiveCategory.KAKAO_TALK);
+        kakao9.setSubCategory("편의 기능");
+        kakao9.setUploadedBy(admin);
+        kakao9.setFileUploads(Collections.emptyList());
+        publicArchiveRepository.save(kakao9);
+
+        // 10. 카카오페이 송금
+        PublicArchive kakao10 = new PublicArchive();
+        kakao10.setTitle("카카오페이로 송금하고 결제하기");
+        kakao10.setDescription("은행 앱 없이 카카오톡에서 친구에게 간편하게 돈을 보내거나, 온라인 쇼핑몰에서 결제하는 방법을 설명합니다. 카카오페이에 계좌를 연결하여 사용할 수 있습니다.");
+        kakao10.setCategory(ArchiveCategory.KAKAO_TALK);
+        kakao10.setSubCategory("금융");
+        kakao10.setUploadedBy(admin);
+        kakao10.setFileUploads(Collections.emptyList());
+        publicArchiveRepository.save(kakao10);
+
+        // 11. 선물하기
+        PublicArchive kakao11 = new PublicArchive();
+        kakao11.setTitle("카카오톡으로 선물 보내기");
+        kakao11.setDescription("친구의 생일이나 특별한 날, 커피 쿠폰이나 케이크 등 다양한 선물을 보내는 방법을 안내합니다. 주소를 몰라도 친구가 직접 입력하게 할 수 있어 편리합니다.");
+        kakao11.setCategory(ArchiveCategory.KAKAO_TALK);
+        kakao11.setSubCategory("편의 기능");
+        kakao11.setUploadedBy(admin);
+        kakao11.setFileUploads(Collections.emptyList());
+        publicArchiveRepository.save(kakao11);
+
+        // 12. 오픈채팅
+        PublicArchive kakao12 = new PublicArchive();
+        kakao12.setTitle("카카오톡 오픈채팅 참여하기");
+        kakao12.setDescription("나와 같은 관심사를 가진 사람들과 익명으로 대화할 수 있는 오픈채팅방에 참여하는 방법을 설명합니다. 검색을 통해 원하는 주제의 채팅방을 찾을 수 있습니다.");
+        kakao12.setCategory(ArchiveCategory.KAKAO_TALK);
+        kakao12.setSubCategory("소셜");
+        kakao12.setUploadedBy(admin);
+        kakao12.setFileUploads(Collections.emptyList());
+        publicArchiveRepository.save(kakao12);
+
+        // 13. 대화 백업
+        PublicArchive kakao13 = new PublicArchive();
+        kakao13.setTitle("카카오톡 대화 내용 백업하고 복원하기");
+        kakao13.setDescription("휴대폰을 바꾸거나 앱을 다시 설치할 때를 대비하여, 친구들과 나눈 대화 내용을 안전하게 저장(백업)하고 다시 불러오는(복원) 방법을 안내합니다.");
+        kakao13.setCategory(ArchiveCategory.KAKAO_TALK);
+        kakao13.setSubCategory("설정");
+        kakao13.setUploadedBy(admin);
+        kakao13.setFileUploads(Collections.emptyList());
+        publicArchiveRepository.save(kakao13);
     }
 
 }
