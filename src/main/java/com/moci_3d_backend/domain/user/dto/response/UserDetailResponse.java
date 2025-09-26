@@ -2,11 +2,13 @@ package com.moci_3d_backend.domain.user.dto.response;
 
 import com.moci_3d_backend.domain.user.entity.User;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserDetailResponse {

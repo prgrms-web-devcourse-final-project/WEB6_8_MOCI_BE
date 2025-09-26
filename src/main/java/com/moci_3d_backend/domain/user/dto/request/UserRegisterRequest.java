@@ -3,13 +3,15 @@ package com.moci_3d_backend.domain.user.dto.request;
 import com.moci_3d_backend.domain.user.entity.User;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserRegisterRequest {
@@ -40,18 +42,12 @@ public class UserRegisterRequest {
     private String userId; // 전화번호
     private String password; // 비밀번호
     
-    // ========================================
-    // 소셜 회원가입
-    // ========================================
-    private String socialId; // 암호화된 소셜 고유 ID
-    
     // === DTO → Entity 변환 메서드 ===
     public User toEntity() {
         User user = new User();
         
         // 1. 기본 정보 설정
         user.setUserId(this.userId);
-        user.setSocialId(this.socialId);
         user.setLoginType(this.loginType);
         user.setPassword(this.password);
         user.setName(this.name);
