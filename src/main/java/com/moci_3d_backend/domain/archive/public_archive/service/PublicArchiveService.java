@@ -8,6 +8,7 @@ import com.moci_3d_backend.domain.fileUpload.entity.FileUpload;
 import com.moci_3d_backend.domain.fileUpload.repository.FileUploadRepository;
 import com.moci_3d_backend.domain.user.entity.User;
 import com.moci_3d_backend.domain.user.repository.UserRepository;
+import com.moci_3d_backend.global.util.KoreanTextAnalyzer;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -72,17 +73,38 @@ public class PublicArchiveService {
         return publicArchiveMapper.toResponseDto(archive);
     }
 
-    // 교육 자료실 검색 (title, description)
+    // 교육 자료실 검색 (KOMORAN 형태소 분석 적용)
     @Transactional(readOnly = true)
     public PublicArchiveListResponse searchPublicArchives(String keyword, Pageable pageable) {
-        // 키워드가 없으면 전체 조회
         if (keyword == null || keyword.trim().isEmpty()) {
             return getPublicArchives(pageable);
         }
 
-        Page<PublicArchive> entityPage = publicArchiveRepository.searchByKeyword(keyword.trim(), pageable);
-        Page<PublicArchiveListItemDto> dtoPage = entityPage.map(publicArchiveMapper::toListItemDto);
+        // KOMORAN으로 명사 추출
+        List<String> nouns = KoreanTextAnalyzer.extractNouns(keyword);
+        
+        // 명사가 없으면 원본 키워드로 검색 (영어, 숫자 등)
+        if (nouns.isEmpty()) {
+            String[] keywords = keyword.trim().split("\\s+");
+            Page<PublicArchive> entityPage = keywords.length == 1 ?
+                    publicArchiveRepository.searchByKeyword(keywords[0], pageable) :
+                    publicArchiveRepository.searchByKeywords(keywords, pageable);
+            
+            Page<PublicArchiveListItemDto> dtoPage = entityPage.map(publicArchiveMapper::toListItemDto);
+            return new PublicArchiveListResponse(dtoPage);
+        }
 
+        Page<PublicArchive> entityPage;
+
+        if (nouns.size() == 1) {
+            // 단일 명사
+            entityPage = publicArchiveRepository.searchByKeyword(nouns.get(0), pageable);
+        } else {
+            // 여러 명사 (QueryDSL)
+            entityPage = publicArchiveRepository.searchByKeywords(nouns.toArray(new String[0]), pageable);
+        }
+
+        Page<PublicArchiveListItemDto> dtoPage = entityPage.map(publicArchiveMapper::toListItemDto);
         return new PublicArchiveListResponse(dtoPage);
     }
 

@@ -9,8 +9,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface PublicArchiveRepository extends JpaRepository<PublicArchive, Long> {
-
+public interface PublicArchiveRepository extends JpaRepository<PublicArchive, Long>,
+                                                            PublicArchiveRepositoryCustom {
     /**
      * title 또는 description에서 키워드를 검색
      * LIKE 검색으로 부분 일치를 지원
