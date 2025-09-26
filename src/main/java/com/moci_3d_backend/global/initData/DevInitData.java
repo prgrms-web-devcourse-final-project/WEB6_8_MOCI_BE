@@ -8,6 +8,7 @@ import com.moci_3d_backend.domain.archive.public_archive.entity.PublicArchive;
 import com.moci_3d_backend.domain.archive.public_archive.repository.PublicArchiveRepository;
 import com.moci_3d_backend.domain.user.entity.User;
 import com.moci_3d_backend.domain.user.repository.UserRepository;
+import com.moci_3d_backend.global.util.PasswordUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
@@ -53,7 +54,8 @@ public class DevInitData {
         User admin = new User();
         admin.setUserId("01012345678");
         admin.setLoginType("PHONE");
-        admin.setPassword("admin123");
+        admin.setPassword(PasswordUtil.encode("admin123"));
+        admin.setRefreshToken(admin.getUserId());
         admin.setName("관리자");
         admin.setEmail("admin@example.com");
         admin.setRole(User.UserRole.ADMIN);
@@ -66,7 +68,8 @@ public class DevInitData {
         User mentor1 = new User();
         mentor1.setUserId("01023456789");
         mentor1.setLoginType("PHONE");
-        mentor1.setPassword("mentor123");
+        mentor1.setPassword(PasswordUtil.encode("mentor123"));
+        mentor1.setRefreshToken(mentor1.getUserId());
         mentor1.setName("김철수");
         mentor1.setEmail("kim@example.com");
         mentor1.setRole(User.UserRole.MENTOR);
@@ -79,7 +82,8 @@ public class DevInitData {
         User mentor2 = new User();
         mentor2.setUserId("01034567890");
         mentor2.setLoginType("PHONE");
-        mentor2.setPassword("mentor123");
+        mentor2.setPassword(PasswordUtil.encode("mentor123"));
+        mentor2.setRefreshToken(mentor2.getUserId());
         mentor2.setName("이영희");
         mentor2.setEmail("lee@example.com");
         mentor2.setRole(User.UserRole.MENTOR);
@@ -92,7 +96,8 @@ public class DevInitData {
         User user1 = new User();
         user1.setUserId("01045678901");
         user1.setLoginType("PHONE");
-        user1.setPassword("user123");
+        user1.setPassword(PasswordUtil.encode("user123"));
+        user1.setRefreshToken(user1.getUserId());
         user1.setName("박민수");
         user1.setEmail("park@example.com");
         user1.setRole(User.UserRole.USER);
@@ -105,7 +110,8 @@ public class DevInitData {
         User user2 = new User();
         user2.setUserId("01056789012");
         user2.setLoginType("PHONE");
-        user2.setPassword("pass123");
+        user2.setPassword(PasswordUtil.encode("pass123"));
+        user2.setRefreshToken(user2.getUserId());
         user2.setName("최민수");
         user2.setEmail("choi@example.com");
         user2.setRole(User.UserRole.USER);
@@ -118,7 +124,8 @@ public class DevInitData {
         User user3 = new User();
         user3.setUserId("01067890123");
         user3.setLoginType("PHONE");
-        user3.setPassword("qwer123");
+        user3.setPassword(PasswordUtil.encode("qwer123"));
+        user3.setRefreshToken(user3.getUserId());
         user3.setName("정수진");
         user3.setEmail("jung@example.com");
         user3.setRole(User.UserRole.USER);
@@ -131,7 +138,8 @@ public class DevInitData {
         User user4 = new User();
         user4.setUserId("01078901234");
         user4.setLoginType("PHONE");
-        user4.setPassword("asdf123");
+        user4.setPassword(PasswordUtil.encode("asdf123"));
+        user4.setRefreshToken(user4.getUserId());
         user4.setName("한지영");
         user4.setEmail("han@example.com");
         user4.setRole(User.UserRole.USER);
@@ -144,7 +152,8 @@ public class DevInitData {
         User user5 = new User();
         user5.setUserId("01089012345");
         user5.setLoginType("PHONE");
-        user5.setPassword("zxcv123");
+        user5.setPassword(PasswordUtil.encode("zxcv123"));
+        user5.setRefreshToken(user5.getUserId());
         user5.setName("윤태호");
         user5.setEmail("yoon@example.com");
         user5.setRole(User.UserRole.USER);
@@ -157,7 +166,8 @@ public class DevInitData {
         User user6 = new User();
         user6.setUserId("01090123456");
         user6.setLoginType("PHONE");
-        user6.setPassword("123456");
+        user6.setPassword(PasswordUtil.encode("123456"));
+        user6.setRefreshToken(user6.getUserId());
         user6.setName("강미래");
         user6.setEmail("kang@example.com");
         user6.setRole(User.UserRole.USER);
@@ -170,7 +180,8 @@ public class DevInitData {
         User user7 = new User();
         user7.setUserId("01012345670");
         user7.setLoginType("PHONE");
-        user7.setPassword("password");
+        user7.setPassword(PasswordUtil.encode("password"));
+        user7.setRefreshToken(user7.getUserId());
         user7.setName("송하늘");
         user7.setEmail("song@example.com");
         user7.setRole(User.UserRole.USER);

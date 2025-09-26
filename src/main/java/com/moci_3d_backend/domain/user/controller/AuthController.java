@@ -7,6 +7,7 @@ import com.moci_3d_backend.domain.user.dto.response.UserLoginResponse;
 import com.moci_3d_backend.domain.user.dto.response.UserRegisterResponse;
 import com.moci_3d_backend.domain.user.entity.User;
 import com.moci_3d_backend.domain.user.service.UserService;
+import com.moci_3d_backend.global.rq.Rq;
 import com.moci_3d_backend.global.rsData.RsData;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthController {
-
+    private final Rq rq;
     private final UserService userService;
 
     // === 회원가입 ===
@@ -44,6 +45,8 @@ public class AuthController {
         UserCreateTokenResponse tokenResponse = UserCreateTokenResponse.from(response.getUser());
 
         String refreshToken = response.getUser().getRefreshToken();
+
+        rq.setCookie("refreshToken", refreshToken);
 
         return ResponseEntity.ok(RsData.successOf(tokenResponse));
     }

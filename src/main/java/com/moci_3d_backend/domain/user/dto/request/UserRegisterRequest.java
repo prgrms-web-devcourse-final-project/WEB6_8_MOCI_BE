@@ -1,6 +1,7 @@
 package com.moci_3d_backend.domain.user.dto.request;
 
 import com.moci_3d_backend.domain.user.entity.User;
+import com.moci_3d_backend.global.util.PasswordUtil;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,6 +10,7 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -49,7 +51,8 @@ public class UserRegisterRequest {
         // 1. 기본 정보 설정
         user.setUserId(this.userId);
         user.setLoginType(this.loginType);
-        user.setPassword(this.password);
+        user.setPassword(PasswordUtil.encode(this.password));
+        user.setRefreshToken(UUID.randomUUID().toString());
         user.setName(this.name);
         user.setEmail(this.email);
         

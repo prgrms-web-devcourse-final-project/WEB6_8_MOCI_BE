@@ -19,7 +19,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "refresh_token", length = 50)
+    @Column(name = "refresh_token", length = 50, unique = true)
     private String refreshToken;
 
     @Column(name = "user_id")
