@@ -33,8 +33,8 @@ public class MentorChatRoomService {
     @Transactional
     public void joinMentorChatRoom(Long roomId, User mentor) {
         MentorChatRoom mentorChatRoom = mentorChatRoomRepository.findByIdAndDeletedFalse(roomId).orElse(null);
-        if (mentorChatRoom != null){
-            throw new ServiceException(400, "chat room already exists");
+        if (mentorChatRoom == null){
+            throw new ServiceException(400, "chat room does not exist");
         }
         mentorChatRoom.joinMentor(mentor);
     }
@@ -47,5 +47,10 @@ public class MentorChatRoomService {
 
     public List<MentorChatRoomResponse> getMentorChatRooms(User mentor){
         return mentorChatRoomRepository.getMentorChatRooms(mentor, true);
+    }
+
+    public List<DetailMentorChatRoom> getAllMentorChatRooms(){
+        List<MentorChatRoom> mentorChatRoomList = mentorChatRoomRepository.findByDeletedFalse();
+        return mentorChatRoomDtoService.toDetailMentorChatRoomList(mentorChatRoomList);
     }
 }
