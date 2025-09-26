@@ -24,19 +24,30 @@ public class FileUploadService {
     private final FileUploadRepository fileUploadRepository;
 
     public FileUploadDto uploadFile(MultipartFile file) {
-        String saveName = UUID.randomUUID()+"-"+file.getOriginalFilename();
-        FileUpload fileUpload = null;
+        String saveName = UUID.randomUUID() + "-" + file.getOriginalFilename();
 
         try {
-            log.info("file path : {}", filePath);
-            File localFile = new File(filePath + "/" + saveName);
+            // 절대 경로로 자동 변환 + 디렉토리 자동 생성
+            File uploadDir = new File(filePath).getAbsoluteFile();
+            if (!uploadDir.exists()) {
+                uploadDir.mkdirs();
+                log.info("업로드 디렉토리 생성: {}", uploadDir.getAbsolutePath());
+            }
+
+            File localFile = new File(uploadDir, saveName);
             file.transferTo(localFile);
             log.info("파일 저장 완료: {}", localFile.getCanonicalPath());
-            fileUpload = new FileUpload(file.getOriginalFilename(), saveName, file.getContentType());
-        } catch (IllegalStateException | IOException e) {
-            throw new RuntimeException(e);
-        }
-        return FileUploadDto.from(fileUploadRepository.save(fileUpload));
-    }
 
+            FileUpload fileUpload = new FileUpload(
+                    file.getOriginalFilename(),
+                    saveName,
+                    file.getContentType()
+            );
+            return FileUploadDto.from(fileUploadRepository.save(fileUpload));
+
+        } catch (IllegalStateException | IOException e) {
+            log.error("파일 업로드 실패: {}", e.getMessage());
+            throw new RuntimeException("파일 업로드 실패: " + e.getMessage(), e);
+        }
+    }
 }
