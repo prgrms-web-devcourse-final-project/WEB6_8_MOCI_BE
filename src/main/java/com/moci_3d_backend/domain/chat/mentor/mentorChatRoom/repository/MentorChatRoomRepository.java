@@ -13,6 +13,7 @@ public interface MentorChatRoomRepository extends JpaRepository<MentorChatRoom, 
     List<MentorChatRoom> findByMenteeAndDeletedFalse(User mentee);
     List<MentorChatRoom> findByMentorNullAndDeletedFalse();
     List<MentorChatRoom> findByMentorAndDeletedFalse(User mentor);
+    List<MentorChatRoom> findByDeletedFalse();
 
     Optional<MentorChatRoom> findByIdAndDeletedFalse(Long roomId);
 }

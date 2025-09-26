@@ -50,7 +50,7 @@ public class MentorChatRoomService {
     }
 
     public List<DetailMentorChatRoom> getAllMentorChatRooms(){
-        List<MentorChatRoom> mentorChatRoomList = mentorChatRoomRepository.findAll();
+        List<MentorChatRoom> mentorChatRoomList = mentorChatRoomRepository.findByDeletedFalse();
         return mentorChatRoomDtoService.toDetailMentorChatRoomList(mentorChatRoomList);
     }
 }
