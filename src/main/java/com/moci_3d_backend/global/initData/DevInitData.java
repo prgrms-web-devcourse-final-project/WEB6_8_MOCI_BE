@@ -6,6 +6,8 @@ import com.moci_3d_backend.domain.archive.archive_request.repository.ArchiveRequ
 import com.moci_3d_backend.domain.archive.public_archive.entity.ArchiveCategory;
 import com.moci_3d_backend.domain.archive.public_archive.entity.PublicArchive;
 import com.moci_3d_backend.domain.archive.public_archive.repository.PublicArchiveRepository;
+import com.moci_3d_backend.domain.chat.ai.aiChatRoom.repository.AiChatRoomRepository;
+import com.moci_3d_backend.domain.chat.ai.aiChatRoom.service.AiChatRoomService;
 import com.moci_3d_backend.domain.user.entity.User;
 import com.moci_3d_backend.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +33,8 @@ public class DevInitData {
     private final UserRepository userRepository;
     private final ArchiveRequestRepository archiveRequestRepository;
     private final PublicArchiveRepository publicArchiveRepository;
+    private final AiChatRoomRepository aiChatRoomRepository;
+    private final AiChatRoomService aiChatRoomService;
 
     @Bean
     ApplicationRunner devInitDataApplicationRunner() {
@@ -38,6 +42,7 @@ public class DevInitData {
             self.memberInit();
             self.archiveRequestInit();
             self.publicArchiveInit();
+            self.aiRoomInit();
         };
     }
 
@@ -48,7 +53,7 @@ public class DevInitData {
         }
 
         // === 테스트 데이터 10개 생성 ===
-        
+
         // 1. 관리자 계정
         User admin = new User();
         admin.setUserId("01012345678");
@@ -389,6 +394,18 @@ public class DevInitData {
         archive3.setUploadedBy(admin);
         archive3.setFileUploads(Collections.emptyList()); // 파일 없음
         publicArchiveRepository.save(archive3);
+    }
+
+    @Transactional
+    public void aiRoomInit() {
+        if (aiChatRoomRepository.count() > 0) {
+            return;
+        }
+
+        aiChatRoomService.create("샘플 AI 채팅방1", "카카오톡 사용법");
+        aiChatRoomService.create("샘플 AI 채팅방2", "유투브 사용법");
+        aiChatRoomService.create("샘플 AI 채팅방3", "KTX 온라인 예매");
+
     }
 
 }

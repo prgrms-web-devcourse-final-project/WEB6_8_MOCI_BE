@@ -81,7 +81,7 @@ public class AiChatMessageService {
 
         final int DEFAULT_CONTEXT_SIZE = 10;
 
-        int N = Math.max(0, history.size()-DEFAULT_CONTEXT_SIZE);
+        int N = Math.max(0, history.size() - DEFAULT_CONTEXT_SIZE);
         List<AiChatMessage> last = history.subList(N, history.size());
 
         String hist = last.stream()
@@ -89,25 +89,39 @@ public class AiChatMessageService {
                 .collect(Collectors.joining("\n"));
 
         String system = """
-                너는 친절한 한국인 AI 비서야.
-                사용자가 50대 노인이라고 생각하고 밝고 명확하게 한국어로 대답해줘.
-                사용자가 이해하기 쉽게 예시를 들어서 설명해줘.
-                짧고 굵게 대답해줘.
-                어르신이라고 표현하지 말아줘.
+                너는 디지털 소외계층을 위한 50대 이상 사용자를 돕는 한국인 AI 도우미야.  
+                사용자가 컴퓨터, 스마트폰, 인터넷을 쉽게 사용할 수 있도록 친절하고 이해하기 쉽게 설명해줘.
+                사용자가 질문하면, 최대한 쉽게 단계별로 설명해줘.
+                
+                답변은 반드시 아래 형식을 따라야 해:
+                
+                [목적]  
+                - 설명의 목표를 1~2줄로 간단히 작성  
+                
+                [형식]  
+                - 1~5단계로 핵심만 안내 (각 단계는 2줄 이내)  
+                
+                [기준]  
+                - 전체 300자 이내  
+                - 어려운 용어 없이 쉬운 표현 사용  
+                - 버튼·메뉴명은 그대로 제시
                 """;
 
         return system + "\n\n" + hist + "\n\nAI:";
     }
 
 
-
     @Transactional(readOnly = true)
-    public List<AiChatMessage> listMessages(Long roomId) {
+    public List<AiChatMessage> listMessages(Long roomId, Long fromId) {
         AiChatRoom room = aiChatRoomRepository.findById(roomId)
                 .orElseThrow(() -> new ServiceException(404, "존재하지 않는 AI 채팅방입니다."));
 
-        return aiChatMessageRepository.findByRoomIdOrderByIdAsc(roomId);
+        if (fromId == null) {
+            return aiChatMessageRepository.findByRoomIdOrderByIdAsc(roomId);
+        }
 
+        //  fromId 이후 메시지만 가져오기
+        return aiChatMessageRepository.findByRoomIdAndIdGreaterThanOrderByIdAsc(roomId, fromId);
     }
 
     @Transactional
@@ -123,8 +137,8 @@ public class AiChatMessageService {
     @Transactional
     public List<AiChatMessageDto> markAsReadUpTo(Long roomId, Long lastSeenMessageId) {
         AiChatMessage last = aiChatMessageRepository.findById(lastSeenMessageId)
-                .orElseThrow(()-> new ServiceException(404,"lastSeenMessageId가 존재하지 않습니다."));
-        if(!last.getRoom().getId().equals(roomId)) {
+                .orElseThrow(() -> new ServiceException(404, "lastSeenMessageId가 존재하지 않습니다."));
+        if (!last.getRoom().getId().equals(roomId)) {
             throw new ServiceException(400, "해당 메세지는 요청한 roomId에 속하지 않습니다.");
         }
 
