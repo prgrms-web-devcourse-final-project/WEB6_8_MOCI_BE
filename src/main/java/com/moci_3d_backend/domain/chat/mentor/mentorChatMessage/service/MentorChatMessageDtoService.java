@@ -14,10 +14,11 @@ import java.util.List;
 public class MentorChatMessageDtoService {
 
     public ChatSendMessage toSendMessage(MentorChatMessage entity){
+        FileUpload attachment = entity.getAttachment();
         return new ChatSendMessage(
                 entity.getSender().getName(),
                 entity.getContent(),
-                entity.getAttachment().getId()
+                attachment != null ? attachment.getId() : null
         );
     }
 
