@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -88,7 +89,7 @@ public class UserService {
         return userOptional.get();
     }
 
-    public Optional<User> findByRefreshKey(String refreshToken) {
+    public Optional<User> findByRefreshToken(String refreshToken) {
         return userRepository.findByRefreshToken(refreshToken);
     }
 
@@ -115,5 +116,9 @@ public class UserService {
         }
 
         return user;
+    }
+
+    public Map<String, Object> payload(String accessToken) {
+        return authTokenService.payload(accessToken);
     }
 }

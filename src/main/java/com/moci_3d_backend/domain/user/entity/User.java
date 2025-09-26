@@ -104,7 +104,7 @@ public class User {
                 .toList();
     }
 
-    private List<String> getAuthoritiesAsStringList() {
+    public List<String> getAuthoritiesAsStringList() {
         List<String> authorities = new ArrayList<>();
 
         authorities.add("ROLE_" + this.role.name());
