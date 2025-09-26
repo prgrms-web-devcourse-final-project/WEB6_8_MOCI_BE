@@ -25,6 +25,7 @@ configurations {
 
 repositories {
     mavenCentral()
+    maven { url 'https://jitpack.io' }  // KOMORAN을 위한 JitPack 추가
 }
 
 dependencies {
@@ -40,6 +41,8 @@ dependencies {
 
     implementation 'com.bucket4j:bucket4j_jdk17-core:8.14.0' //rate limit 관련
     implementation "com.querydsl:querydsl-jpa:${querydslVersion}:jakarta"
+
+    implementation "com.github.shin285:KOMORAN:3.3.9" //KOMORAN 형태소 분석기
 
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
