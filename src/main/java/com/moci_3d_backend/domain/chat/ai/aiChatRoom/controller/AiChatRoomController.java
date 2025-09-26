@@ -53,7 +53,7 @@ public class AiChatRoomController {
     @Operation(summary = "AI 채팅방 단건 조회", description = "AI 채팅방 ID로 단건 조회합니다.")
     @GetMapping("/{id}")
     @Transactional(readOnly = true)
-    public RsData<AiChatRoomDto> getAiChatRoom(@PathVariable long id) {
+    public RsData<AiChatRoomDto> getAiChatRoom(@PathVariable Long id) {
         AiChatRoom aiChatRoom = aiChatRoomService.getRoom(id)
                 .orElseThrow(() -> new ServiceException(404, "존재하지 않는 AI 채팅방입니다."));
 
@@ -109,7 +109,7 @@ public class AiChatRoomController {
     @Operation( summary = "AI 채팅방을 삭제 ", description = "AI 채팅방을 삭제합니다.")
     @DeleteMapping("/{id}")
     @Transactional
-    public RsData<Void> deleteAiChatRoom(@PathVariable long id) {// TODO: 실제 구현시 @AuthenticationPrincipal 또는 SecurityContext에서 User 정보를 가져와야 함
+    public RsData<Void> deleteAiChatRoom(@PathVariable Long id) {// TODO: 실제 구현시 @AuthenticationPrincipal 또는 SecurityContext에서 User 정보를 가져와야 함
 //        if(user == null ) {
 //            throw new ServiceException(401, "로그인이 필요합니다.");
 //        }

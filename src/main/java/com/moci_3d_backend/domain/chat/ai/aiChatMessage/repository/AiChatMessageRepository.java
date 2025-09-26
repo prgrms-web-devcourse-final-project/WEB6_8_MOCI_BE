@@ -11,4 +11,5 @@ public interface AiChatMessageRepository extends JpaRepository<AiChatMessage, Lo
     List<AiChatMessage> findByRoomIdOrderByIdAsc(Long roomId);
     List<AiChatMessage> findByRoomIdAndIdLessThanEqualAndStatusNot(Long roomId, Long lastSeenMessageId, MessageStatus messageStatus);
     List<AiChatMessage> findByRoomIdAndContentLikeOrderByIdAsc(Long roomId, String query);
+    List<AiChatMessage> findByRoomIdAndIdGreaterThanOrderByIdAsc(Long roomId, Long fromId);
 }
