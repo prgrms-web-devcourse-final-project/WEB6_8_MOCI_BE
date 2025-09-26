@@ -31,7 +31,9 @@ public class SecurityConfig {
                                 "/swagger-resources/**",
                                 "/webjars/**",
                                 "/api/v1/**",// API 테스트용으로 모두 허용. 차후 필수로 변경 필요.
-                                "/api/v1/file/**"
+                                "/api/v1/file/**",
+                                "/chat/**", // 테스트용 채팅 화면 접근 허용
+                                "/sse/**" // 테스트용 SSE 화면 접근 허용
                         ).permitAll()
                         .anyRequest().denyAll()
                 )
