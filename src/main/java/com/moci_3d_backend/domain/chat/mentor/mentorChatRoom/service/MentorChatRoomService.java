@@ -33,8 +33,8 @@ public class MentorChatRoomService {
     @Transactional
     public void joinMentorChatRoom(Long roomId, User mentor) {
         MentorChatRoom mentorChatRoom = mentorChatRoomRepository.findByIdAndDeletedFalse(roomId).orElse(null);
-        if (mentorChatRoom != null){
-            throw new ServiceException(400, "chat room already exists");
+        if (mentorChatRoom == null){
+            throw new ServiceException(400, "chat room not exist");
         }
         mentorChatRoom.joinMentor(mentor);
     }
