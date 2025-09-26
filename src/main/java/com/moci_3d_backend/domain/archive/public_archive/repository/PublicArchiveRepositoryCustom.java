@@ -4,10 +4,7 @@ import com.moci_3d_backend.domain.archive.public_archive.entity.PublicArchive;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-/**
- * PublicArchive Custom Repository
- * QueryDSL을 사용한 복잡한 검색 쿼리 처리
- */
+// QueryDSL을 사용한 복잡한 검색 쿼리 처리
 public interface PublicArchiveRepositoryCustom {
     
     /**

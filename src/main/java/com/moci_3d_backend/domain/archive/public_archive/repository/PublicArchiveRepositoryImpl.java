@@ -13,15 +13,11 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-/**
- * PublicArchive Custom Repository 구현
- * 팀원이 설정한 JPAQueryFactory Bean을 활용
- */
 @Repository
 @RequiredArgsConstructor
 public class PublicArchiveRepositoryImpl implements PublicArchiveRepositoryCustom {
 
-    private final JPAQueryFactory queryFactory;  // 팀원이 만든 Bean 주입
+    private final JPAQueryFactory queryFactory;
 
     @Override
     public Page<PublicArchive> searchByKeywords(String[] keywords, Pageable pageable) {
