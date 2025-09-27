@@ -44,9 +44,12 @@ public class AuthController {
         UserLoginResponse response = userService.login(request);
         UserCreateTokenResponse tokenResponse = UserCreateTokenResponse.from(response.getUser());
 
-        String refreshToken = response.getUser().getRefreshToken();
+        User user = userService.findByUserId(request.getUserId());
+        String refreshToken = user.getRefreshToken();
 
-        rq.setCookie("refreshToken", refreshToken);
+        if (refreshToken != null) {
+            rq.setCookie("refreshToken", refreshToken);
+        }
 
         return ResponseEntity.ok(RsData.successOf(tokenResponse));
     }
