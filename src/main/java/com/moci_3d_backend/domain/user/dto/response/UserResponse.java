@@ -17,7 +17,6 @@ public class UserResponse {
     private Long id;
     private String userId;
     private String socialId;
-    private String refreshToken;
     private String name;
     private String email;
     private User.UserRole role;
@@ -29,7 +28,6 @@ public class UserResponse {
                 user.getId(),
                 user.getUserId(),
                 user.getSocialId(),
-                user.getRefreshToken(),
                 user.getName(),
                 user.getEmail(),
                 user.getRole(),
