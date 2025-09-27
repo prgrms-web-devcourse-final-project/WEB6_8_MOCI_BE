@@ -13,8 +13,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserResponse {
-    
+
     private Long id;
+    private String userId;
+    private String socialId;
     private String name;
     private String email;
     private User.UserRole role;
@@ -23,12 +25,14 @@ public class UserResponse {
 
     public static UserResponse from(User user) {
         return new UserResponse(
-            user.getId(),
-            user.getName(),
-            user.getEmail(),
-            user.getRole(),
-            user.getDigitalLevel(),
-            user.getCreatedAt()
+                user.getId(),
+                user.getUserId(),
+                user.getSocialId(),
+                user.getName(),
+                user.getEmail(),
+                user.getRole(),
+                user.getDigitalLevel(),
+                user.getCreatedAt()
         );
     }
 }
