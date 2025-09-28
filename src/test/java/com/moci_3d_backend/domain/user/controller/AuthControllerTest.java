@@ -59,7 +59,6 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.data.user").exists())
                 .andExpect(jsonPath("$.data.user.id").value(user.getId()))
                 .andExpect(jsonPath("$.data.user.userId").value(user.getUserId()))
-                .andExpect(jsonPath("$.data.user.refreshToken").doesNotExist()) 
                 .andExpect(jsonPath("$.data.user.name").value(user.getName()))
                 .andExpect(jsonPath("$.data.user.email").value(user.getEmail()))
                 .andExpect(jsonPath("$.data.user.role").value(user.getRole().name()))
@@ -68,10 +67,15 @@ public class AuthControllerTest {
 
         resultActions.andExpect(
                 result -> {
-                    Cookie apiKeyCookie = result.getResponse().getCookie("refreshToken");
-                    assertThat(apiKeyCookie.getValue()).isEqualTo(user.getRefreshToken());
-                    assertThat(apiKeyCookie.getPath()).isEqualTo("/");
-                    assertThat(apiKeyCookie.getAttribute("HttpOnly")).isEqualTo("true");
+                    Cookie accessTokenCookie = result.getResponse().getCookie("accessToken");
+                    assertThat(accessTokenCookie.getValue()).isNotEmpty();
+                    assertThat(accessTokenCookie.getPath()).isEqualTo("/");
+                    assertThat(accessTokenCookie.getAttribute("HttpOnly")).isEqualTo("true");
+
+                    Cookie refreshTokenCookie = result.getResponse().getCookie("refreshToken");
+                    assertThat(refreshTokenCookie.getValue()).isEqualTo(user.getRefreshToken());
+                    assertThat(refreshTokenCookie.getPath()).isEqualTo("/");
+                    assertThat(refreshTokenCookie.getAttribute("HttpOnly")).isEqualTo("true");
                 }
         );
     }

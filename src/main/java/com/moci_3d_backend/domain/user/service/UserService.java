@@ -3,6 +3,7 @@ package com.moci_3d_backend.domain.user.service;
 import com.moci_3d_backend.domain.user.dto.request.UserLoginRequest;
 import com.moci_3d_backend.domain.user.dto.request.UserRegisterRequest;
 import com.moci_3d_backend.domain.user.dto.response.UserLoginResponse;
+import com.moci_3d_backend.domain.user.dto.response.UserResponse;
 import com.moci_3d_backend.domain.user.entity.User;
 import com.moci_3d_backend.domain.user.repository.UserRepository;
 import com.moci_3d_backend.global.exception.ServiceException;
@@ -19,6 +20,7 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public class UserService {
 
+    private final AuthTokenService authTokenService;
     private final UserRepository userRepository;
 
     // === 회원가입 ===
@@ -92,5 +94,26 @@ public class UserService {
 
     public User getReferenceById(long id) {
         return userRepository.getReferenceById(id);
+    }
+
+    public String genAccessToken(User user) {
+        return authTokenService.genAccessToken(user);
+    }
+
+    public User auth(UserLoginRequest request) {
+        // 1. UserId 검증
+        Optional<User> userOptional = userRepository.findByUserId(request.getUserId());
+        if (userOptional.isEmpty()) {
+            throw new ServiceException(400, "'아이디 또는 비밀번호가 틀렸습니다.'");
+        }
+        User user = userOptional.get();
+
+        // 비밀번호 검증 (BCrypt)
+        boolean isPasswordMatch = PasswordUtil.matches(request.getPassword(), user.getPassword());
+        if (!isPasswordMatch) {
+            throw new ServiceException(400, "'아이디 또는 비밀번호가 틀렸습니다.'");
+        }
+
+        return user;
     }
 }
