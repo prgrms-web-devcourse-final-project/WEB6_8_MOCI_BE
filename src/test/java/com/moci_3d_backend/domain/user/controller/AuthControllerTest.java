@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -78,5 +79,33 @@ public class AuthControllerTest {
                     assertThat(refreshTokenCookie.getAttribute("HttpOnly")).isEqualTo("true");
                 }
         );
+    }
+
+    @Test
+    @DisplayName("로그아웃")
+    void t3() throws Exception {
+        ResultActions resultActions = mvc
+                .perform(
+                        delete("/api/v1/auth/token")
+                )
+                .andDo(print());
+
+        resultActions
+                .andExpect(handler().handlerType(AuthController.class))
+                .andExpect(handler().methodName("deleteToken"))
+                .andExpect(status().isOk())
+                .andExpect(result -> {
+                    Cookie refreshTokenCookie = result.getResponse().getCookie("refreshToken");
+                    assertThat(refreshTokenCookie.getValue()).isEmpty();
+                    assertThat(refreshTokenCookie.getMaxAge()).isEqualTo(0);
+                    assertThat(refreshTokenCookie.getPath()).isEqualTo("/");
+                    assertThat(refreshTokenCookie.isHttpOnly()).isTrue();
+
+                    Cookie accessTokenCookie = result.getResponse().getCookie("accessToken");
+                    assertThat(accessTokenCookie.getValue()).isEmpty();
+                    assertThat(accessTokenCookie.getMaxAge()).isEqualTo(0);
+                    assertThat(accessTokenCookie.getPath()).isEqualTo("/");
+                    assertThat(accessTokenCookie.isHttpOnly()).isTrue();
+                });
     }
 }
