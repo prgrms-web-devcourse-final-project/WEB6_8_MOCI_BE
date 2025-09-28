@@ -89,6 +89,12 @@ public class UserService {
         return userOptional.get();
     }
 
+    public Optional<User> findByUserIdOptional(String userId) {
+        Optional<User> userOptional = userRepository.findByUserId(userId);
+
+        return userOptional;
+    }
+
     public Optional<User> findByRefreshToken(String refreshToken) {
         return userRepository.findByRefreshToken(refreshToken);
     }
@@ -120,5 +126,9 @@ public class UserService {
 
     public Map<String, Object> payload(String accessToken) {
         return authTokenService.payload(accessToken);
+    }
+
+    public User save (User user) {
+        return userRepository.save(user);
     }
 }
