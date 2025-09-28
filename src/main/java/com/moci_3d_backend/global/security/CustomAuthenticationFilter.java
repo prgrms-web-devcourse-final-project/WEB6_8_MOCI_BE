@@ -58,6 +58,7 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
         }
 
         String refreshToken;
+        String accessToken;
 
         String headerAuthorization = rq.getHeader("Authorization", "");
 
@@ -65,23 +66,56 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
             if (!headerAuthorization.startsWith("Bearer "))
                 throw new ServiceException(401, "Authorization 헤더가 Bearer 형식이 아닙니다.");
 
-            String[] headerAuthorizationBits = headerAuthorization.split(" ", 2);
+            String[] headerAuthorizationBits = headerAuthorization.split(" ", 3);
 
             refreshToken = headerAuthorizationBits[1];
+            accessToken = headerAuthorizationBits.length == 3 ? headerAuthorizationBits[2] : "";
         } else {
             refreshToken = rq.getCookieValue("refreshToken", "");
+            accessToken = rq.getCookieValue("accessToken", "");
         }
 
         boolean isRefreshTokenExists = !refreshToken.isBlank();
+        boolean isAccessTokenExists = !accessToken.isBlank();
 
-        if (!isRefreshTokenExists) {
+        if (!isRefreshTokenExists && !isAccessTokenExists) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        User user = userService
-                .findByRefreshKey(refreshToken)
-                .orElseThrow(() -> new ServiceException(403, "API 키가 유효하지 않습니다."));
+        User user = null;
+        boolean isAccessTokenValid = false;
+
+        if (isAccessTokenExists) {
+            Map<String, Object> payload = userService.payload(accessToken);
+
+            if (payload != null) {
+                int id = (int) payload.get("id");
+                String userId = (String) payload.get("userId");
+                String name = (String) payload.get("name");
+                String role = (String) payload.get("role");
+                user = new User();
+                user.setId((long) id);
+                user.setUserId(userId);
+                user.setName(name);
+                user.setRole(User.UserRole.valueOf(role));
+
+                isAccessTokenValid = true;
+            }
+        }
+
+        if (user == null) {
+            user = userService
+                    .findByRefreshToken(refreshToken)
+                    .orElseThrow(() -> new ServiceException(401, "API 키가 유효하지 않습니다."));
+        }
+
+        if (isAccessTokenExists && !isAccessTokenValid) {
+            String actorAccessToken = userService.genAccessToken(user);
+
+            rq.setCookie("accessToken", actorAccessToken);
+            rq.setHeader("Authorization", "Bearer " + refreshToken + " " + actorAccessToken);
+        }
 
         UserDetails securityUser = new SecurityUser(
                 user.getId(),

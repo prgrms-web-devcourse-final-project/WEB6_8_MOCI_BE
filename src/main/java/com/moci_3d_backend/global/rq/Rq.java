@@ -73,4 +73,8 @@ public class Rq {
         String value = req.getHeader(name);
         return value != null ? value : defaultValue;
     }
+
+    public void setHeader(String name, String value) {
+        resp.setHeader(name, value);
+    }
 }
