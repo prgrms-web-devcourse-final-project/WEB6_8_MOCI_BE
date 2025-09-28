@@ -30,6 +30,7 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client:3.5.5'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -41,6 +42,9 @@ dependencies {
 
     implementation 'com.bucket4j:bucket4j_jdk17-core:8.14.0' //rate limit 관련
     implementation "com.querydsl:querydsl-jpa:${querydslVersion}:jakarta"
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
+    implementation 'io.jsonwebtoken:jjwt-impl:0.12.3'
+    implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3'
 
     implementation "com.github.shin285:KOMORAN:3.3.9" //KOMORAN 형태소 분석기
 

@@ -11,10 +11,7 @@ import com.moci_3d_backend.global.rq.Rq;
 import com.moci_3d_backend.global.rsData.RsData;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -41,16 +38,23 @@ public class AuthController {
     // === 로그인 ===
     @PostMapping("/token")
     public ResponseEntity<RsData<UserCreateTokenResponse>> token(@RequestBody UserLoginRequest request) {
-        UserLoginResponse response = userService.login(request);
-        UserCreateTokenResponse tokenResponse = UserCreateTokenResponse.from(response.getUser());
+        User user = userService.auth(request);
 
-        User user = userService.findByUserId(request.getUserId());
         String refreshToken = user.getRefreshToken();
 
-        if (refreshToken != null) {
-            rq.setCookie("refreshToken", refreshToken);
-        }
+        rq.setCookie("accessToken", userService.genAccessToken(user));
+        rq.setCookie("refreshToken", refreshToken);
+
+        UserCreateTokenResponse tokenResponse = UserCreateTokenResponse.from(user);
 
         return ResponseEntity.ok(RsData.successOf(tokenResponse));
+    }
+
+    @DeleteMapping("/token")
+    public ResponseEntity<Void> deleteToken() {
+        rq.deleteCookie("accessToken");
+        rq.deleteCookie("refreshToken");
+
+        return ResponseEntity.ok().build();
     }
 }

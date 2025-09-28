@@ -24,7 +24,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 
 @Configuration
-@Profile("dev")
+@Profile("!prod") // 테스트 환경에서도 실행되도록 변경
 @RequiredArgsConstructor
 public class DevInitData {
     @Autowired
