@@ -21,7 +21,7 @@ public class AppConfig {
     }
 
     public static boolean isTest() {
-        return !environment.matchesProfiles("test");
+        return environment.matchesProfiles("test");
     }
 
     public static boolean isProd() {

@@ -39,7 +39,7 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
                                 "code": "%s",
                                 "msg": "%s"
                             }
-                            """.formatted(e.getCode(), e.getCode())
+                            """.formatted(e.getCode(), e.getMsg())
             );
         }
     }
