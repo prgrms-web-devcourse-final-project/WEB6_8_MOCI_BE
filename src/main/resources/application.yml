@@ -30,11 +30,30 @@ springdoc:
   default-produces-media-type: application/json;charset=UTF-8
 
 server:
+  port: 8080
   servlet:
     encoding:
       charset: UTF-8
       enabled: true
       force: true
-
 file:
   dir: ./uploads
+
+custom:
+  jwt:
+    secretKey: abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789
+  accessToken:
+    expirationSeconds: "#{60 * 20}"
+  dev:
+    cookieDomain: localhost
+    frontUrl: "http://${custom.dev.cookieDomain}:3000"
+    backUrl: "http://${custom.dev.cookieDomain}:${server.port}"
+  prod:
+    cookieDomain: moci.oa.gg
+    frontUrl: "https://www.${custom.prod.cookieDomain}"
+    backUrl: "https://api.${custom.prod.cookieDomain}"
+  site:
+    cookieDomain: "${custom.dev.cookieDomain}"
+    frontUrl: "${custom.dev.frontUrl}"
+    backUrl: "${custom.dev.backUrl}"
+    name: MOCI
