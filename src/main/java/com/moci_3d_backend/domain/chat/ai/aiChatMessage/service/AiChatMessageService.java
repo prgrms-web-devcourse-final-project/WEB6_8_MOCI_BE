@@ -57,7 +57,7 @@ public class AiChatMessageService {
         // 추정 토큰 수 아주 보수적,간단 추정
         long tokensNeeded = Math.max(1, content.length());
 
-        aiChatMessageRateLimitService.checkRateLimitsOrThrow(1L, tokensNeeded); // TODO: userId 나중에 넣기
+        aiChatMessageRateLimitService.checkRateLimitsOrThrow(actor.getId(), tokensNeeded);
 
         // 사용자 메시지 저장
         AiChatMessage userMessage = create(actor, roomId, SenderType.HUMAN, content);

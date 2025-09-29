@@ -15,12 +15,13 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Slf4j
 public class AiChatRoomService {
-    private  final AiChatRoomRepository aiChatRoomRepository;
+    private final AiChatRoomRepository aiChatRoomRepository;
 
-    public AiChatRoom create(User actor, String title) {
+    public AiChatRoom create(User actor, String category, String question) {
         AiChatRoom aiChatRoom = AiChatRoom.builder()
                 .user(actor)
-                .title(title)
+                .title(question)
+                .category(category)
                 .status(true)
                 .build();
 
@@ -54,7 +55,7 @@ public class AiChatRoomService {
 
         List<AiChatRoom> aiChatRooms = aiChatRoomRepository.findByUserIdOrderByLastMessageAtDesc(userId);
 
-        log.info("자기 자신의 AI 채팅방 조회 성공 총 {}개 조회함 ",aiChatRooms.size());
+        log.info("자기 자신의 AI 채팅방 조회 성공 총 {}개 조회함 ", aiChatRooms.size());
 
         return aiChatRooms;
     }
@@ -65,7 +66,7 @@ public class AiChatRoomService {
                 .orElseThrow(() -> new ServiceException(404, "존재하지 않는 AI 채팅방입니다."));
 
         //권한 체크
-        if(!actor.getRole().equals(User.UserRole.ADMIN) && !aiChatRoom.getUser().getId().equals(actor.getId())) {
+        if (!actor.getRole().equals(User.UserRole.ADMIN) && !aiChatRoom.getUser().getId().equals(actor.getId())) {
             throw new ServiceException(403, "권한이 없습니다.");
         }
 
