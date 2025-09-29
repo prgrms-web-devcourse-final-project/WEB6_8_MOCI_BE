@@ -25,12 +25,12 @@ public class ApiV1MentorChatRoomController {
     @PutMapping("/join/{roomId}")
     @PreAuthorize("hasRole('MENTOR')")
     @Operation(summary = "[멘토] 채팅방 입장", description = "멘토가 채팅방에 입장합니다.")
-    public RsData<Void> joinMentorChatRoom(
+    public RsData<MentorChatRoomResponse> joinMentorChatRoom(
             @PathVariable(value = "roomId") Long roomId
     ){
         User user = rq.getActor();
-        mentorChatRoomService.joinMentorChatRoom(roomId, user);
-        return RsData.of(200, "success to join mentor chat room");
+        MentorChatRoomResponse response = mentorChatRoomService.joinMentorChatRoom(roomId, user);
+        return RsData.of(200, "success to join mentor chat room", response);
     }
 
     @GetMapping("/my-mentees")

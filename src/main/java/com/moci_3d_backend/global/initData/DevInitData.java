@@ -9,7 +9,7 @@ import com.moci_3d_backend.domain.archive.public_archive.repository.PublicArchiv
 import com.moci_3d_backend.domain.chat.ai.aiChatRoom.repository.AiChatRoomRepository;
 import com.moci_3d_backend.domain.chat.ai.aiChatRoom.service.AiChatRoomService;
 import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.dto.CreateMentorChatRoom;
-import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.entity.MentorChatRoom;
+import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.dto.MentorChatRoomResponse;
 import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.service.MenteeChatRoomService;
 import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.service.MentorChatRoomService;
 import com.moci_3d_backend.domain.user.entity.User;
@@ -671,7 +671,7 @@ public class DevInitData {
         User mentee2 = userRepository.findById(5L).get();
         User mentor = userRepository.findById(2L).get();
 
-        MentorChatRoom chatroom = menteeChatRoomService.createMenteeChatRoom(
+        MentorChatRoomResponse chatroom = menteeChatRoomService.createMenteeChatRoom(
                 new CreateMentorChatRoom(
                         "카카오톡",
                         "카카오톡 설치 어떻게 하나요?"
@@ -680,7 +680,7 @@ public class DevInitData {
         );
         mentorChatRoomService.joinMentorChatRoom(chatroom.getId(), mentor);
 
-        MentorChatRoom chatroom2 = menteeChatRoomService.createMenteeChatRoom(
+        MentorChatRoomResponse chatroom2 = menteeChatRoomService.createMenteeChatRoom(
                 new CreateMentorChatRoom(
                         "카카오톡",
                         "카카오톡 채팅을 어떻게 시작하나요?"
