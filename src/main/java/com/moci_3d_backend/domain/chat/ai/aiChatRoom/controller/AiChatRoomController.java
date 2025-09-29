@@ -33,7 +33,8 @@ public class AiChatRoomController {
     private final Rq rq;
 
     public record CreateAiRoomReqBody(
-            @NotBlank String title) {
+            @Size(max = 50) String category,
+            @NotBlank String question) {
     }
 
     @Operation(summary = "AI 채팅방 생성", description = "질문을 입력하면 해당 질문을 제목으로 하는 AI 채팅방을 생성하고, 동시에 첫 질문을 등록합니다.")
@@ -43,14 +44,14 @@ public class AiChatRoomController {
 
         User actor = rq.getActor();
 
-        if( actor == null ) {
+        if (actor == null) {
             throw new ServiceException(401, "로그인이 필요합니다.(AI 채팅방 생성)");
         }
 
-        AiChatRoom chatRoom = aiChatRoomService.create(actor,reqBody.title);
+        AiChatRoom chatRoom = aiChatRoomService.create(actor, reqBody.category, reqBody.question);
 
         // 첫 질문을 등록하고 AI 응답을 받는 로직
-        aiChatMessageService.ask(actor, chatRoom.getId(), reqBody.title);
+        aiChatMessageService.ask(actor, chatRoom.getId(), reqBody.question);
 
         return new RsData<>(
                 200,
@@ -69,7 +70,7 @@ public class AiChatRoomController {
 
         User actor = rq.getActor();
 
-        if( actor == null ) {
+        if (actor == null) {
             throw new ServiceException(401, "로그인이 필요합니다.(AI 채팅방 단건 조회)");
         }
 
@@ -84,7 +85,7 @@ public class AiChatRoomController {
         );
     }
 
-    @Operation( summary = "AI 채팅방 다건 조회(관리자만!!)", description = "모든 유저 AI 채탱방 모두 조회합니다.)")
+    @Operation(summary = "AI 채팅방 다건 조회(관리자만!!)", description = "모든 유저 AI 채탱방 모두 조회합니다.)")
     @GetMapping
     @Transactional(readOnly = true)
     public RsData<AiChatRoomListDto> getAiChatRooms() {
@@ -107,13 +108,13 @@ public class AiChatRoomController {
         );
     }
 
-    @Operation( summary = "자기의 AI 채팅방 목록 조회", description = "자기자신의 채팅방 목록조회")
+    @Operation(summary = "자기의 AI 채팅방 목록 조회", description = "자기자신의 채팅방 목록조회")
     @GetMapping("/mine")
     @Transactional(readOnly = true)
     public RsData<AiChatRoomListDto> getMyAiChatRooms() {
 
         User actor = rq.getActor();
-        if( actor == null ) {
+        if (actor == null) {
             throw new ServiceException(401, "로그인이 필요합니다.(자신의 AI 채팅방 목록 조회)");
         }
 
@@ -130,14 +131,14 @@ public class AiChatRoomController {
 
     }
 
-    @Operation( summary = "AI 채팅방을 삭제(관리자 + 자기자신의 채팅방만) ", description = "AI 채팅방을 삭제합니다.")
+    @Operation(summary = "AI 채팅방을 삭제(관리자 + 자기자신의 채팅방만) ", description = "AI 채팅방을 삭제합니다.")
     @DeleteMapping("/{id}")
     @Transactional
     public RsData<Void> deleteAiChatRoom(@PathVariable Long id) {// TODO: 실제 구현시 @AuthenticationPrincipal 또는 SecurityContext에서 User 정보를 가져와야 함
 
         User actor = rq.getActor();
 
-        if( actor == null ) {
+        if (actor == null) {
             throw new ServiceException(401, "로그인이 필요합니다.(AI 채팅방 삭제)");
         }
 
@@ -145,6 +146,6 @@ public class AiChatRoomController {
         aiChatRoomService.delete(id, actor);
 
         return new RsData<>(
-                200,"%d번 AI 채팅방이 삭제되었습니다.".formatted(id), null);
+                200, "%d번 AI 채팅방이 삭제되었습니다.".formatted(id), null);
     }
 }

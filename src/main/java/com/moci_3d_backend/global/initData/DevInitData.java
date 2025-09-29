@@ -656,13 +656,13 @@ public class DevInitData {
         User user4 = userRepository.findById(4L).get();
         User user5 = userRepository.findById(5L).get();
 
-        aiChatRoomService.create(user4,"샘플 AI 채팅방1");
-        aiChatRoomService.create(user4,"샘플 AI 채팅방2");
-        aiChatRoomService.create(user5,"샘플 AI 채팅방3");
+        aiChatRoomService.create(user4, "카카오톡 설명서", "샘플 AI 채팅방1");
+        aiChatRoomService.create(user4, "카카오톡 설명서", "샘플 AI 채팅방2");
+        aiChatRoomService.create(user5, "카카오톡 설명서", "샘플 AI 채팅방3");
 
     }
 
-    @Transactional
+     @Transactional
     public void chatRoomInit(){
         if (mentorChatRoomService.getChatRoomCount() >0){
             return;

@@ -50,6 +50,9 @@ public class AiChatRoom {
 
     private boolean status; //채팅방 상태
 
+    @Column(length = 50)
+    private String category;
+
     @OneToMany(mappedBy = "room", cascade = CascadeType.REMOVE,  orphanRemoval = true)
     private List<AiChatMessage> messages = new ArrayList<>();
 
