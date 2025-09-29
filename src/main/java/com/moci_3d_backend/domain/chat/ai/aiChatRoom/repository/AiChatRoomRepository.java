@@ -8,4 +8,5 @@ import java.util.List;
 public interface AiChatRoomRepository extends JpaRepository<AiChatRoom, Long> {
 
     List<AiChatRoom> findByUserIdOrderByLastMessageAtDesc(Long userId);
+    List<AiChatRoom> findByUserId(Long id);
 }

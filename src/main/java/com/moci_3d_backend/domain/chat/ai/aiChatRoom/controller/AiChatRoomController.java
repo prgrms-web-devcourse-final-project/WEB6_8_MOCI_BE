@@ -5,7 +5,9 @@ import com.moci_3d_backend.domain.chat.ai.aiChatRoom.dto.AiChatRoomDto;
 import com.moci_3d_backend.domain.chat.ai.aiChatRoom.dto.AiChatRoomListDto;
 import com.moci_3d_backend.domain.chat.ai.aiChatRoom.entity.AiChatRoom;
 import com.moci_3d_backend.domain.chat.ai.aiChatRoom.service.AiChatRoomService;
+import com.moci_3d_backend.domain.user.entity.User;
 import com.moci_3d_backend.global.exception.ServiceException;
+import com.moci_3d_backend.global.rq.Rq;
 import com.moci_3d_backend.global.rsData.RsData;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,8 +30,7 @@ import java.util.List;
 public class AiChatRoomController {
     private final AiChatRoomService aiChatRoomService;
     private final AiChatMessageService aiChatMessageService;
-
-    //TODO: 로그인한 사용자가 없다 추후에 추가한다.
+    private final Rq rq;
 
     public record CreateAiRoomReqBody(
             @NotBlank String title) {
@@ -40,10 +41,16 @@ public class AiChatRoomController {
     @Transactional
     public RsData<AiChatRoomDto> createAiChatRoom(@RequestBody @Valid CreateAiRoomReqBody reqBody) {
 
-        AiChatRoom chatRoom = aiChatRoomService.create(reqBody.title);
+        User actor = rq.getActor();
+
+        if( actor == null ) {
+            throw new ServiceException(401, "로그인이 필요합니다.(AI 채팅방 생성)");
+        }
+
+        AiChatRoom chatRoom = aiChatRoomService.create(actor,reqBody.title);
 
         // 첫 질문을 등록하고 AI 응답을 받는 로직
-        aiChatMessageService.ask(chatRoom.getId(), reqBody.title);
+        aiChatMessageService.ask(actor, chatRoom.getId(), reqBody.title);
 
         return new RsData<>(
                 200,
@@ -55,11 +62,18 @@ public class AiChatRoomController {
     }
 
 
-    @Operation(summary = "AI 채팅방 단건 조회", description = "AI 채팅방 ID로 단건 조회합니다.")
+    @Operation(summary = "AI 채팅방 단건 조회(관리자 + 유저의 자신의 방)", description = "AI 채팅방 ID로 단건 조회합니다.")
     @GetMapping("/{id}")
     @Transactional(readOnly = true)
     public RsData<AiChatRoomDto> getAiChatRoom(@PathVariable Long id) {
-        AiChatRoom aiChatRoom = aiChatRoomService.getRoom(id)
+
+        User actor = rq.getActor();
+
+        if( actor == null ) {
+            throw new ServiceException(401, "로그인이 필요합니다.(AI 채팅방 단건 조회)");
+        }
+
+        AiChatRoom aiChatRoom = aiChatRoomService.getRoom(actor, id)
                 .orElseThrow(() -> new ServiceException(404, "존재하지 않는 AI 채팅방입니다."));
 
         AiChatRoomDto aiChatRoomDto = new AiChatRoomDto(aiChatRoom);
@@ -70,10 +84,17 @@ public class AiChatRoomController {
         );
     }
 
-    @Operation( summary = "AI 채팅방 다건 조회", description = "AI 채탱방 모두 조회합니다.")
+    @Operation( summary = "AI 채팅방 다건 조회(관리자만!!)", description = "모든 유저 AI 채탱방 모두 조회합니다.)")
     @GetMapping
     @Transactional(readOnly = true)
     public RsData<AiChatRoomListDto> getAiChatRooms() {
+
+        User actor = rq.getActor();
+
+        if (!actor.getRole().equals(User.UserRole.ADMIN)) {
+            throw new ServiceException(403, "관리자만 접근할 수 있습니다.");
+        }
+
         List<AiChatRoom> aiChatRooms = aiChatRoomService.getRooms();
 
         List<AiChatRoomDto> roomDtos = aiChatRooms.stream()
@@ -89,16 +110,14 @@ public class AiChatRoomController {
     @Operation( summary = "자기의 AI 채팅방 목록 조회", description = "자기자신의 채팅방 목록조회")
     @GetMapping("/mine")
     @Transactional(readOnly = true)
-    public RsData<AiChatRoomListDto> getMyAiChatRooms(
-            // TODO: 실제 구현시 @AuthenticationPrincipal 또는 SecurityContext에서 User 정보를 가져와야 함
-    ) {
-        //일단 유저가 없으니 주석
-//        if(user == null) {
-//            throw new ServiceException(401, "로그인이 필요합니다.");
-//        }
-//        Long userId = user.getId();
+    public RsData<AiChatRoomListDto> getMyAiChatRooms() {
 
-        List<AiChatRoom> aiChatRooms = aiChatRoomService.getMyRooms(1L); // TODO: 실제 사용자 ID로 변경
+        User actor = rq.getActor();
+        if( actor == null ) {
+            throw new ServiceException(401, "로그인이 필요합니다.(자신의 AI 채팅방 목록 조회)");
+        }
+
+        List<AiChatRoom> aiChatRooms = aiChatRoomService.getMyRooms(actor.getId()); // TODO: 실제 사용자 ID로 변경
 
         List<AiChatRoomDto> roomDtos = aiChatRooms.stream()
                 .map(AiChatRoomDto::new)
@@ -111,14 +130,19 @@ public class AiChatRoomController {
 
     }
 
-    @Operation( summary = "AI 채팅방을 삭제 ", description = "AI 채팅방을 삭제합니다.")
+    @Operation( summary = "AI 채팅방을 삭제(관리자 + 자기자신의 채팅방만) ", description = "AI 채팅방을 삭제합니다.")
     @DeleteMapping("/{id}")
     @Transactional
     public RsData<Void> deleteAiChatRoom(@PathVariable Long id) {// TODO: 실제 구현시 @AuthenticationPrincipal 또는 SecurityContext에서 User 정보를 가져와야 함
-//        if(user == null ) {
-//            throw new ServiceException(401, "로그인이 필요합니다.");
-//        }
-        aiChatRoomService.delete(id);
+
+        User actor = rq.getActor();
+
+        if( actor == null ) {
+            throw new ServiceException(401, "로그인이 필요합니다.(AI 채팅방 삭제)");
+        }
+
+
+        aiChatRoomService.delete(id, actor);
 
         return new RsData<>(
                 200,"%d번 AI 채팅방이 삭제되었습니다.".formatted(id), null);

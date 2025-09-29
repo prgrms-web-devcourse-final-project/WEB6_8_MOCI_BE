@@ -8,6 +8,7 @@ import com.moci_3d_backend.domain.chat.ai.aiChatMessage.enums.SenderType;
 import com.moci_3d_backend.domain.chat.ai.aiChatMessage.repository.AiChatMessageRepository;
 import com.moci_3d_backend.domain.chat.ai.aiChatRoom.entity.AiChatRoom;
 import com.moci_3d_backend.domain.chat.ai.aiChatRoom.repository.AiChatRoomRepository;
+import com.moci_3d_backend.domain.user.entity.User;
 import com.moci_3d_backend.external.ai.client.GeminiClient;
 import com.moci_3d_backend.external.ai.dto.GeminiRequest;
 import com.moci_3d_backend.external.ai.dto.GeminiResponse;
@@ -31,12 +32,14 @@ public class AiChatMessageService {
     private final AiChatMessageRateLimitService aiChatMessageRateLimitService;
 
 
-    public AiChatMessage create(Long roomId, SenderType senderType, String content) {
+    public AiChatMessage create(User actor, Long roomId, SenderType senderType, String content) {
+
         AiChatRoom room = aiChatRoomRepository.findById(roomId)
                 .orElseThrow(() -> new ServiceException(404, "존재하지 않는 AI 채팅방입니다."));
 
 
         AiChatMessage message = AiChatMessage.builder()
+                .sender(actor)
                 .room(room)
                 .senderType(senderType)
                 .content(content)
@@ -49,7 +52,7 @@ public class AiChatMessageService {
     }
 
     @Transactional
-    public AiExchangeDto ask(Long roomId, String content) {
+    public AiExchangeDto ask(User actor, Long roomId, String content) {
 
         // 추정 토큰 수 아주 보수적,간단 추정
         long tokensNeeded = Math.max(1, content.length());
@@ -57,7 +60,7 @@ public class AiChatMessageService {
         aiChatMessageRateLimitService.checkRateLimitsOrThrow(1L, tokensNeeded); // TODO: userId 나중에 넣기
 
         // 사용자 메시지 저장
-        AiChatMessage userMessage = create(roomId, SenderType.HUMAN, content);
+        AiChatMessage userMessage = create(actor, roomId, SenderType.HUMAN, content);
 
         // 히스토리 프롬프트 구성
         List<AiChatMessage> history = aiChatMessageRepository.findByRoomIdOrderByIdAsc(roomId);
@@ -67,7 +70,7 @@ public class AiChatMessageService {
         String aiText = geminiClient.generateChatResponse(prompt);
 
         // Ai 메시지 저장
-        AiChatMessage aiMessage = create(roomId, SenderType.AI, aiText);
+        AiChatMessage aiMessage = create(actor, roomId, SenderType.AI, aiText);
 
         return new AiExchangeDto(
                 new AiChatMessageDto(userMessage),
@@ -109,9 +112,15 @@ public class AiChatMessageService {
 
 
     @Transactional(readOnly = true)
-    public List<AiChatMessage> listMessages(Long roomId, Long fromId) {
+    public List<AiChatMessage> listMessages(User actor, Long roomId, Long fromId) {
         AiChatRoom room = aiChatRoomRepository.findById(roomId)
                 .orElseThrow(() -> new ServiceException(404, "존재하지 않는 AI 채팅방입니다."));
+
+        if (!actor.getRole().equals(User.UserRole.ADMIN) &&
+                !room.getUser().getId().equals(actor.getId())) {
+            throw new ServiceException(403, "해당 채팅방 메시지에 접근할 권한이 없습니다.");
+        }
+
 
         if (fromId == null) {
             return aiChatMessageRepository.findByRoomIdOrderByIdAsc(roomId);
@@ -151,9 +160,14 @@ public class AiChatMessageService {
 
 
     @Transactional(readOnly = true)
-    public List<AiChatMessage> searchAll(Long roomId, String query) {
+    public List<AiChatMessage> searchAll(User actor, Long roomId, String query) {
         AiChatRoom room = aiChatRoomRepository.findById(roomId)
                 .orElseThrow(() -> new ServiceException(404, "존재하지 않는 AI 채팅방입니다,"));
+
+        if (!actor.getRole().equals(User.UserRole.ADMIN) &&
+                !room.getUser().getId().equals(actor.getId())) {
+            throw new ServiceException(403, "해당 채팅방 메시지에 접근할 권한이 없습니다.");
+        }
 
         String likeKeyword = "%" + query + "%";
 
@@ -162,12 +176,17 @@ public class AiChatMessageService {
     }
 
     @Transactional
-    public void delete(Long roomId, Long messageId) {
+    public void delete(User actor, Long roomId, Long messageId) {
         AiChatRoom room = aiChatRoomRepository.findById(roomId)
                 .orElseThrow(() -> new ServiceException(404, "존재하지 않는 AI 채팅방입니다."));
 
         AiChatMessage message = aiChatMessageRepository.findById(messageId)
                 .orElseThrow(() -> new ServiceException(404, "존재하지 않는 메시지입니다."));
+
+        if (!actor.getRole().equals(User.UserRole.ADMIN) &&
+                !room.getUser().getId().equals(actor.getId())) {
+            throw new ServiceException(403, "해당 채팅방 메시지에 접근할 권한이 없습니다.");
+        }
 
         // 메시지가 해당 채팅방에 속하는지 검증
         if (!message.getRoom().getId().equals(room.getId())) {
