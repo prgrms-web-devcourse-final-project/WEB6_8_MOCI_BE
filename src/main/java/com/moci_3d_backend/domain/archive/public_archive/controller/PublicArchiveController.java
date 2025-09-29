@@ -5,6 +5,8 @@ import com.moci_3d_backend.domain.archive.public_archive.dto.PublicArchiveListRe
 import com.moci_3d_backend.domain.archive.public_archive.dto.PublicArchiveResponse;
 import com.moci_3d_backend.domain.archive.public_archive.dto.PublicArchiveUpdateRequest;
 import com.moci_3d_backend.domain.archive.public_archive.service.PublicArchiveService;
+import com.moci_3d_backend.domain.user.entity.User;
+import com.moci_3d_backend.global.rq.Rq;
 import com.moci_3d_backend.global.rsData.RsData;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -20,10 +22,11 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
-@Tag(name = "교육 자료실", description = "교육 자료실 관련 API (현재 인증인가 미구현으로 **수동으로 userId를 넣어야 합니다**(구현시 수정예정)")
+@Tag(name = "교육 자료실", description = "교육 자료실 관련 API 입니다.")
 public class PublicArchiveController {
 
     private final PublicArchiveService publicArchiveService;
+    private final Rq rq;
 
     // ==================================
     // =  Public API(인증 필요 x)  =
@@ -34,12 +37,12 @@ public class PublicArchiveController {
     @Operation(summary = "교육 자료실 목록 조회", description = "모든 사용자가 교육자료실 목록을 조회할 수 있습니다. (페이징)\n\n" +
        "** 검색 기능: **\n" +
     "- keyword 파라미터를 추가하면 title과 description에서 검색합니다. \n" +
-    "- keyword가 없으면 전체 목록을 반환합니다. (하위 호환성 유지)")
+    "- keyword가 없으면 전체 목록을 반환합니다.")
     public RsData<PublicArchiveListResponse> getPublicArchives(
             @RequestParam(required = false)
             @Parameter(
                     description = "검색 키워드 (선택사항, title 또는 description에서 검색)",
-                    example = "카카오톡"
+                    example = "기차 예매하는 법"
             ) String keyword,
 
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
@@ -56,7 +59,7 @@ public class PublicArchiveController {
             response = publicArchiveService.getPublicArchives(pageable);
         }
 
-        return RsData.of(200, "success to get public archives", response);
+        return RsData.of(200, "교육자료실 목록 조회 성공", response);
     }
 
     // 교육 자료실 상세 조회
@@ -66,7 +69,7 @@ public class PublicArchiveController {
             @PathVariable @Parameter(description = "자료실 ID") Long archiveId
     ) {
         PublicArchiveResponse response = publicArchiveService.getPublicArchive(archiveId);
-        return RsData.of(200, "success to get public archive", response);
+        return RsData.of(200, "교육 자료실 상세조회 성공", response);
     }
 
 
@@ -79,12 +82,11 @@ public class PublicArchiveController {
     @Operation(summary = "[관리자] 교육 자료실 등록", description = "관리자만 교육자료실에 글을 등록할 수 있습니다.\n" +
             "현재 플로우: 프론트에서 텍스트 및 파일**(선택사항 & 파일 첨부시 파일 업로드API먼저 호출 필요)** -> 양식에 맞게 본 API호출 -> DB저장")
     public RsData<PublicArchiveResponse> createPublicArchive(
-            @Valid @RequestBody PublicArchiveCreateRequest request,
-            // TODO 임시: 테스트용 userId 파라미터 (추후 @AuthenticationPrincipal 또는 SecurityContextHolder로 대체)
-            @RequestParam @Parameter(description = "임시 테스트용 관리자 ID") Long userId
+            @Valid @RequestBody PublicArchiveCreateRequest request
             ) {
-        PublicArchiveResponse response = publicArchiveService.createPublicArchive(request, userId);
-        return RsData.of(201, "success to create public archive", response);
+        User actor = rq.getActor();
+        PublicArchiveResponse response = publicArchiveService.createPublicArchive(request, actor);
+        return RsData.of(201, "교육 자료실 글 생성 성공 ", response);
     }
 
     @PutMapping("/admin/archive/public/{archiveId}")
@@ -92,22 +94,20 @@ public class PublicArchiveController {
     @Operation(summary = "[관리자] 교육 자료실 수정", description = "관리자만 교육자료실 글을 수정할 수 있습니다.")
     public RsData<PublicArchiveResponse> updatePublicArchive(
             @PathVariable @Parameter(description = "수정할 자료실 ID") Long archiveId,
-            @Valid @RequestBody PublicArchiveUpdateRequest request,
-            // 임시: 테스트용 userId 파라미터 (추후 본인 작성 글 확인용으로 사용)
-            @RequestParam @Parameter(description = "임시 테스트용 관리자 ID", example = "1") Long userId
-            ) {
-        PublicArchiveResponse response = publicArchiveService.updatePublicArchive(archiveId, request, userId);
-        return RsData.of(200, "success to update public archive", response);
+            @Valid @RequestBody PublicArchiveUpdateRequest request
+    ) {
+        User actor = rq.getActor();
+        PublicArchiveResponse response = publicArchiveService.updatePublicArchive(archiveId, request, actor);
+        return RsData.of(200, "교육 자료실 글 수정 성공", response);
     }
 
     @DeleteMapping("/admin/archive/public/{archiveId}")
     @PreAuthorize("hasRole('ADMIN')") // 관리자 권한 필요
     @Operation(summary = "[관리자] 교육 자료실 삭제", description = "관리자만 교육자료실 글을 삭제할 수 있습니다.")
     public RsData<Void> deletePublicArchive
-            (@PathVariable @Parameter(description = "삭제할 자료실 ID") Long archiveId,
-             // 임시: 테스트용 userId 파라미터 (추후 본인 작성 글 확인용으로 사용)
-             @RequestParam @Parameter(description = "임시 테스트용 관리자 ID", example = "1") Long userId) {
-        publicArchiveService.deletePublicArchive(archiveId, userId);
-        return RsData.of(200, "success to delete public archive");
+            (@PathVariable @Parameter(description = "삭제할 자료실 ID") Long archiveId) {
+        User actor = rq.getActor();
+        publicArchiveService.deletePublicArchive(archiveId, actor);
+        return RsData.of(200, "교육 자료실 글 삭제 성공");
     }
 }
