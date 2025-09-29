@@ -8,6 +8,10 @@ import com.moci_3d_backend.domain.archive.public_archive.entity.PublicArchive;
 import com.moci_3d_backend.domain.archive.public_archive.repository.PublicArchiveRepository;
 import com.moci_3d_backend.domain.chat.ai.aiChatRoom.repository.AiChatRoomRepository;
 import com.moci_3d_backend.domain.chat.ai.aiChatRoom.service.AiChatRoomService;
+import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.dto.CreateMentorChatRoom;
+import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.entity.MentorChatRoom;
+import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.service.MenteeChatRoomService;
+import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.service.MentorChatRoomService;
 import com.moci_3d_backend.domain.user.entity.User;
 import com.moci_3d_backend.domain.user.repository.UserRepository;
 import com.moci_3d_backend.global.util.PasswordUtil;
@@ -36,6 +40,8 @@ public class DevInitData {
     private final PublicArchiveRepository publicArchiveRepository;
     private final AiChatRoomRepository aiChatRoomRepository;
     private final AiChatRoomService aiChatRoomService;
+    private final MenteeChatRoomService menteeChatRoomService;
+    private final MentorChatRoomService mentorChatRoomService;
 
     @Bean
     ApplicationRunner devInitDataApplicationRunner() {
@@ -44,6 +50,7 @@ public class DevInitData {
             self.archiveRequestInit();
             self.publicArchiveInit();
             self.aiRoomInit();
+            self.chatRoomInit();
         };
     }
 
@@ -649,6 +656,22 @@ public class DevInitData {
         aiChatRoomService.create("샘플 AI 채팅방1");
         aiChatRoomService.create("샘플 AI 채팅방2");
         aiChatRoomService.create("샘플 AI 채팅방3");
+
+    }
+
+    @Transactional
+    public void chatRoomInit(){
+        User mentee = userRepository.findById(4L).get();
+        User mentor = userRepository.findById(2L).get();
+
+        MentorChatRoom chatroom = menteeChatRoomService.createMenteeChatRoom(
+                new CreateMentorChatRoom(
+                        "카카오톡",
+                        "카카오톡 설치 어떻게 하나요?"
+                ),
+                mentee
+        );
+        mentorChatRoomService.joinMentorChatRoom(chatroom.getId(), mentor);
 
     }
 

@@ -13,4 +13,10 @@ public class ChatSendMessage {
         this.content = content;
         this.attachmentId = attachmentId;
     }
+
+    public ChatSendMessage(String sender, ChatReceiveMessage receiveMessage) {
+        this.sender = sender;
+        this.content = receiveMessage.getContent();
+        this.attachmentId = receiveMessage.getAttachmentId();
+    }
 }

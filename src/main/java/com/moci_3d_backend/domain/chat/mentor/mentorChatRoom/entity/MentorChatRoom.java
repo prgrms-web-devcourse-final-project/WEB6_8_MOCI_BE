@@ -73,7 +73,7 @@ public class MentorChatRoom {
 
     public MentorChatRoom(CreateMentorChatRoom createMentorChatRoom, User mentee){
         this.category = createMentorChatRoom.getCategory();
-        this.title = createMentorChatRoom.getTitle();
+        this.title = createMentorChatRoom.getQuestion();
         this.status = true;
         this.mentee = mentee;
         this.menteeLastAt = LocalDateTime.now();
