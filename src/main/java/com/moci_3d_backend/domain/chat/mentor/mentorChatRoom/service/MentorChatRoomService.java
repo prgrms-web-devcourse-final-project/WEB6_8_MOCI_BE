@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -52,5 +53,9 @@ public class MentorChatRoomService {
     public List<DetailMentorChatRoom> getAllMentorChatRooms(){
         List<MentorChatRoom> mentorChatRoomList = mentorChatRoomRepository.findByDeletedFalse();
         return mentorChatRoomDtoService.toDetailMentorChatRoomList(mentorChatRoomList);
+    }
+
+    public Optional<MentorChatRoom> getChatRoomById(Long roomId) {
+        return mentorChatRoomRepository.findByIdAndDeletedFalse(roomId);
     }
 }

@@ -4,7 +4,6 @@ import lombok.Getter;
 
 @Getter
 public class ChatReceiveMessage {
-    private String sender;
     private String content;
     private Long attachmentId;
 }
