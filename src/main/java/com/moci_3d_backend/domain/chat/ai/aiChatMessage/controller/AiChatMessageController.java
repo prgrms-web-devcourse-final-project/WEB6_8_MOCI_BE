@@ -5,8 +5,10 @@ import com.moci_3d_backend.domain.chat.ai.aiChatMessage.dto.AiExchangeDto;
 import com.moci_3d_backend.domain.chat.ai.aiChatMessage.entity.AiChatMessage;
 import com.moci_3d_backend.domain.chat.ai.aiChatMessage.enums.SenderType;
 import com.moci_3d_backend.domain.chat.ai.aiChatMessage.service.AiChatMessageService;
+import com.moci_3d_backend.domain.user.entity.User;
 import com.moci_3d_backend.external.sse.SseEmitters;
 import com.moci_3d_backend.external.sse.Ut;
+import com.moci_3d_backend.global.rq.Rq;
 import com.moci_3d_backend.global.rsData.RsData;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,8 +32,7 @@ import java.util.List;
 public class AiChatMessageController {
     private final AiChatMessageService aiChatMessageService;
     private final SseEmitters sseEmitter;
-
-    //TODO: 로그인한 사용자가없음
+    private final Rq rq;
 
     public record CreateAiChatMessageReqBody(
             @NotNull SenderType senderType,
@@ -50,7 +51,9 @@ public class AiChatMessageController {
             @PathVariable Long roomId,
             @RequestBody @Valid CreateAiChatMessageReqBody reqBody
     ) {
-        AiChatMessage chatMessage = aiChatMessageService.create(roomId, reqBody.senderType, reqBody.content);
+        User actor = rq.getActor();
+
+        AiChatMessage chatMessage = aiChatMessageService.create(actor, roomId, reqBody.senderType, reqBody.content);
 
 
         return new RsData<>(
@@ -73,8 +76,9 @@ public class AiChatMessageController {
     @PostMapping(value = "/{roomId}/ask", produces = MediaType.APPLICATION_JSON_VALUE)
     public RsData<AiExchangeDto> askAi(@PathVariable Long roomId,
                                        @RequestBody @Valid AskAiRequest req) {
+        User actor = rq.getActor();
 
-        AiExchangeDto exchangeDto = aiChatMessageService.ask(roomId, req.content);
+        AiExchangeDto exchangeDto = aiChatMessageService.ask(actor, roomId, req.content);
 
         sseEmitter.noti("chat__messageAdded", Ut.mapOf(
                 "roomId", roomId,
@@ -93,7 +97,9 @@ public class AiChatMessageController {
             @PathVariable Long roomId,
             @RequestParam(required = false) Long fromId  // 이 ID 이후의 메시지들만 가져옴
     ) {
-        List<AiChatMessage> messages = aiChatMessageService.listMessages(roomId, fromId);
+        User actor = rq.getActor();
+
+        List<AiChatMessage> messages = aiChatMessageService.listMessages(actor, roomId, fromId);
         return messages.stream()
                 .map(AiChatMessageDto::new)
                 .toList();
@@ -106,7 +112,9 @@ public class AiChatMessageController {
     )
     @GetMapping("/{roomId}/messages/search")
     public RsData<List<AiChatMessageDto>> searchMessages(@PathVariable Long roomId, @RequestParam @NotBlank String query) {
-        List<AiChatMessage> messages = aiChatMessageService.searchAll(roomId, query);
+        User actor = rq.getActor();
+
+        List<AiChatMessage> messages = aiChatMessageService.searchAll(actor, roomId, query);
 
         List<AiChatMessageDto> dtoList = messages.stream()
                 .map(AiChatMessageDto::new)
@@ -140,7 +148,10 @@ public class AiChatMessageController {
     @Operation(summary = "메시지 삭제", description = "채팅방 안에 특정 메시지를 삭제합니다.")
     @DeleteMapping("/{roomId}/messages/{messageId}")
     public RsData<Void> deleteMessage(@PathVariable Long roomId, @PathVariable Long messageId) {
-        aiChatMessageService.delete(roomId, messageId);
+
+        User actor = rq.getActor();
+
+        aiChatMessageService.delete(actor, roomId, messageId);
 
         return new RsData<>(
                 200, "%d번 메시지를 삭제했습니다.".formatted(messageId), null);

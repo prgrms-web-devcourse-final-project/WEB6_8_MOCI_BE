@@ -653,9 +653,12 @@ public class DevInitData {
             return;
         }
 
-        aiChatRoomService.create("샘플 AI 채팅방1");
-        aiChatRoomService.create("샘플 AI 채팅방2");
-        aiChatRoomService.create("샘플 AI 채팅방3");
+        User user4 = userRepository.findById(4L).get();
+        User user5 = userRepository.findById(5L).get();
+
+        aiChatRoomService.create(user4,"샘플 AI 채팅방1");
+        aiChatRoomService.create(user4,"샘플 AI 채팅방2");
+        aiChatRoomService.create(user5,"샘플 AI 채팅방3");
 
     }
 
