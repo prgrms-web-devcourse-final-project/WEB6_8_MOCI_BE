@@ -50,7 +50,7 @@ public class AiChatRoomController {
         AiChatRoom chatRoom = aiChatRoomService.create(actor,reqBody.title);
 
         // 첫 질문을 등록하고 AI 응답을 받는 로직
-        aiChatMessageService.ask(chatRoom.getId(), reqBody.title);
+        aiChatMessageService.ask(actor, chatRoom.getId(), reqBody.title);
 
         return new RsData<>(
                 200,
