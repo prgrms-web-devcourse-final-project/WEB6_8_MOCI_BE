@@ -44,7 +44,7 @@ public class AiChatRoomController {
         User actor = rq.getActor();
 
         if( actor == null ) {
-            throw new ServiceException(401, "로그인이 필요합니다.(AI 채팅방 생성");
+            throw new ServiceException(401, "로그인이 필요합니다.(AI 채팅방 생성)");
         }
 
         AiChatRoom chatRoom = aiChatRoomService.create(actor,reqBody.title);
@@ -70,7 +70,7 @@ public class AiChatRoomController {
         User actor = rq.getActor();
 
         if( actor == null ) {
-            throw new ServiceException(401, "로그인이 필요합니다.(AI 채팅방 단건 조회");
+            throw new ServiceException(401, "로그인이 필요합니다.(AI 채팅방 단건 조회)");
         }
 
         AiChatRoom aiChatRoom = aiChatRoomService.getRoom(actor, id)
@@ -84,7 +84,7 @@ public class AiChatRoomController {
         );
     }
 
-    @Operation( summary = "AI 채팅방 다건 조회(관리자만!!)", description = "모든 유저 AI 채탱방 모두 조회합니다.")
+    @Operation( summary = "AI 채팅방 다건 조회(관리자만!!)", description = "모든 유저 AI 채탱방 모두 조회합니다.)")
     @GetMapping
     @Transactional(readOnly = true)
     public RsData<AiChatRoomListDto> getAiChatRooms() {
@@ -114,7 +114,7 @@ public class AiChatRoomController {
 
         User actor = rq.getActor();
         if( actor == null ) {
-            throw new ServiceException(401, "로그인이 필요합니다.(자신의 AI 채팅방 목록 조회");
+            throw new ServiceException(401, "로그인이 필요합니다.(자신의 AI 채팅방 목록 조회)");
         }
 
         List<AiChatRoom> aiChatRooms = aiChatRoomService.getMyRooms(actor.getId()); // TODO: 실제 사용자 ID로 변경
@@ -138,7 +138,7 @@ public class AiChatRoomController {
         User actor = rq.getActor();
 
         if( actor == null ) {
-            throw new ServiceException(401, "로그인이 필요합니다.(AI 채팅방 삭제");
+            throw new ServiceException(401, "로그인이 필요합니다.(AI 채팅방 삭제)");
         }
 
 
