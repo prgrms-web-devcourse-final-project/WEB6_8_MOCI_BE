@@ -9,6 +9,7 @@ import com.moci_3d_backend.domain.fileUpload.repository.FileUploadRepository;
 import com.moci_3d_backend.domain.user.entity.User;
 import com.moci_3d_backend.domain.user.repository.UserRepository;
 import com.moci_3d_backend.global.util.KoreanTextAnalyzer;
+import com.moci_3d_backend.global.validator.AuthValidator;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -32,20 +33,15 @@ public class PublicArchiveService {
 
     // 교육 자료실 게시물 생성
     @Transactional
-    public PublicArchiveResponse createPublicArchive(PublicArchiveCreateRequest request, Long userId) {
-        // 권한 확인 (관리자)
-        User user = userRepository.findById(userId)
-                        .orElseThrow(() -> new EntityNotFoundException("해당 ID의 사용자를 찾을 수 없습니다." + userId));
-                if (!User.UserRole.ADMIN.equals(user.getRole())) {
-                    throw new IllegalStateException("관리자 권한이 필요합니다.");
-                }
+    public PublicArchiveResponse createPublicArchive(PublicArchiveCreateRequest request, User actor) {
+        authValidator.validateAdmin(actor);
 
         PublicArchive newArchive = new PublicArchive();
         newArchive.setTitle(request.getTitle());
         newArchive.setDescription(request.getDescription());
         newArchive.setCategory(request.getCategory());
         newArchive.setSubCategory(request.getSubCategory());
-        newArchive.setUploadedBy(user);
+        newArchive.setUploadedBy(actor);
 
         // 파일 처리 - 3가지 케이스 모두 지원
         processFiles(newArchive, request.getFileIds());
@@ -110,12 +106,8 @@ public class PublicArchiveService {
 
     // 교육 자료실 게시물 수정
     @Transactional
-    public PublicArchiveResponse updatePublicArchive(Long archiveId, PublicArchiveUpdateRequest request, Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 ID의 사용자를 찾을 수 없습니다." + userId));
-        if (!User.UserRole.ADMIN.equals(user.getRole())) {
-            throw new IllegalStateException("관리자 권한이 필요합니다.");
-        }
+    public PublicArchiveResponse updatePublicArchive(Long archiveId, PublicArchiveUpdateRequest request, User actor) {
+        authValidator.validateAdmin(actor);
 
         PublicArchive existingArchive = publicArchiveRepository.findById(archiveId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 ID의 교육 자료실 글을 찾을 수 없습니다: " + archiveId));
@@ -129,12 +121,8 @@ public class PublicArchiveService {
 
     // 교육 자료실 게시물 삭제
     @Transactional
-    public void deletePublicArchive(Long archiveId, Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 ID의 사용자를 찾을 수 없습니다." + userId));
-        if (!User.UserRole.ADMIN.equals(user.getRole())) {
-            throw new IllegalStateException("관리자 권한이 필요합니다.");
-        }
+    public void deletePublicArchive(Long archiveId, User actor) {
+        authValidator.validateAdmin(actor);
 
         if (!publicArchiveRepository.existsById(archiveId)) {
             throw new EntityNotFoundException("해당 ID의 교육 자료실 글을 찾을 수 없습니다: " + archiveId);
@@ -195,4 +183,6 @@ public class PublicArchiveService {
         archive.setFileUploads(fileUploads);
         fileUploads.forEach(file -> file.setPublicArchive(archive));
     }
+
+    private final AuthValidator authValidator;
 }
