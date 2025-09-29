@@ -3,7 +3,6 @@ package com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.controller;
 import com.moci_3d_backend.domain.user.entity.User;
 import com.moci_3d_backend.domain.user.service.UserService;
 import jakarta.servlet.http.Cookie;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,10 +29,6 @@ public class ApiV1MenteeChatRoomControllerTest {
 
     @Autowired
     private MockMvc mvc;
-
-    @BeforeAll
-    public static void beforeAll() {
-    }
 
     @Test
     @DisplayName("채팅방 생성")
