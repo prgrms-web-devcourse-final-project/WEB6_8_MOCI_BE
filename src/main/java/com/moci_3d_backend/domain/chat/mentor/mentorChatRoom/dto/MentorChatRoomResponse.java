@@ -4,21 +4,26 @@ import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.entity.MentorChatRo
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
+
 @Getter
 public class MentorChatRoomResponse {
     private Long id;
     private String question;
     private Long unread_count;
+    private LocalDateTime createdAt;
 
     public MentorChatRoomResponse(MentorChatRoom entity){
         this.id = entity.getId();
         this.question = entity.getQuestion();
         this.unread_count = 0L;
+        this.createdAt = entity.getCreatedAt();
     }
     @QueryProjection
-    public MentorChatRoomResponse(Long id, String question, Long unread_count){
+    public MentorChatRoomResponse(Long id, String question, Long unread_count, LocalDateTime createdAt){
         this.id = id;
         this.question = question;
         this.unread_count = unread_count;
+        this.createdAt = createdAt;
     }
 }
