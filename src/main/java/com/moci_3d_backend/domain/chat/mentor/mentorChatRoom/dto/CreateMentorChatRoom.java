@@ -5,5 +5,5 @@ import lombok.Getter;
 @Getter
 public class CreateMentorChatRoom {
     private String category;
-    private String title;
+    private String question;
 }
