@@ -48,23 +48,24 @@ public class CustomOAuth2LoginSuccessHandler implements AuthenticationSuccessHan
             return;
         }
 
-        // ✅ 기본 리다이렉트 URL
-        String redirectUrl = "/";
+        // ✅ digitalLevel에 따른 리다이렉트 URL 결정 (임시로 state 파라미터 무시)
+        String redirectUrl = determineRedirectUrl(actor);
+        
+        log.info("리다이렉트 URL 결정: {}", redirectUrl);
 
-        // ✅ state 파라미터 확인
-        String stateParam = request.getParameter("state");
-
-        if (stateParam != null) {
-            // 1️⃣ Base64 URL-safe 디코딩
-            String decodedStateParam = new String(Base64.getUrlDecoder().decode(stateParam), StandardCharsets.UTF_8);
-
-            // 2️⃣ '#' 앞은 redirectUrl, 뒤는 originState
-            redirectUrl = decodedStateParam.split("#", 2)[0];
-        }
-
-        // ✅ 최종 리다이렉트
+        // ✅ 최종 리다이렉트 (토큰 정보는 쿠키에 이미 저장됨)
         response.sendRedirect(redirectUrl);
         
         log.info("OAuth2 로그인 완료 - 사용자: {}, 리다이렉트: {}", actor.getUserId(), redirectUrl);
     }
+
+    private String determineRedirectUrl(User user) {
+        // FE로 리다이렉트하고 상태 정보 전달
+        if (user.getDigitalLevel() == null) {
+            return "http://localhost:3000/register/ox-test"; // 디지털 레벨 테스트 페이지
+        } else {
+            return "http://localhost:3000/main"; // 홈페이지
+        }
+    }
+
 }

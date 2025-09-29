@@ -17,6 +17,7 @@ public class UserLoginRequest {
     private String loginType;
     
     // === 일반 로그인 ===
-    private String userId;    // 전화번호
+    @Pattern(regexp = "^010-\\d{4}-\\d{4}$", message = "전화번호는 010-XXXX-XXXX 형식이어야 합니다")
+    private String userId;    // 전화번호 (010-1234-5678 형식)
     private String password;  // 비밀번호
 }

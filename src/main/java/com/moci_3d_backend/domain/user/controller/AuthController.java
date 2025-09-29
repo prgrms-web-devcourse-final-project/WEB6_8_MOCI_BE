@@ -3,7 +3,6 @@ package com.moci_3d_backend.domain.user.controller;
 import com.moci_3d_backend.domain.user.dto.request.UserLoginRequest;
 import com.moci_3d_backend.domain.user.dto.request.UserRegisterRequest;
 import com.moci_3d_backend.domain.user.dto.response.UserCreateTokenResponse;
-import com.moci_3d_backend.domain.user.dto.response.UserLoginResponse;
 import com.moci_3d_backend.domain.user.dto.response.UserRegisterResponse;
 import com.moci_3d_backend.domain.user.entity.User;
 import com.moci_3d_backend.domain.user.service.UserService;
@@ -34,14 +33,6 @@ public class AuthController {
         return ResponseEntity.ok(RsData.successOf(response));
     }
 
-    // // === 로그인 ===
-    // @Operation(summary = "로그인()", description = "사용자 로그인을 수행합니다.")
-    // @ApiResponse(responseCode = "200", description = "로그인 성공")
-    // @PostMapping("/login")
-    // public ResponseEntity<RsData<UserLoginResponse>> login(@RequestBody UserLoginRequest request) {
-    //     UserLoginResponse response = userService.login(request);
-    //     return ResponseEntity.ok(RsData.successOf(response));
-    // }
 
     // === 토큰 생성 ===
     @Operation(summary = "로그인(토큰발급)", description = "사용자 인증 후 JWT 토큰을 생성하고 쿠키에 저장합니다.")
@@ -62,7 +53,7 @@ public class AuthController {
 
     @Operation(summary = "로그아웃", description = "저장된 JWT 토큰을 삭제합니다 (로그아웃).")
     @ApiResponse(responseCode = "200", description = "토큰 삭제 성공")
-    @DeleteMapping("/logout")
+    @DeleteMapping("/token")
     public ResponseEntity<Void> deleteToken() {
         rq.deleteCookie("accessToken");
         rq.deleteCookie("refreshToken");

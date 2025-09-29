@@ -45,17 +45,25 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private void work(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        String requestURI = request.getRequestURI();
+        System.out.println("=== CustomAuthenticationFilter 실행 ===");
+        System.out.println("요청 URI: " + requestURI);
+        
         // API 요청이 아니라면 패스
-        if (!request.getRequestURI().startsWith("/api/")) {
+        if (!requestURI.startsWith("/api/")) {
+            System.out.println("API 요청이 아님 - 패스");
             filterChain.doFilter(request, response);
             return;
         }
 
         // 인증, 인가가 필요없는 API 요청이라면 패스
-        if (List.of("/api/v1/auth/login", "/api/v1/auth/signup", "/api/v1/members/join").contains(request.getRequestURI())) {
+        if (requestURI.startsWith("/api/v1/auth/") || requestURI.equals("/api/v1/users/check-phone")) {
+            System.out.println("인증 불필요한 API - 패스");
             filterChain.doFilter(request, response);
             return;
         }
+        
+        System.out.println("인증 필요한 API - 인증 처리 시작");
 
         String refreshToken;
         String accessToken;

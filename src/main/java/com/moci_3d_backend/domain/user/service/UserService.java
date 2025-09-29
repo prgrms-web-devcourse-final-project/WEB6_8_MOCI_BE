@@ -1,9 +1,10 @@
 package com.moci_3d_backend.domain.user.service;
 
+import com.moci_3d_backend.domain.user.dto.request.UserCheckPhoneNumberRequest;
 import com.moci_3d_backend.domain.user.dto.request.UserLoginRequest;
 import com.moci_3d_backend.domain.user.dto.request.UserRegisterRequest;
+import com.moci_3d_backend.domain.user.dto.response.UserCheckPhoneNumberResponse;
 import com.moci_3d_backend.domain.user.dto.response.UserLoginResponse;
-import com.moci_3d_backend.domain.user.dto.response.UserResponse;
 import com.moci_3d_backend.domain.user.entity.User;
 import com.moci_3d_backend.domain.user.repository.UserRepository;
 import com.moci_3d_backend.global.exception.ServiceException;
@@ -56,6 +57,12 @@ public class UserService {
 
         // 저장 및 반환
         return userRepository.save(user);
+    }
+
+    // === 전화번호 중복확인 ===
+    public UserCheckPhoneNumberResponse checkPhone(UserCheckPhoneNumberRequest request) {
+        boolean isAvailable = !userRepository.existsByUserId(request.getPhoneNumber());
+        return UserCheckPhoneNumberResponse.from(request.getPhoneNumber(), isAvailable);
     }
 
 

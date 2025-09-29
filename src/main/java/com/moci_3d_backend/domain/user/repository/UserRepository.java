@@ -14,6 +14,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     // === 중복 체크 ===
     boolean existsByUserId(String userId);  // userId(전화번호) 중복 체크
-
     Optional<User> findByRefreshToken(String refreshToken);
 }
