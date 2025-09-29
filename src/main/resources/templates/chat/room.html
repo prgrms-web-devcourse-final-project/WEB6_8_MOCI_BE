@@ -38,6 +38,23 @@
         })
             .then(response => response.json())
     }
+
+    function fetPost(lastSeenMessageId) {
+        fetch("/api/v1/chat/ai/rooms/1/read", {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify({
+                lastSeenMessageId: lastSeenMessageId
+            })
+        })
+            .then(response => response.json())
+            .then(body => {
+                console.log("읽음 처리 결과:", body);
+            });
+    }
 </script>
 
 <script>
@@ -81,8 +98,11 @@
     function Chat__drawMessages(messages) {
         if (messages.length > 0) {
 
-            // 메세지를 그리기 전에 Chat__lastLoadedUuid 변수를 갱신합니다.
+            // 메세지를 그리기 전에 Chat__lastLoadedId(마지막 메시지 ID)를 갱신
             Chat__lastLoadedId = messages[messages.length - 1].id;
+
+            // 메세지를 그린 후에 읽음 처리를 합니다.
+            fetPost(Chat__lastLoadedId);
         }
 
         messages.forEach((message) => {

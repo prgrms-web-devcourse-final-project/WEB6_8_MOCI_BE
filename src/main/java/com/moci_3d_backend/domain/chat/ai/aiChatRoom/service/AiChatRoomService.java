@@ -16,10 +16,9 @@ import java.util.Optional;
 public class AiChatRoomService {
     private  final AiChatRoomRepository aiChatRoomRepository;
 
-    public AiChatRoom create(String title,String category) {
+    public AiChatRoom create(String title) {
         AiChatRoom aiChatRoom = AiChatRoom.builder()
                 .title(title)
-                .category(category)
                 .status(true)
                 .build();
 

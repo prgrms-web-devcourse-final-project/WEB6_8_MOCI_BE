@@ -18,8 +18,6 @@ public class AiChatRoomDto {
     private String title;
     private boolean status;
 
-    private String category;
-
     public AiChatRoomDto(AiChatRoom aiChatRoom) {
         this.id = aiChatRoom.getId();
         this.createdAt = aiChatRoom.getCreatedAt();
@@ -28,7 +26,6 @@ public class AiChatRoomDto {
         //this.userId = aiChatRoom.getUser().getId();
         this.title = aiChatRoom.getTitle();
         this.status = aiChatRoom.isStatus();
-        this.category = aiChatRoom.getCategory();
 
     }
 }
