@@ -662,9 +662,13 @@ public class DevInitData {
 
     }
 
-    @Transactional
-    public void chatRoomInit() {
+     @Transactional
+    public void chatRoomInit(){
+        if (mentorChatRoomService.getChatRoomCount() >0){
+            return;
+        }
         User mentee = userRepository.findById(4L).get();
+        User mentee2 = userRepository.findById(5L).get();
         User mentor = userRepository.findById(2L).get();
 
         MentorChatRoom chatroom = menteeChatRoomService.createMenteeChatRoom(
@@ -675,6 +679,14 @@ public class DevInitData {
                 mentee
         );
         mentorChatRoomService.joinMentorChatRoom(chatroom.getId(), mentor);
+
+        MentorChatRoom chatroom2 = menteeChatRoomService.createMenteeChatRoom(
+                new CreateMentorChatRoom(
+                        "카카오톡",
+                        "카카오톡 채팅을 어떻게 시작하나요?"
+                ),
+                mentee2
+        );
 
     }
 
