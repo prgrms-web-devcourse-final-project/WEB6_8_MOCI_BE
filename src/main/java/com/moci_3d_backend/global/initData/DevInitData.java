@@ -402,9 +402,9 @@ public class DevInitData {
             return;
         }
 
-        aiChatRoomService.create("샘플 AI 채팅방1", "카카오톡 사용법");
-        aiChatRoomService.create("샘플 AI 채팅방2", "유투브 사용법");
-        aiChatRoomService.create("샘플 AI 채팅방3", "KTX 온라인 예매");
+        aiChatRoomService.create("샘플 AI 채팅방1");
+        aiChatRoomService.create("샘플 AI 채팅방2");
+        aiChatRoomService.create("샘플 AI 채팅방3");
 
     }
 
