@@ -1,11 +1,13 @@
 package com.moci_3d_backend.domain.webRTC.controller;
 
 import com.moci_3d_backend.domain.webRTC.dto.WebRTCDto;
+import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
 @Controller
+@RequiredArgsConstructor
 public class WebRTCController {
 
     @MessageMapping("/webrtc")
