@@ -42,7 +42,9 @@ public class SecurityConfig {
                                 "/v3/api-docs/**", // OPEN API 문서의 JSON 버전
                                 "/webjars/**",
                                 "/actuator/**", // 헬스체크, 무중단배포에 필요
-                                "/api/v1/file/**"
+                                "/api/v1/file/**",
+                                "/chat/room/**",
+                                "sse/**"
                         ).permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/*/archive/public/**")
                         .permitAll()
