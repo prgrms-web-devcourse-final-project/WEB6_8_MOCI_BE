@@ -20,9 +20,9 @@ public class MenteeChatRoomService {
     private final MentorChatRoomDtoService mentorChatRoomDtoService;
 
     @Transactional
-    public void createMenteeChatRoom(CreateMentorChatRoom createMentorChatRoom, User mentee){
+    public MentorChatRoom createMenteeChatRoom(CreateMentorChatRoom createMentorChatRoom, User mentee){
         MentorChatRoom mentorChatRoom = new MentorChatRoom(createMentorChatRoom, mentee);
-        mentorChatRoomRepository.save(mentorChatRoom);
+        return mentorChatRoomRepository.save(mentorChatRoom);
     }
 
     public List<MentorChatRoomResponse> getMenteeChatRooms(User mentee){

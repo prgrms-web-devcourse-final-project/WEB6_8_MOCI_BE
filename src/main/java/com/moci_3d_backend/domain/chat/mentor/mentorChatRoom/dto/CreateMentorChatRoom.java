@@ -6,4 +6,9 @@ import lombok.Getter;
 public class CreateMentorChatRoom {
     private String category;
     private String question;
+
+    public CreateMentorChatRoom(String category, String question) {
+        this.category = category;
+        this.question = question;
+    }
 }
