@@ -32,12 +32,13 @@ public class MentorChatRoomService {
     }
 
     @Transactional
-    public void joinMentorChatRoom(Long roomId, User mentor) {
+    public MentorChatRoomResponse joinMentorChatRoom(Long roomId, User mentor) {
         MentorChatRoom mentorChatRoom = mentorChatRoomRepository.findByIdAndDeletedFalse(roomId).orElse(null);
         if (mentorChatRoom == null){
             throw new ServiceException(400, "chat room does not exist");
         }
         mentorChatRoom.joinMentor(mentor);
+        return mentorChatRoomDtoService.toMentorChatRoomResponse(mentorChatRoom);
     }
 
 

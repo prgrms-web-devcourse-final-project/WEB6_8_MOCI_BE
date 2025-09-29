@@ -44,7 +44,8 @@ public class MentorChatRoomRepositoryImpl implements MentorChatRoomRepositoryCus
                 .select(new QMentorChatRoomResponse(
                         chatRoom.id,
                         chatRoom.question,
-                        message.count().as("unread_count")
+                        message.count().as("unread_count"),
+                        chatRoom.createdAt
                 ))
                 .from(chatRoom)
                 .leftJoin(message).on(
