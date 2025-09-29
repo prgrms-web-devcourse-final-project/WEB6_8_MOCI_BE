@@ -58,4 +58,8 @@ public class MentorChatRoomService {
     public Optional<MentorChatRoom> getChatRoomById(Long roomId) {
         return mentorChatRoomRepository.findByIdAndDeletedFalse(roomId);
     }
+
+    public Long getChatRoomCount(){
+        return mentorChatRoomRepository.count();
+    }
 }
