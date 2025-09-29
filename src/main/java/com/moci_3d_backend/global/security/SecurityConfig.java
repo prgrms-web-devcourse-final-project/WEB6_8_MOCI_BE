@@ -44,7 +44,7 @@ public class SecurityConfig {
                                 "/actuator/**", // 헬스체크, 무중단배포에 필요
                                 "/api/v1/file/**",
                                 "/chat/room/**",
-                                "sse/**"
+                                "/sse/**"
                         ).permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/*/archive/public/**")
                         .permitAll()
