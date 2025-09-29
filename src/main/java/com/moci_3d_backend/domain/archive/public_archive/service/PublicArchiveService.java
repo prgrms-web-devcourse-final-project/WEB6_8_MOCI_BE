@@ -27,6 +27,7 @@ public class PublicArchiveService {
     private final PublicArchiveRepository publicArchiveRepository;
     private final UserRepository userRepository;
     private final FileUploadRepository fileUploadRepository;
+    private final AuthValidator authValidator;
 
     // 데이터 변환 mapper
     private final PublicArchiveMapper publicArchiveMapper;
@@ -78,14 +79,14 @@ public class PublicArchiveService {
 
         // KOMORAN으로 명사 추출
         List<String> nouns = KoreanTextAnalyzer.extractNouns(keyword);
-        
+
         // 명사가 없으면 원본 키워드로 검색 (영어, 숫자 등)
         if (nouns.isEmpty()) {
             String[] keywords = keyword.trim().split("\\s+");
             Page<PublicArchive> entityPage = keywords.length == 1 ?
                     publicArchiveRepository.searchByKeyword(keywords[0], pageable) :
                     publicArchiveRepository.searchByKeywords(keywords, pageable);
-            
+
             Page<PublicArchiveListItemDto> dtoPage = entityPage.map(publicArchiveMapper::toListItemDto);
             return new PublicArchiveListResponse(dtoPage);
         }
@@ -183,6 +184,4 @@ public class PublicArchiveService {
         archive.setFileUploads(fileUploads);
         fileUploads.forEach(file -> file.setPublicArchive(archive));
     }
-
-    private final AuthValidator authValidator;
 }
