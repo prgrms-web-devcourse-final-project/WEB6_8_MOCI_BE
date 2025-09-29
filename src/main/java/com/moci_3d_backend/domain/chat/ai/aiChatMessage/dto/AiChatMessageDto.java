@@ -13,7 +13,7 @@ public class AiChatMessageDto {
     private LocalDateTime createdAt;
     private LocalDateTime readAt;
     private Long roomId;
-    private Long senderId; //사람이면 User, AI면 null //TODO: 나중에 추가
+    private Long senderId; //사람이면 User, AI면 null
     private String senderType;
     private String content;
     private String status;
