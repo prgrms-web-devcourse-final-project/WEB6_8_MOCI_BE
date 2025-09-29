@@ -1,6 +1,8 @@
 package com.moci_3d_backend.domain.user.entity;
 
 import com.moci_3d_backend.domain.archive.public_archive.entity.PublicArchive;
+import com.moci_3d_backend.domain.chat.ai.aiChatRoom.entity.AiChatRoom;
+import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.entity.MentorChatRoom;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -62,19 +64,19 @@ public class User {
     @OneToMany(mappedBy = "uploadedBy", fetch = FetchType.LAZY)
     private List<PublicArchive> uploadedArchives;
 
-    // 멘토 참여 채팅방
-    // @OneToMany(mappedBy = "mentor", fetch = FetchType.LAZY)
-    // private List<MentorChatRoom> mentorChatRooms;
+//     멘토 참여 채팅방
+     @OneToMany(mappedBy = "mentor", fetch = FetchType.LAZY)
+     private List<MentorChatRoom> mentorChatRooms;
 
 
-    // 멘티 참여 채팅방
-    // @OneToMany(mappedBy = "mentee", fetch = FetchType.LAZY)
-    // private List<MentorChatRoom> menteeChatRooms;
+//     멘티 참여 채팅방
+     @OneToMany(mappedBy = "mentee", fetch = FetchType.LAZY)
+     private List<MentorChatRoom> menteeChatRooms;
 
 
-    // AI 채팅방
-    // @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    // private List<AiChatRoom> aiChatRooms;
+//     AI 채팅방
+     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+     private List<AiChatRoom> aiChatRooms;
 
     // === 비즈니스 메서드 ===
     public void updateName(String name) {
