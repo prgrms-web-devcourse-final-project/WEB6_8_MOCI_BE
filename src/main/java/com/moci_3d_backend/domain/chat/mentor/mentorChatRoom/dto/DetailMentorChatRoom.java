@@ -12,7 +12,7 @@ public class DetailMentorChatRoom {
 
     public DetailMentorChatRoom(MentorChatRoom mentorChatRoom){
         this.id = mentorChatRoom.getId();
-        this.title = mentorChatRoom.getTitle();
+        this.title = mentorChatRoom.getQuestion();
         this.category = mentorChatRoom.getCategory();
         this.digital_level = mentorChatRoom.getMentee().getDigitalLevel();
     }

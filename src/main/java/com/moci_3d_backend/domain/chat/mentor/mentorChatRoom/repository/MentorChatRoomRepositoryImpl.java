@@ -1,12 +1,11 @@
 package com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.repository;
 
 import com.moci_3d_backend.domain.chat.mentor.mentorChatMessage.entity.QMentorChatMessage;
-import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.dto.DetailMentorChatRoom;
 import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.dto.MentorChatRoomResponse;
+import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.dto.QMentorChatRoomResponse;
 import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.entity.QMentorChatRoom;
 import com.moci_3d_backend.domain.user.entity.User;
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
@@ -41,10 +40,10 @@ public class MentorChatRoomRepositoryImpl implements MentorChatRoomRepositoryCus
             builder.and(chatRoom.mentor.isNull());
         }
 
-        List<MentorChatRoomResponse> result =  jpaQueryFactory
-                .select(Projections.bean(MentorChatRoomResponse.class,
+        return jpaQueryFactory
+                .select(new QMentorChatRoomResponse(
                         chatRoom.id,
-                        chatRoom.title,
+                        chatRoom.question,
                         message.count().as("unread_count")
                 ))
                 .from(chatRoom)
@@ -54,6 +53,5 @@ public class MentorChatRoomRepositoryImpl implements MentorChatRoomRepositoryCus
                 .where(builder)
                 .groupBy(chatRoom.id)
                 .fetch();
-        return result;
     }
 }
