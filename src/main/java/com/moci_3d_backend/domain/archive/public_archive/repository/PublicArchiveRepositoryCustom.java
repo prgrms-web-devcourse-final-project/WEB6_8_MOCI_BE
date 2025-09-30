@@ -1,5 +1,6 @@
 package com.moci_3d_backend.domain.archive.public_archive.repository;
 
+import com.moci_3d_backend.domain.archive.public_archive.entity.ArchiveCategory;
 import com.moci_3d_backend.domain.archive.public_archive.entity.PublicArchive;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,4 +17,6 @@ public interface PublicArchiveRepositoryCustom {
      * @return 검색 결과 (페이징)
      */
     Page<PublicArchive> searchByKeywords(String[] keywords, Pageable pageable);
+
+    Page<PublicArchive> searchByKeywordsAndCategory(String[] keywords, ArchiveCategory category, Pageable pageable);
 }

@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 public class PublicArchiveListItemDto {
     private final Long id;
     private final String title;
+    private final String category;
     private final FileUploadDto thumbnail; // 첫 번째 이미지 (없으면 null)
     private final LocalDateTime createdAt;
 }

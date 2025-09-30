@@ -54,6 +54,7 @@ public class PublicArchiveMapper {
         return PublicArchiveListItemDto.builder()
                 .id(archive.getId())
                 .title(archive.getTitle())
+                .category(archive.getCategory() != null ? archive.getCategory().name() : null)
                 .thumbnail(thumbnail)
                 .createdAt(archive.getCreatedAt())
                 .build();

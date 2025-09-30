@@ -1,6 +1,7 @@
 package com.moci_3d_backend.domain.archive.public_archive.service;
 
 import com.moci_3d_backend.domain.archive.public_archive.dto.*;
+import com.moci_3d_backend.domain.archive.public_archive.entity.ArchiveCategory;
 import com.moci_3d_backend.domain.archive.public_archive.entity.PublicArchive;
 import com.moci_3d_backend.domain.archive.public_archive.mapper.PublicArchiveMapper;
 import com.moci_3d_backend.domain.archive.public_archive.repository.PublicArchiveRepository;
@@ -61,6 +62,17 @@ public class PublicArchiveService {
         return new PublicArchiveListResponse(dtoPage);
     }
 
+    // 카테고리별 조회
+    @Transactional(readOnly = true)
+    public PublicArchiveListResponse getPublicArchivesByCategory(
+            ArchiveCategory category,
+            Pageable pageable
+    ) {
+        Page<PublicArchive> entityPage = publicArchiveRepository.findByCategory(category, pageable);
+        Page<PublicArchiveListItemDto> dtoPage = entityPage.map(publicArchiveMapper::toListItemDto);
+        return new PublicArchiveListResponse(dtoPage);
+    }
+
     // 교육 자료실 상세 조회
     @Transactional(readOnly = true)
     public PublicArchiveResponse getPublicArchive(Long archiveId) {
@@ -104,6 +116,44 @@ public class PublicArchiveService {
         Page<PublicArchiveListItemDto> dtoPage = entityPage.map(publicArchiveMapper::toListItemDto);
         return new PublicArchiveListResponse(dtoPage);
     }
+
+    // 카테고리 + 키워드 검색
+    @Transactional(readOnly = true)
+    public PublicArchiveListResponse searchByKeywordAndCategory(
+            String keyword,
+            ArchiveCategory category,
+            Pageable pageable
+    ) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return getPublicArchivesByCategory(category, pageable);
+        }
+
+        // KOMORAN으로 명사 추출
+        List<String> nouns = KoreanTextAnalyzer.extractNouns(keyword);
+
+        // 명사가 없으면 원본 키워드로 검색 (영어, 숫자 등)
+        if (nouns.isEmpty()) {
+            String[] keywords = keyword.trim().split("\\s+");
+            Page<PublicArchive> entityPage = keywords.length == 1 ?
+                    publicArchiveRepository.searchByKeywordAndCategory(keywords[0], category, pageable) :
+                    publicArchiveRepository.searchByKeywordsAndCategory(keywords, category, pageable);
+
+            Page<PublicArchiveListItemDto> dtoPage = entityPage.map(publicArchiveMapper::toListItemDto);
+            return new PublicArchiveListResponse(dtoPage);
+        }
+
+        Page<PublicArchive> entityPage;
+        if (nouns.size() == 1) {
+            // 단일 명사 + 카테고리
+            entityPage = publicArchiveRepository.searchByKeywordAndCategory(nouns.get(0), category, pageable);
+        } else {
+            // 여러 명사 + 카테고리 (QueryDSL)
+            entityPage = publicArchiveRepository.searchByKeywordsAndCategory(nouns.toArray(new String[0]), category, pageable);
+        }
+        Page<PublicArchiveListItemDto> dtoPage = entityPage.map(publicArchiveMapper::toListItemDto);
+        return new PublicArchiveListResponse(dtoPage);
+    }
+
 
     // 교육 자료실 게시물 수정
     @Transactional
