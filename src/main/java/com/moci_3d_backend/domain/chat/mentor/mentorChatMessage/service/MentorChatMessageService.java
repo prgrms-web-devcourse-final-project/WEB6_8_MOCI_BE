@@ -41,6 +41,7 @@ public class MentorChatMessageService {
         FileUpload fileUpload = fileUploadRepository.findById(message.getAttachmentId()).orElse(null);
         MentorChatMessage mentorChatMessage = mentorChatMessageDtoService.toEntity(message, sender, mentorChatRoom, fileUpload);
         mentorChatMessageRepository.save(mentorChatMessage);
+        mentorChatRoom.updateLastMessageAt();
     }
 
     public List<ChatSendMessage> getMentorChatMessages(Long roomId, User user){

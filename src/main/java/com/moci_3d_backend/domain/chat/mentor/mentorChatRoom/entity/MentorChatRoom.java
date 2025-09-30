@@ -86,6 +86,14 @@ public class MentorChatRoom {
         this.mentorLastAt = LocalDateTime.now();
     }
 
+    public void updateMentorLastAt(){
+        this.mentorLastAt = LocalDateTime.now();
+    }
+
+    public void updateMenteeLastAt(){
+        this.menteeLastAt = LocalDateTime.now();
+    }
+
     public void updateLastMessageAt(){
         this.lastMessageAt = LocalDateTime.now();
     }

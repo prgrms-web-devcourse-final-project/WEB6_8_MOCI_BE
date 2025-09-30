@@ -21,6 +21,14 @@ public class StompJwtInterceptor implements ChannelInterceptor {
 
     private final MentorChatRoomService mentorChatRoomService;
 
+    Long getRoomId(StompHeaderAccessor accessor) {
+        String roomIdStr = accessor.getFirstNativeHeader("roomId");
+        if (roomIdStr == null){
+            throw new IllegalArgumentException("roomId is null");
+        }
+        return Long.parseLong(roomIdStr);
+    }
+
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
@@ -37,19 +45,25 @@ public class StompJwtInterceptor implements ChannelInterceptor {
             return message;
         }
         accessor.setUser(user);
-        if (command == StompCommand.CONNECT) {
-            String roomIdStr = accessor.getFirstNativeHeader("roomId");
-            if (roomIdStr == null){
-                throw new IllegalArgumentException("roomId is null");
+
+        switch (command) {
+            case CONNECT -> {
+                Long roomId = getRoomId(accessor);
+                MentorChatRoom room = mentorChatRoomService.getChatRoomById(roomId).orElseThrow();
+                User mentee = room.getMentee();
+                User mentor = room.getMentor();
+                if (!mentee.getId().equals(user.getId()) && !mentor.getId().equals(user.getId())){
+                    throw new IllegalArgumentException("user is not mentee or mentor");
+                }
+                accessor.getSessionAttributes().put("roomId", roomId);
             }
-            Long roomId = Long.parseLong(roomIdStr);
-            MentorChatRoom room = mentorChatRoomService.getChatRoomById(roomId).orElseThrow();
-            User mentee = room.getMentee();
-            User mentor = room.getMentor();
-            if (!mentee.getId().equals(user.getId()) && !mentor.getId().equals(user.getId())){
-                throw new IllegalArgumentException("user is not mentee or mentor");
+            case SEND -> {
+                Long roomId = getRoomId(accessor);
+                Long sessionLongId = (Long) accessor.getSessionAttributes().getOrDefault("roomId", null);
+                if (sessionLongId == null || !sessionLongId.equals(roomId)){
+                    throw new IllegalArgumentException("roomId is not same");
+                }
             }
-            accessor.getSessionAttributes().put("roomId", roomId);
         }
 
         return message;
