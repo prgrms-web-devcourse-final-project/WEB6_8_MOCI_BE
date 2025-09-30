@@ -25,12 +25,12 @@ public class ApiV1MenteeChatRoomController {
 
     @PostMapping()
     @Operation(summary = "[멘티] 채팅방 생성", description = "멘티가 채팅방을 생성합니다.")
-    public RsData<MentorChatRoomResponse> createMentorChatRoom(
+    public RsData<Void> createMentorChatRoom(
             @RequestBody CreateMentorChatRoom createMentorChatRoom
     ) {
         User user = rq.getActor();
-        MentorChatRoomResponse response = menteeChatRoomService.createMenteeChatRoom(createMentorChatRoom, user);
-        return RsData.of(201, "success to create chat room", response);
+        menteeChatRoomService.createMenteeChatRoom(createMentorChatRoom, user);
+        return RsData.of(201, "success to create chat room");
     }
 
     @GetMapping()

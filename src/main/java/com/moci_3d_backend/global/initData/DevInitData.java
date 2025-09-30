@@ -9,7 +9,7 @@ import com.moci_3d_backend.domain.archive.public_archive.repository.PublicArchiv
 import com.moci_3d_backend.domain.chat.ai.aiChatRoom.repository.AiChatRoomRepository;
 import com.moci_3d_backend.domain.chat.ai.aiChatRoom.service.AiChatRoomService;
 import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.dto.CreateMentorChatRoom;
-import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.dto.MentorChatRoomResponse;
+import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.entity.MentorChatRoom;
 import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.service.MenteeChatRoomService;
 import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.service.MentorChatRoomService;
 import com.moci_3d_backend.domain.user.entity.User;
@@ -64,7 +64,7 @@ public class DevInitData {
 
         // 1. 관리자 계정
         User admin = new User();
-        admin.setUserId("010-1234-5678");
+        admin.setUserId("01012345678");
         admin.setLoginType("PHONE");
         admin.setPassword(PasswordUtil.encode("admin123"));
         admin.setRefreshToken(admin.getUserId());
@@ -78,7 +78,7 @@ public class DevInitData {
 
         // 2. 멘토 계정 1
         User mentor1 = new User();
-        mentor1.setUserId("010-2345-6789");
+        mentor1.setUserId("01023456789");
         mentor1.setLoginType("PHONE");
         mentor1.setPassword(PasswordUtil.encode("mentor123"));
         mentor1.setRefreshToken(mentor1.getUserId());
@@ -92,7 +92,7 @@ public class DevInitData {
 
         // 3. 멘토 계정 2
         User mentor2 = new User();
-        mentor2.setUserId("010-3456-7890");
+        mentor2.setUserId("01034567890");
         mentor2.setLoginType("PHONE");
         mentor2.setPassword(PasswordUtil.encode("mentor123"));
         mentor2.setRefreshToken(mentor2.getUserId());
@@ -106,7 +106,7 @@ public class DevInitData {
 
         // 4. 일반 사용자 1
         User user1 = new User();
-        user1.setUserId("010-4567-8901");
+        user1.setUserId("01045678901");
         user1.setLoginType("PHONE");
         user1.setPassword(PasswordUtil.encode("user123"));
         user1.setRefreshToken(user1.getUserId());
@@ -120,7 +120,7 @@ public class DevInitData {
 
         // 5. 일반 사용자 2
         User user2 = new User();
-        user2.setUserId("010-5678-9012");
+        user2.setUserId("01056789012");
         user2.setLoginType("PHONE");
         user2.setPassword(PasswordUtil.encode("pass123"));
         user2.setRefreshToken(user2.getUserId());
@@ -134,7 +134,7 @@ public class DevInitData {
 
         // 6. 일반 사용자 3
         User user3 = new User();
-        user3.setUserId("010-6789-0123");
+        user3.setUserId("01067890123");
         user3.setLoginType("PHONE");
         user3.setPassword(PasswordUtil.encode("qwer123"));
         user3.setRefreshToken(user3.getUserId());
@@ -148,7 +148,7 @@ public class DevInitData {
 
         // 7. 일반 사용자 4
         User user4 = new User();
-        user4.setUserId("010-7890-1234");
+        user4.setUserId("01078901234");
         user4.setLoginType("PHONE");
         user4.setPassword(PasswordUtil.encode("asdf123"));
         user4.setRefreshToken(user4.getUserId());
@@ -162,7 +162,7 @@ public class DevInitData {
 
         // 8. 일반 사용자 5
         User user5 = new User();
-        user5.setUserId("010-8901-2345");
+        user5.setUserId("01089012345");
         user5.setLoginType("PHONE");
         user5.setPassword(PasswordUtil.encode("zxcv123"));
         user5.setRefreshToken(user5.getUserId());
@@ -176,7 +176,7 @@ public class DevInitData {
 
         // 9. 일반 사용자 6
         User user6 = new User();
-        user6.setUserId("010-9012-3456");
+        user6.setUserId("01090123456");
         user6.setLoginType("PHONE");
         user6.setPassword(PasswordUtil.encode("123456"));
         user6.setRefreshToken(user6.getUserId());
@@ -190,7 +190,7 @@ public class DevInitData {
 
         // 10. 일반 사용자 7
         User user7 = new User();
-        user7.setUserId("010-1234-5670");
+        user7.setUserId("01012345670");
         user7.setLoginType("PHONE");
         user7.setPassword(PasswordUtil.encode("password"));
         user7.setRefreshToken(user7.getUserId());
@@ -653,25 +653,18 @@ public class DevInitData {
             return;
         }
 
-        User user4 = userRepository.findById(4L).get();
-        User user5 = userRepository.findById(5L).get();
-
-        aiChatRoomService.create(user4, "카카오톡 설명서", "샘플 AI 채팅방1");
-        aiChatRoomService.create(user4, "카카오톡 설명서", "샘플 AI 채팅방2");
-        aiChatRoomService.create(user5, "카카오톡 설명서", "샘플 AI 채팅방3");
+        aiChatRoomService.create("샘플 AI 채팅방1");
+        aiChatRoomService.create("샘플 AI 채팅방2");
+        aiChatRoomService.create("샘플 AI 채팅방3");
 
     }
 
-     @Transactional
+    @Transactional
     public void chatRoomInit(){
-        if (mentorChatRoomService.getChatRoomCount() >0){
-            return;
-        }
         User mentee = userRepository.findById(4L).get();
-        User mentee2 = userRepository.findById(5L).get();
         User mentor = userRepository.findById(2L).get();
 
-        MentorChatRoomResponse chatroom = menteeChatRoomService.createMenteeChatRoom(
+        MentorChatRoom chatroom = menteeChatRoomService.createMenteeChatRoom(
                 new CreateMentorChatRoom(
                         "카카오톡",
                         "카카오톡 설치 어떻게 하나요?"
@@ -679,14 +672,6 @@ public class DevInitData {
                 mentee
         );
         mentorChatRoomService.joinMentorChatRoom(chatroom.getId(), mentor);
-
-        MentorChatRoomResponse chatroom2 = menteeChatRoomService.createMenteeChatRoom(
-                new CreateMentorChatRoom(
-                        "카카오톡",
-                        "카카오톡 채팅을 어떻게 시작하나요?"
-                ),
-                mentee2
-        );
 
     }
 

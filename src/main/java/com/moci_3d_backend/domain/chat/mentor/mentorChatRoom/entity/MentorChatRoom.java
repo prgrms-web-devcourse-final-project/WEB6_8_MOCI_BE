@@ -25,8 +25,8 @@ public class MentorChatRoom {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="question", length=255)
-    private String question;
+    @Column(name="title", length=255)
+    private String title;
 
     @Column(name="category",length = 255)
     private String category;
@@ -73,7 +73,7 @@ public class MentorChatRoom {
 
     public MentorChatRoom(CreateMentorChatRoom createMentorChatRoom, User mentee){
         this.category = createMentorChatRoom.getCategory();
-        this.question = createMentorChatRoom.getQuestion();
+        this.title = createMentorChatRoom.getQuestion();
         this.status = true;
         this.mentee = mentee;
         this.menteeLastAt = LocalDateTime.now();
