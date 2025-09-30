@@ -37,7 +37,7 @@ public class MentorChatMessageService {
 
     @Transactional
     public void saveMentorChatMessage(ChatReceiveMessage message, User sender, Long roomId){
-        MentorChatRoom mentorChatRoom = mentorChatRoomService.getMentorChatRoom(roomId, sender);
+        MentorChatRoom mentorChatRoom = mentorChatRoomService.getChatRoomById(roomId).orElseThrow(() -> new IllegalArgumentException("No chat room found"));
         FileUpload fileUpload = fileUploadRepository.findById(message.getAttachmentId()).orElse(null);
         MentorChatMessage mentorChatMessage = mentorChatMessageDtoService.toEntity(message, sender, mentorChatRoom, fileUpload);
         mentorChatMessageRepository.save(mentorChatMessage);
