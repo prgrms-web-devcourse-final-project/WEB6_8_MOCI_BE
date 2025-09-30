@@ -36,20 +36,28 @@ public class StompJwtInterceptor implements ChannelInterceptor {
         if (user == null) {
             return message;
         }
+        String roomIdStr = accessor.getFirstNativeHeader("roomId");
+        if (roomIdStr == null){
+            throw new IllegalArgumentException("roomId is null");
+        }
+        Long roomId = Long.parseLong(roomIdStr);
         accessor.setUser(user);
-        if (command == StompCommand.CONNECT) {
-            String roomIdStr = accessor.getFirstNativeHeader("roomId");
-            if (roomIdStr == null){
-                throw new IllegalArgumentException("roomId is null");
+        switch (command) {
+            case CONNECT -> {
+                MentorChatRoom room = mentorChatRoomService.getChatRoomById(roomId).orElseThrow();
+                User mentee = room.getMentee();
+                User mentor = room.getMentor();
+                if (!mentee.getId().equals(user.getId()) && !mentor.getId().equals(user.getId())){
+                    throw new IllegalArgumentException("user is not mentee or mentor");
+                }
+                accessor.getSessionAttributes().put("roomId", roomId);
             }
-            Long roomId = Long.parseLong(roomIdStr);
-            MentorChatRoom room = mentorChatRoomService.getChatRoomById(roomId).orElseThrow();
-            User mentee = room.getMentee();
-            User mentor = room.getMentor();
-            if (!mentee.getId().equals(user.getId()) && !mentor.getId().equals(user.getId())){
-                throw new IllegalArgumentException("user is not mentee or mentor");
+            case SEND -> {
+                Long sessionLongId = (Long) accessor.getSessionAttributes().getOrDefault("roomId", null);
+                if (sessionLongId == null || !sessionLongId.equals(roomId)){
+                    throw new IllegalArgumentException("roomId is not same");
+                }
             }
-            accessor.getSessionAttributes().put("roomId", roomId);
         }
 
         return message;

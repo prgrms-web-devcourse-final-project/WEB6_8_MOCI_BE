@@ -1,5 +1,7 @@
 package com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.service;
 
+import com.moci_3d_backend.domain.chat.mentor.mentorChatMessage.entity.MentorChatMessage;
+import com.moci_3d_backend.domain.chat.mentor.mentorChatMessage.repository.MentorChatMessageRepository;
 import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.dto.CreateMentorChatRoom;
 import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.dto.MentorChatRoomResponse;
 import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.entity.MentorChatRoom;
@@ -18,12 +20,16 @@ public class MenteeChatRoomService {
 
     private final MentorChatRoomRepository mentorChatRoomRepository;
     private final MentorChatRoomDtoService mentorChatRoomDtoService;
+    private final MentorChatMessageRepository mentorChatMessageRepository;
 
     @Transactional
     public MentorChatRoomResponse createMenteeChatRoom(CreateMentorChatRoom createMentorChatRoom, User mentee){
         MentorChatRoom mentorChatRoom = new MentorChatRoom(createMentorChatRoom, mentee);
-
-        return mentorChatRoomDtoService.toMentorChatRoomResponse(mentorChatRoomRepository.save(mentorChatRoom));
+        mentorChatRoom = mentorChatRoomRepository.save(mentorChatRoom);
+        MentorChatMessage message = new MentorChatMessage(mentorChatRoom, mentee, createMentorChatRoom.getQuestion(), null);
+        mentorChatMessageRepository.save(message);
+        mentorChatRoom.updateLastMessageAt();
+        return mentorChatRoomDtoService.toMentorChatRoomResponse(mentorChatRoom);
     }
 
     public List<MentorChatRoomResponse> getMenteeChatRooms(User mentee){
