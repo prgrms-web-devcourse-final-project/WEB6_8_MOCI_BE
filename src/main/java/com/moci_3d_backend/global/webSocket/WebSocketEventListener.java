@@ -11,6 +11,8 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
+import java.util.Map;
+
 
 @Component
 @RequiredArgsConstructor
@@ -22,7 +24,11 @@ public class WebSocketEventListener {
     @EventListener
     public void handlerSessionDisconnect(SessionDisconnectEvent event){
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
-        Long roomId = (Long) accessor.getSessionAttributes().getOrDefault("roomId", null);
+        Map<String, Object> attributes = accessor.getSessionAttributes();
+        if (attributes == null){
+            return;
+        }
+        Long roomId = (Long) attributes.getOrDefault("roomId", null);
         if (roomId == null){
             return;
         }
@@ -45,8 +51,7 @@ public class WebSocketEventListener {
         if (mentor.getId().equals(user.getId())){
             room.updateMentorLastAt();
             mentorChatRoomRepository.save(room);
-            return;
+
         }
-        return;
     }
 }
