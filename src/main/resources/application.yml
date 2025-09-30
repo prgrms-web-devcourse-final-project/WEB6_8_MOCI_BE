@@ -91,3 +91,7 @@ custom:
     frontUrl: "${custom.dev.frontUrl}"
     backUrl: "${custom.dev.backUrl}"
     name: MOCI
+  frontend:
+    baseUrl: "http://localhost:3000"
+    registerPath: "/register/ox-test"
+    mainPath: "/main"
