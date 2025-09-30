@@ -20,12 +20,23 @@
     const iceConfig = { iceServers:[{ urls:'stun:stun.l.google.com:19302' }] };
     let pc;
 
-    stomp.connect(
-      { Authorization: 'Bearer ' + localStorage.getItem('ACCESS_TOKEN') },
-      () => {
-        stomp.subscribe('/api/v1/chat/topic/webrtc', frame => onSignal(JSON.parse(frame.body)));
-      },
-      err => console.error('STOMP connect error', err)
+    // stomp.connect(
+    //   { Authorization: 'Bearer ' + localStorage.getItem('ACCESS_TOKEN') },
+    //   () => {
+    //     stomp.subscribe('/api/v1/chat/topic/webrtc', frame => onSignal(JSON.parse(frame.body)));
+    //   },
+    //   err => console.error('STOMP connect error', err)
+    // );
+    const stompClient = Stomp.over(socket);
+
+    stompClient.connect(
+        { Authorization: "Bearer " + localStorage.getItem("accessToken") }, // ✅ 헤더 추가
+        (frame) => {
+            console.log("✅ Connected: " + frame);
+        },
+        (error) => {
+            console.error("❌ STOMP connect error", error);
+        }
     );
 
     document.getElementById('shareBtn').onclick = async () => {
