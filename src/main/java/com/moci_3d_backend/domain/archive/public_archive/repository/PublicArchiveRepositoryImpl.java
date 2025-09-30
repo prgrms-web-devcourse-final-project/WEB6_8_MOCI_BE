@@ -118,6 +118,8 @@ public class PublicArchiveRepositoryImpl implements PublicArchiveRepositoryCusto
                             archive.title.asc() : archive.title.desc());
                 }
             });
+        } else {
+            query.orderBy(archive.createdAt.desc());
         }
     }
 }

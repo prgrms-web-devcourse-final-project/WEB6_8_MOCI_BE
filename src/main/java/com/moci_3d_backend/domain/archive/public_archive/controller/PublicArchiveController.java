@@ -37,7 +37,7 @@ public class PublicArchiveController {
     @GetMapping("/archive/public")
     @Operation(summary = "교육 자료실 목록 조회", description = "모든 사용자가 교육자료실 목록을 조회할 수 있습니다. (페이징)\n\n" +
             "** 검색 기능: **\n" +
-            "- cateory 파라미터로 필터링\n" +
+            "- category 파라미터로 필터링\n" +
             "- keyword 파라미터로 제목/내용 검색\n" +
             "- 두 파라미터를 함께 사용하면 해당 카테고리 내에서 검색\n" +
             "- 파라미터가 없으면 전체 목록을 반환합니다.")
