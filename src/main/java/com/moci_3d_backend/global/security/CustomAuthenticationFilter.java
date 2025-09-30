@@ -52,7 +52,14 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
         }
 
         // 인증, 인가가 필요없는 API 요청이라면 패스
-        if (List.of("/api/v1/auth/login", "/api/v1/auth/signup", "/api/v1/members/join").contains(request.getRequestURI())) {
+        if (List.of(
+                "/api/v1/auth/login",
+                "/api/v1/auth/signup",
+                "/api/v1/auth/register",
+                "/api/v1/auth/token",
+                "/api/v1/members/join",
+                "/api/v1/users/phone-check"  // 전화번호 중복확인
+        ).contains(request.getRequestURI())) {
             filterChain.doFilter(request, response);
             return;
         }
