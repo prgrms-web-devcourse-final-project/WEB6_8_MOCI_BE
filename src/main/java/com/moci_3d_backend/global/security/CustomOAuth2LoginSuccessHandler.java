@@ -40,10 +40,10 @@ public class CustomOAuth2LoginSuccessHandler implements AuthenticationSuccessHan
         log.info("OAuth2 로그인 성공: {}", authentication.getName());
         
         // 🔍 설정 값 디버깅
-        log.info("=== 설정 값 확인 ===");
-        log.info("frontendBaseUrl: {}", frontendBaseUrl);
-        log.info("registerPath: {}", registerPath);
-        log.info("mainPath: {}", mainPath);
+        log.debug("=== 설정 값 확인 ===");
+        log.debug("frontendBaseUrl: {}", frontendBaseUrl);
+        log.debug("registerPath: {}", registerPath);
+        log.debug("mainPath: {}", mainPath);
         
         // SecurityUser에서 사용자 정보 추출
         User actor = null;
@@ -111,7 +111,7 @@ public class CustomOAuth2LoginSuccessHandler implements AuthenticationSuccessHan
         } catch (Exception e) {
             log.error("리다이렉트 URL 생성 중 오류 발생: {}", e.getMessage());
             // 기본값으로 fallback
-            return "http://localhost:3000";
+            return frontendBaseUrl;
         }
     }
 }
