@@ -50,6 +50,8 @@ public class SecurityConfig {
                         .permitAll()
                         .requestMatchers("/api/*/auth/login", "/api/*/auth/register", "/api/*/auth/token")
                         .permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/*/users/phone-check")
+                        .permitAll()
                         .anyRequest().authenticated()
                 )
 
