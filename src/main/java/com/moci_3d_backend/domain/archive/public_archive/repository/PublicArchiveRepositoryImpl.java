@@ -109,7 +109,7 @@ public class PublicArchiveRepositoryImpl implements PublicArchiveRepositoryCusto
                 String property = order.getProperty();
                 if ("createdAt".equals(property)) {
                     query.orderBy(order.isAscending() ?
-                            archive.createdAt.asc() : archive.createdAt.asc());
+                            archive.createdAt.asc() : archive.createdAt.desc());
                 } else if ("updatedAt".equals(property)) {
                     query.orderBy(order.isAscending() ?
                             archive.updatedAt.asc() : archive.updatedAt.desc());
