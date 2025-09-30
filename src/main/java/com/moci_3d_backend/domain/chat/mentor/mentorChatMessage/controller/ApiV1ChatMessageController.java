@@ -29,7 +29,7 @@ public class ApiV1ChatMessageController {
             Principal principal
     ) {
         SecurityUser securityUser = (SecurityUser) principal;
-        User userRef= userService.getReferenceById(securityUser.getId());
+        User userRef = userService.getReferenceById(securityUser.getId());
         ChatSendMessage chatSendMessage = new ChatSendMessage(securityUser.getNickname(), message);
         mentorChatMessageService.saveMentorChatMessage(message, userRef, roomId);
         messagingTemplate.convertAndSend("/api/v1/chat/topic/%d".formatted(roomId), chatSendMessage);
