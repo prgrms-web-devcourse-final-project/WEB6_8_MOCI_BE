@@ -1,5 +1,6 @@
 package com.moci_3d_backend.domain.chat.ai.aiChatRoom.controller;
 
+import com.moci_3d_backend.domain.chat.ai.aiChatMessage.dto.AiExchangeDto;
 import com.moci_3d_backend.domain.chat.ai.aiChatMessage.service.AiChatMessageService;
 import com.moci_3d_backend.domain.chat.ai.aiChatRoom.dto.AiChatRoomDto;
 import com.moci_3d_backend.domain.chat.ai.aiChatRoom.dto.AiChatRoomListDto;
@@ -40,7 +41,7 @@ public class AiChatRoomController {
     @Operation(summary = "AI 채팅방 생성", description = "질문을 입력하면 해당 질문을 제목으로 하는 AI 채팅방을 생성하고, 동시에 첫 질문을 등록합니다.")
     @PostMapping
     @Transactional
-    public RsData<AiChatRoomDto> createAiChatRoom(@RequestBody @Valid CreateAiRoomReqBody reqBody) {
+    public RsData<AiExchangeDto> createAiChatRoom(@RequestBody @Valid CreateAiRoomReqBody reqBody) {
 
         User actor = rq.getActor();
 
@@ -51,12 +52,12 @@ public class AiChatRoomController {
         AiChatRoom chatRoom = aiChatRoomService.create(actor, reqBody.category, reqBody.question);
 
         // 첫 질문을 등록하고 AI 응답을 받는 로직
-        aiChatMessageService.ask(actor, chatRoom.getId(), reqBody.question);
+        AiExchangeDto exchangeDto = aiChatMessageService.ask(actor, chatRoom.getId(), reqBody.question);
 
         return new RsData<>(
                 200,
                 "%d번 AI 채팅방이 생성되고 첫 질문이 등록되고 ai 응답을 받았습니다".formatted(chatRoom.getId()),
-                new AiChatRoomDto(chatRoom)
+                exchangeDto
         );
 
 

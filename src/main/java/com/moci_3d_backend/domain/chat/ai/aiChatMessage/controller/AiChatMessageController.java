@@ -6,8 +6,6 @@ import com.moci_3d_backend.domain.chat.ai.aiChatMessage.entity.AiChatMessage;
 import com.moci_3d_backend.domain.chat.ai.aiChatMessage.enums.SenderType;
 import com.moci_3d_backend.domain.chat.ai.aiChatMessage.service.AiChatMessageService;
 import com.moci_3d_backend.domain.user.entity.User;
-import com.moci_3d_backend.external.sse.SseEmitters;
-import com.moci_3d_backend.external.sse.Ut;
 import com.moci_3d_backend.global.rq.Rq;
 import com.moci_3d_backend.global.rsData.RsData;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,10 +15,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
 
@@ -31,7 +27,6 @@ import java.util.List;
 @RequestMapping("/api/v1/chat/ai/rooms")
 public class AiChatMessageController {
     private final AiChatMessageService aiChatMessageService;
-    private final SseEmitters sseEmitter;
     private final Rq rq;
 
     public record CreateAiChatMessageReqBody(
@@ -80,10 +75,6 @@ public class AiChatMessageController {
 
         AiExchangeDto exchangeDto = aiChatMessageService.ask(actor, roomId, req.content);
 
-        sseEmitter.noti("chat__messageAdded", Ut.mapOf(
-                "roomId", roomId,
-                "exchange", exchangeDto.getAiMessage()   // 또는 exchangeDto.getAiMessage(), getHumanMessage()
-        ));
         return new RsData<>(
                 200, "AI 응답을 받았습니다.",
                 exchangeDto);
