@@ -1,10 +1,13 @@
 package com.moci_3d_backend.domain.user.controller;
 
+import com.moci_3d_backend.domain.user.dto.request.UserPhoneCheckRequest;
 import com.moci_3d_backend.domain.user.dto.response.UserResponse;
+import com.moci_3d_backend.domain.user.dto.response.UserPhoneCheckResponse;
 import com.moci_3d_backend.domain.user.entity.User;
 import com.moci_3d_backend.domain.user.service.UserService;
 import com.moci_3d_backend.global.rq.Rq;
 import com.moci_3d_backend.global.rsData.RsData;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +27,16 @@ public class UserController {
         User actor = rq.getActor();
 
         UserResponse response = UserResponse.from(actor);
+        return ResponseEntity.ok(RsData.successOf(response));
+    }
+
+    // === 전화번호 중복확인 ===
+    @PostMapping("/phone-check")
+    @Transactional(readOnly = true)
+    public ResponseEntity<RsData<UserPhoneCheckResponse>> checkPhoneDuplicate(
+            @Valid @RequestBody UserPhoneCheckRequest request) {
+        
+        UserPhoneCheckResponse response = userService.checkPhoneDuplicate(request);
         return ResponseEntity.ok(RsData.successOf(response));
     }
 }

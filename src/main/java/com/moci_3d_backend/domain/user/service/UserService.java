@@ -2,8 +2,9 @@ package com.moci_3d_backend.domain.user.service;
 
 import com.moci_3d_backend.domain.user.dto.request.UserLoginRequest;
 import com.moci_3d_backend.domain.user.dto.request.UserRegisterRequest;
+import com.moci_3d_backend.domain.user.dto.request.UserPhoneCheckRequest;
 import com.moci_3d_backend.domain.user.dto.response.UserLoginResponse;
-import com.moci_3d_backend.domain.user.dto.response.UserResponse;
+import com.moci_3d_backend.domain.user.dto.response.UserPhoneCheckResponse;
 import com.moci_3d_backend.domain.user.entity.User;
 import com.moci_3d_backend.domain.user.repository.UserRepository;
 import com.moci_3d_backend.global.exception.ServiceException;
@@ -130,5 +131,31 @@ public class UserService {
 
     public User save (User user) {
         return userRepository.save(user);
+    }
+
+    // === 전화번호 중복확인 ===
+    public UserPhoneCheckResponse checkPhoneDuplicate(UserPhoneCheckRequest request) {
+        // 전화번호 정규화 (하이픈 제거)
+        String normalizedPhone = normalizePhoneNumber(request.getPhoneNumber());
+        
+        // 전화번호 중복 체크
+        boolean isDuplicate = userRepository.existsByUserId(normalizedPhone);
+        
+        if (isDuplicate) {
+            return UserPhoneCheckResponse.unavailable();
+        } else {
+            return UserPhoneCheckResponse.available();
+        }
+    }
+    
+    /**
+     * 전화번호를 정규화합니다. (하이픈 제거)
+     * 예: "010-1234-5678" → "01012345678"
+     */
+    private String normalizePhoneNumber(String phoneNumber) {
+        if (phoneNumber == null) {
+            return null;
+        }
+        return phoneNumber.replaceAll("-", "");
     }
 }
