@@ -50,7 +50,7 @@ public class PublicArchiveController {
             @RequestParam(required = false)
             @Parameter(
                     description = "검색 키워드 (선택사항, title 또는 description에서 검색)",
-                    example = "친구 추가하는 법"
+                    example = "친구에게 선물 보내는 방법"
             ) String keyword,
 
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
