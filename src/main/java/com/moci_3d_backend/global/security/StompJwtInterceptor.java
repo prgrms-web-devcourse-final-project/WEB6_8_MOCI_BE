@@ -21,6 +21,14 @@ public class StompJwtInterceptor implements ChannelInterceptor {
 
     private final MentorChatRoomService mentorChatRoomService;
 
+    Long getRoomId(StompHeaderAccessor accessor) {
+        String roomIdStr = accessor.getFirstNativeHeader("roomId");
+        if (roomIdStr == null){
+            throw new IllegalArgumentException("roomId is null");
+        }
+        return Long.parseLong(roomIdStr);
+    }
+
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
@@ -36,14 +44,11 @@ public class StompJwtInterceptor implements ChannelInterceptor {
         if (user == null) {
             return message;
         }
-        String roomIdStr = accessor.getFirstNativeHeader("roomId");
-        if (roomIdStr == null){
-            throw new IllegalArgumentException("roomId is null");
-        }
-        Long roomId = Long.parseLong(roomIdStr);
         accessor.setUser(user);
+
         switch (command) {
             case CONNECT -> {
+                Long roomId = getRoomId(accessor);
                 MentorChatRoom room = mentorChatRoomService.getChatRoomById(roomId).orElseThrow();
                 User mentee = room.getMentee();
                 User mentor = room.getMentor();
@@ -53,6 +58,7 @@ public class StompJwtInterceptor implements ChannelInterceptor {
                 accessor.getSessionAttributes().put("roomId", roomId);
             }
             case SEND -> {
+                Long roomId = getRoomId(accessor);
                 Long sessionLongId = (Long) accessor.getSessionAttributes().getOrDefault("roomId", null);
                 if (sessionLongId == null || !sessionLongId.equals(roomId)){
                     throw new IllegalArgumentException("roomId is not same");
