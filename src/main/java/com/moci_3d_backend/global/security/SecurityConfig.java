@@ -33,7 +33,7 @@ public class SecurityConfig {
     * ADMIN > MENTOR > USER
     * ADMIN 권한은 MENTOR, USER 권한을 포함
     * MENTOR 권한은 USER 권한을 포함
-     */
+    */
     @Bean
     public RoleHierarchy roleHierarchy() {
         RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
