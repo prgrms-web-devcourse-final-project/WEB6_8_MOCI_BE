@@ -54,7 +54,7 @@ public class ArchiveRequestController {
 
     // 자료 요청 삭제 (멘토 + 관리자)
     @DeleteMapping("/archive-requests/{requestId}")
-    @PreAuthorize("hasRole('MENTOR') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('MENTOR')")
     @Operation(summary = "[멘토/관리자] 자료 요청 삭제", description = "멘토가 본인의 글을, 관리자는 모든 글에대해 삭제할 권한이 있습니다.")
     public RsData<Void> deleteArchiveRequest(
             @PathVariable @Parameter(description = "삭제할 요청글 ID", example = "1") Long requestId
@@ -69,7 +69,7 @@ public class ArchiveRequestController {
 
     // 자료 요청 목록 조회 (관리자, 멘토)
     @GetMapping("/archive-requests")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MENTOR')")
+    @PreAuthorize("hasRole('MENTOR')")
     @Operation(summary = "[관리자/멘토] 자료 요청 목록 조회", description = "관리자와 멘토가 자료 요청 목록을 조회할 수 있습니다.")
     public RsData<ArchiveRequestListResponseDto> getArchiveRequests(
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
@@ -91,7 +91,7 @@ public class ArchiveRequestController {
 
     // 자료 요청 상세 조회 (관리자, 멘토)
     @GetMapping("/archive-requests/{requestId}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MENTOR')")
+    @PreAuthorize("hasRole('MENTOR')")
     @Operation(summary = "[관리자/멘토] 자료 요청 상세 조회", description = "관리자와 멘토가 자료 요청 상세 정보를 조회할 수 있습니다.")
     public RsData<ArchiveRequestResponseDto> getArchiveRequest(
             @PathVariable @Parameter(description = "조회할 요청글 ID") Long requestId
@@ -103,7 +103,7 @@ public class ArchiveRequestController {
 
     // 사용자별 자료 요청 목록 조회 (관리자, 멘토)
     @GetMapping("/users/{userId}/archive-requests")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MENTOR')")
+    @PreAuthorize("hasRole('MENTOR')")
     @Operation(summary = "[관리자/멘토] 사용자별(멘토) 자료 요청 목록 조회", description = "관리자와 멘토가 특정 사용자(멘토)의 자료 요청 목록을 조회할 수 있습니다.")
     public RsData<ArchiveRequestListResponseDto> getUserArchiveRequestByUser(
             @PathVariable @Parameter(description = "조회할 멘토 ID", example = "2") Long userId,
