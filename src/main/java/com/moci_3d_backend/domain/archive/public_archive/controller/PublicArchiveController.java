@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
-@Tag(name = "교육 자료실", description = "교육 자료실 관련 API 입니다.")
+@Tag(name = "교육 자료실", description = "교육 자료실 관련 API 입니다. **401의 경우 요청 시 credentials: \"include\" 필수 (쿠키 인증)**")
 public class PublicArchiveController {
 
     private final PublicArchiveService publicArchiveService;
@@ -96,7 +96,11 @@ public class PublicArchiveController {
     @PostMapping("/admin/archive/public")
     @PreAuthorize("hasRole('ADMIN')") // 관리자 권한 필요
     @Operation(summary = "[관리자] 교육 자료실 등록", description = "관리자만 교육자료실에 글을 등록할 수 있습니다.\n" +
-            "현재 플로우: 프론트에서 텍스트 및 파일**(선택사항 & 파일 첨부시 파일 업로드API먼저 호출 필요)** -> 양식에 맞게 본 API호출 -> DB저장")
+            "현재 플로우: 프론트에서 텍스트 및 파일**(선택사항 & 파일 첨부시 파일 업로드API먼저 호출 필요)** -> 양식에 맞게 본 API호출 -> DB저장\n" +
+            "⚠️ 주의사항:\n" +
+            "- **credentials: \"include\" 필수** (쿠키 인증)\n" +
+            "- title: 필수\n" +
+            "- category: 빈 문자열(\"\") 불가, null 또는 유효한 값만 가능")
     public RsData<PublicArchiveResponse> createPublicArchive(
             @Valid @RequestBody PublicArchiveCreateRequest request
     ) {
