@@ -51,7 +51,7 @@ public class User {
     private UserRole role;
 
     @Column(name = "digital_level")
-    private Integer digitalLevel;  // null: 미설정, 0~5: 디지털 레벨
+    private Integer digitalLevel;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;

@@ -1,12 +1,11 @@
 package com.moci_3d_backend.domain.user.service;
 
-import com.moci_3d_backend.domain.user.dto.request.UserLoginRequest;
-import com.moci_3d_backend.domain.user.dto.request.UserRegisterRequest;
-import com.moci_3d_backend.domain.user.dto.request.UserPhoneCheckRequest;
 import com.moci_3d_backend.domain.user.dto.request.UserDigitalLevelRequest;
-import com.moci_3d_backend.domain.user.dto.response.UserLoginResponse;
-import com.moci_3d_backend.domain.user.dto.response.UserPhoneCheckResponse;
+import com.moci_3d_backend.domain.user.dto.request.UserLoginRequest;
+import com.moci_3d_backend.domain.user.dto.request.UserPhoneCheckRequest;
+import com.moci_3d_backend.domain.user.dto.request.UserRegisterRequest;
 import com.moci_3d_backend.domain.user.dto.response.UserDigitalLevelResponse;
+import com.moci_3d_backend.domain.user.dto.response.UserPhoneCheckResponse;
 import com.moci_3d_backend.domain.user.entity.User;
 import com.moci_3d_backend.domain.user.repository.UserRepository;
 import com.moci_3d_backend.global.exception.ServiceException;
@@ -48,26 +47,6 @@ public class UserService {
         // 저장 및 반환
         return userRepository.save(user);
     }
-
-
-    // === 로그인 ===
-//    public UserLoginResponse login(UserLoginRequest request) {
-//
-//        // 1. UserId 검증
-//        Optional<User> userOptional = userRepository.findByUserId(request.getUserId());
-//        if (userOptional.isEmpty()) {
-//            throw new ServiceException(400, "'아이디 또는 비밀번호가 틀렸습니다.'");
-//        }
-//        User user = userOptional.get();
-//
-//        // 비밀번호 검증 (BCrypt)
-//        boolean isPasswordMatch = PasswordUtil.matches(request.getPassword(), user.getPassword());
-//        if (!isPasswordMatch) {
-//            throw new ServiceException(400, "'아이디 또는 비밀번호가 틀렸습니다.'");
-//        }
-//
-//        return UserLoginResponse.from(user);
-//    }
 
     // === 사용자 조회 ===
     public User findByUserId(String userId) {
