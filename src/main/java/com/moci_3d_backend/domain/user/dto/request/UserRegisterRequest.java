@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -24,10 +23,6 @@ public class UserRegisterRequest {
     @NotNull(message = "로그인 타입은 필수입니다")
     @Pattern(regexp = "^(PHONE|KAKAO|NAVER)$", message = "지원하지 않는 로그인 타입입니다")
     private String loginType;
-    
-    @NotNull(message = "디지털 레벨 설문조사는 필수입니다")
-    @Size(min = 5, max = 5, message = "디지털 레벨 설문조사는 5문항입니다")
-    private List<Boolean> digitalLevelAnswers;
     
     // ========================================
     // 조건부
@@ -58,10 +53,9 @@ public class UserRegisterRequest {
         
         // 2. 기본값 설정 
         user.setRole(User.UserRole.USER);  // 기본 역할: USER
+        user.setDigitalLevel(null);  // 디지털 레벨: 미설정 (별도 API로 설정)
         user.setCreatedAt(LocalDateTime.now());  // 생성일시
         user.setUpdatedAt(LocalDateTime.now());  // 수정일시
-        
-        // 디지털 레벨은 서비스에서 설정할 예정
         
         return user;
     }

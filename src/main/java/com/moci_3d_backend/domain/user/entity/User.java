@@ -50,7 +50,7 @@ public class User {
     @Column(name = "role", columnDefinition = "VARCHAR(20) DEFAULT 'USER'")
     private UserRole role;
 
-    @Column(name = "digital_level", columnDefinition = "INTEGER DEFAULT 0")
+    @Column(name = "digital_level")
     private Integer digitalLevel;
 
     @Column(name = "created_at", nullable = false)
