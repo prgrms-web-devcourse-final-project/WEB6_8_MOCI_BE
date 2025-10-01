@@ -1,7 +1,6 @@
 package com.moci_3d_backend.domain.user.dto.request;
 
 import com.moci_3d_backend.domain.user.entity.User;
-import com.moci_3d_backend.global.util.PasswordUtil;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -37,9 +36,14 @@ public class UserRegisterRequest {
     private String email;  // null 가능
     
     // ========================================
-    // 일반 회원가입
+    // 일반 회원가입 필수 (loginType="PHONE"일 때)
     // ========================================
-    private String userId; // 전화번호
+    @NotBlank(message = "전화번호는 필수입니다")
+    @Pattern(regexp = "^01[016789]\\d{7,8}$", message = "올바른 전화번호 형식이 아닙니다 (하이픈 제외)")
+    private String userId; // 전화번호 (하이픈 제거된 형식)
+    
+    @NotBlank(message = "비밀번호는 필수입니다")
+    @Size(min = 8, message = "비밀번호는 최소 8자 이상이어야 합니다")
     private String password; // 비밀번호
     
     // === DTO → Entity 변환 메서드 ===
@@ -49,7 +53,7 @@ public class UserRegisterRequest {
         // 1. 기본 정보 설정
         user.setUserId(this.userId);
         user.setLoginType(this.loginType);
-        user.setPassword(PasswordUtil.encode(this.password));
+        user.setPassword(this.password);  // Service에서 암호화함 (중복 방지)
         user.setRefreshToken(UUID.randomUUID().toString());
         user.setName(this.name);
         user.setEmail(this.email);  // null 가능 (선택사항)

@@ -14,7 +14,6 @@ import com.moci_3d_backend.domain.user.service.UserService;
 import com.moci_3d_backend.global.rq.Rq;
 import com.moci_3d_backend.global.rsData.RsData;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -63,7 +62,6 @@ public class UserController {
         summary = "디지털 레벨 설정", 
         description = "로그인 후 디지털 레벨 설문조사 응답을 제출하여 디지털 레벨을 설정합니다. (인증 필요)"
     )
-    @ApiResponse(responseCode = "200", description = "디지털 레벨 설정 성공")
     @PatchMapping("/digital-level")
     @Transactional
     public ResponseEntity<RsData<UserDigitalLevelResponse>> updateDigitalLevel(
@@ -79,7 +77,6 @@ public class UserController {
         summary = "이메일 수정/등록", 
         description = "사용자의 이메일을 등록하거나 수정합니다. (인증 필요)"
     )
-    @ApiResponse(responseCode = "200", description = "이메일 수정 성공")
     @PatchMapping("/email")
     @Transactional
     public ResponseEntity<RsData<UserResponse>> updateEmail(
@@ -96,8 +93,6 @@ public class UserController {
         summary = "비밀번호 변경", 
         description = "사용자의 비밀번호를 변경합니다. (인증 필요, 일반 로그인만 가능)"
     )
-    @ApiResponse(responseCode = "200", description = "비밀번호 변경 성공")
-    @ApiResponse(responseCode = "400", description = "소셜 로그인 사용자 또는 비밀번호 불일치")
     @PatchMapping("/password")
     @Transactional
     public ResponseEntity<RsData<Void>> updatePassword(
@@ -114,7 +109,6 @@ public class UserController {
         summary = "회원 탈퇴", 
         description = "사용자 계정을 영구적으로 삭제합니다. (인증 필요, 복구 불가)"
     )
-    @ApiResponse(responseCode = "200", description = "회원 탈퇴 성공")
     @DeleteMapping("/me")
     @Transactional
     public ResponseEntity<RsData<UserWithdrawResponse>> withdrawUser(

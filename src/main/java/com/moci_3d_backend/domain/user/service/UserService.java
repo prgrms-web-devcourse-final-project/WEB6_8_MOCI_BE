@@ -32,22 +32,23 @@ public class UserService {
     // === 회원가입 ===
     @Transactional  // 트랜잭션 처리
     public User register(UserRegisterRequest request) {
-        // User 엔티티 생성
-        User user = request.toEntity();
-
-        //userId 중복 체크
+        // 일반 회원가입(PHONE) 검증
         if ("PHONE".equals(request.getLoginType())) {
-            if (request.getUserId() != null &&
-                    userRepository.existsByUserId(request.getUserId())) {
+            // userId 중복 체크
+            if (userRepository.existsByUserId(request.getUserId())) {
                 throw new ServiceException(409, "이미 사용 중인 전화번호입니다.");
             }
         }
+        
+        // User 엔티티 생성
+        User user = request.toEntity();
 
         // 비밀번호 암호화 (일반 회원가입)
-        if ("PHONE".equals(request.getLoginType()) && request.getPassword() != null) {
+        if ("PHONE".equals(request.getLoginType())) {
             String encodedPassword = PasswordUtil.encode(request.getPassword());
             user.setPassword(encodedPassword);
         }
+        
         // 저장 및 반환
         return userRepository.save(user);
     }
