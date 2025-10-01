@@ -3,9 +3,11 @@ package com.moci_3d_backend.domain.user.controller;
 import com.moci_3d_backend.domain.user.dto.request.UserDigitalLevelRequest;
 import com.moci_3d_backend.domain.user.dto.request.UserEmailUpdateRequest;
 import com.moci_3d_backend.domain.user.dto.request.UserPhoneCheckRequest;
+import com.moci_3d_backend.domain.user.dto.request.UserWithdrawRequest;
 import com.moci_3d_backend.domain.user.dto.response.UserDigitalLevelResponse;
 import com.moci_3d_backend.domain.user.dto.response.UserPhoneCheckResponse;
 import com.moci_3d_backend.domain.user.dto.response.UserResponse;
+import com.moci_3d_backend.domain.user.dto.response.UserWithdrawResponse;
 import com.moci_3d_backend.domain.user.entity.User;
 import com.moci_3d_backend.domain.user.service.UserService;
 import com.moci_3d_backend.global.rq.Rq;
@@ -86,5 +88,28 @@ public class UserController {
         User updatedUser = userService.updateEmail(actor, request);
         UserResponse response = UserResponse.from(updatedUser);
         return ResponseEntity.ok(RsData.successOf(response));
+    }
+    
+    // === 회원 탈퇴 ===
+    @Operation(
+        summary = "회원 탈퇴", 
+        description = "사용자 계정을 영구적으로 삭제합니다. (인증 필요, 복구 불가)"
+    )
+    @ApiResponse(responseCode = "200", description = "회원 탈퇴 성공")
+    @DeleteMapping("/me")
+    @Transactional
+    public ResponseEntity<RsData<UserWithdrawResponse>> withdrawUser(
+            @Valid @RequestBody UserWithdrawRequest request) {
+        
+        User actor = rq.getActor();
+        
+        // 회원 탈퇴 처리 (탈퇴 정보 반환)
+        UserWithdrawResponse response = userService.withdrawUser(actor, request);
+        
+        // JWT 토큰 쿠키 삭제 (로그아웃 처리)
+        rq.deleteCookie("accessToken");
+        rq.deleteCookie("refreshToken");
+        
+        return ResponseEntity.ok(RsData.of(200, response.getName() + "님의 회원 탈퇴가 완료되었습니다.", response));
     }
 }

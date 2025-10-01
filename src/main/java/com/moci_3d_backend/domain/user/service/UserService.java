@@ -5,8 +5,10 @@ import com.moci_3d_backend.domain.user.dto.request.UserEmailUpdateRequest;
 import com.moci_3d_backend.domain.user.dto.request.UserLoginRequest;
 import com.moci_3d_backend.domain.user.dto.request.UserPhoneCheckRequest;
 import com.moci_3d_backend.domain.user.dto.request.UserRegisterRequest;
+import com.moci_3d_backend.domain.user.dto.request.UserWithdrawRequest;
 import com.moci_3d_backend.domain.user.dto.response.UserDigitalLevelResponse;
 import com.moci_3d_backend.domain.user.dto.response.UserPhoneCheckResponse;
+import com.moci_3d_backend.domain.user.dto.response.UserWithdrawResponse;
 import com.moci_3d_backend.domain.user.entity.User;
 import com.moci_3d_backend.domain.user.repository.UserRepository;
 import com.moci_3d_backend.global.exception.ServiceException;
@@ -156,5 +158,22 @@ public class UserService {
         
         // 저장
         return userRepository.save(user);
+    }
+    
+    // === 회원 탈퇴 ===
+    @Transactional
+    public UserWithdrawResponse withdrawUser(User user, UserWithdrawRequest request) {
+        // 탈퇴 확인 검증
+        if (request.getConfirmWithdrawal() == null || !request.getConfirmWithdrawal()) {
+            throw new ServiceException(400, "회원 탈퇴 확인이 필요합니다.");
+        }
+        
+        // 삭제 전에 사용자 정보 저장 (응답용)
+        UserWithdrawResponse response = UserWithdrawResponse.of(user);
+        
+        // 사용자 삭제 
+        userRepository.delete(user);
+        
+        return response;
     }
 }
