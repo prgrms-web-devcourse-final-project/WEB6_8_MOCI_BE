@@ -17,6 +17,9 @@ public class UserLoginRequest {
     private String loginType;
     
     // === 일반 로그인 ===
+    @NotBlank(message = "아이디(전화번호)는 필수입니다")
     private String userId;    // 전화번호
+    
+    @NotBlank(message = "비밀번호는 필수입니다")
     private String password;  // 비밀번호
 }
