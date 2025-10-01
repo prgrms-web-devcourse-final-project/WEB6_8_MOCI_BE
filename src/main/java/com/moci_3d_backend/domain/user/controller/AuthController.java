@@ -23,26 +23,30 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
     private final Rq rq;
     private final UserService userService;
-    
+
     @Value("${custom.frontend.baseUrl}")
     private String frontendBaseUrl;
-    
+
     @Value("${custom.frontend.registerPath}")
     private String registerPath;
-    
+
     @Value("${custom.frontend.mainPath}")
     private String mainPath;
 
     // === 회원가입 ===
-    @Operation(summary = "회원가입", description = "새로운 사용자를 등록합니다.")
+    @Operation(summary = "회원가입", description = "새로운 사용자를 등록하고 자동으로 로그인합니다.")
     @ApiResponse(responseCode = "200", description = "회원가입 성공")
     @PostMapping("/register")
     public ResponseEntity<RsData<UserRegisterResponse>> signup(@RequestBody UserRegisterRequest request) {
         User user = userService.register(request);
-        
+
+        // ⭐ 회원가입 후 자동 로그인: JWT 토큰 생성 및 쿠키 설정
+        rq.setCookie("accessToken", userService.genAccessToken(user));
+        rq.setCookie("refreshToken", user.getRefreshToken());
+
         // 디지털 레벨에 따라 리다이렉트 URL 결정
         String redirectUrl = determineRedirectUrl(user);
-        
+
         UserRegisterResponse response = UserRegisterResponse.of(user, redirectUrl);
         return ResponseEntity.ok(RsData.successOf(response));
     }
@@ -61,7 +65,7 @@ public class AuthController {
 
         // 디지털 레벨에 따라 리다이렉트 URL 결정
         String redirectUrl = determineRedirectUrl(user);
-        
+
         UserCreateTokenResponse tokenResponse = UserCreateTokenResponse.of(user, redirectUrl);
 
         return ResponseEntity.ok(RsData.successOf(tokenResponse));
@@ -76,7 +80,7 @@ public class AuthController {
 
         return ResponseEntity.ok().build();
     }
-    
+
     // === 리다이렉트 URL 결정 (디지털 레벨 기반) ===
     private String determineRedirectUrl(User user) {
         if (user.getDigitalLevel() == null) {

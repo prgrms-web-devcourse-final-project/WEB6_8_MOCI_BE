@@ -11,29 +11,20 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserRegisterResponse {
-    private Long id;
-    private String name;
-    private String email;
-    private Integer digitalLevel;
-    private String redirectUrl;  // 리다이렉트할 URL
-    
+    private UserResponse user;      // ✅ 완전한 사용자 정보
+    private String redirectUrl;     // 리다이렉트할 URL
+
     public static UserRegisterResponse from(User user) {
         return new UserRegisterResponse(
-            user.getId(),
-            user.getName(),
-            user.getEmail(),
-            user.getDigitalLevel(),
-            null  // Controller에서 설정
+                UserResponse.from(user),
+                null  // Controller에서 설정
         );
     }
-    
+
     public static UserRegisterResponse of(User user, String redirectUrl) {
         return new UserRegisterResponse(
-            user.getId(),
-            user.getName(),
-            user.getEmail(),
-            user.getDigitalLevel(),
-            redirectUrl
+                UserResponse.from(user),
+                redirectUrl
         );
     }
 }
