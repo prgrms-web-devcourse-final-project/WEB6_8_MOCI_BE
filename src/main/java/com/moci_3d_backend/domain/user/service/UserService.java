@@ -3,6 +3,7 @@ package com.moci_3d_backend.domain.user.service;
 import com.moci_3d_backend.domain.user.dto.request.UserDigitalLevelRequest;
 import com.moci_3d_backend.domain.user.dto.request.UserEmailUpdateRequest;
 import com.moci_3d_backend.domain.user.dto.request.UserLoginRequest;
+import com.moci_3d_backend.domain.user.dto.request.UserPasswordUpdateRequest;
 import com.moci_3d_backend.domain.user.dto.request.UserPhoneCheckRequest;
 import com.moci_3d_backend.domain.user.dto.request.UserRegisterRequest;
 import com.moci_3d_backend.domain.user.dto.request.UserWithdrawRequest;
@@ -154,6 +155,30 @@ public class UserService {
     public User updateEmail(User user, UserEmailUpdateRequest request) {
         // 이메일 업데이트 (등록 또는 수정)
         user.updateEmail(request.getEmail());
+        user.setUpdatedAt(java.time.LocalDateTime.now());
+        
+        // 저장
+        return userRepository.save(user);
+    }
+    
+    // === 비밀번호 변경 ===
+    @Transactional
+    public User updatePassword(User user, UserPasswordUpdateRequest request) {
+        // 소셜 로그인 사용자 체크 (비밀번호 없음)
+        if (user.getPassword() == null || !user.getLoginType().equals("PHONE")) {
+            throw new ServiceException(400, "소셜 로그인 사용자는 비밀번호를 변경할 수 없습니다.");
+        }
+        
+        // TODO: 보안 강화 - 현재 비밀번호 확인 
+        
+        // 새 비밀번호와 확인 일치 검증
+        if (!request.getNewPassword().equals(request.getNewPasswordConfirm())) {
+            throw new ServiceException(400, "새 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+        }
+        
+        // 비밀번호 암호화 후 업데이트
+        String encodedPassword = PasswordUtil.encode(request.getNewPassword());
+        user.updatePassword(encodedPassword);
         user.setUpdatedAt(java.time.LocalDateTime.now());
         
         // 저장

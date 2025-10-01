@@ -2,6 +2,7 @@ package com.moci_3d_backend.domain.user.controller;
 
 import com.moci_3d_backend.domain.user.dto.request.UserDigitalLevelRequest;
 import com.moci_3d_backend.domain.user.dto.request.UserEmailUpdateRequest;
+import com.moci_3d_backend.domain.user.dto.request.UserPasswordUpdateRequest;
 import com.moci_3d_backend.domain.user.dto.request.UserPhoneCheckRequest;
 import com.moci_3d_backend.domain.user.dto.request.UserWithdrawRequest;
 import com.moci_3d_backend.domain.user.dto.response.UserDigitalLevelResponse;
@@ -88,6 +89,24 @@ public class UserController {
         User updatedUser = userService.updateEmail(actor, request);
         UserResponse response = UserResponse.from(updatedUser);
         return ResponseEntity.ok(RsData.successOf(response));
+    }
+    
+    // === 비밀번호 변경 ===
+    @Operation(
+        summary = "비밀번호 변경", 
+        description = "사용자의 비밀번호를 변경합니다. (인증 필요, 일반 로그인만 가능)"
+    )
+    @ApiResponse(responseCode = "200", description = "비밀번호 변경 성공")
+    @ApiResponse(responseCode = "400", description = "소셜 로그인 사용자 또는 비밀번호 불일치")
+    @PatchMapping("/password")
+    @Transactional
+    public ResponseEntity<RsData<Void>> updatePassword(
+            @Valid @RequestBody UserPasswordUpdateRequest request) {
+        
+        User actor = rq.getActor();
+        userService.updatePassword(actor, request);
+        
+        return ResponseEntity.ok(RsData.of(200, "비밀번호가 성공적으로 변경되었습니다."));
     }
     
     // === 회원 탈퇴 ===
