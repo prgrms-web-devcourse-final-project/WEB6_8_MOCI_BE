@@ -2,6 +2,7 @@ gemini:
   api:
     key: ${GEMINI_API_KEY}
     url: ${GEMINI_API_URL}
+    stream-url: ${GEMINI_API_STREAM_URL}
 
 spring:
   config:
