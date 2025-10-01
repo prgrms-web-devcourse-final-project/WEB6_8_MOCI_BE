@@ -1,8 +1,10 @@
 package com.moci_3d_backend.domain.user.controller;
 
 import com.moci_3d_backend.domain.user.dto.request.UserPhoneCheckRequest;
+import com.moci_3d_backend.domain.user.dto.request.UserDigitalLevelRequest;
 import com.moci_3d_backend.domain.user.dto.response.UserResponse;
 import com.moci_3d_backend.domain.user.dto.response.UserPhoneCheckResponse;
+import com.moci_3d_backend.domain.user.dto.response.UserDigitalLevelResponse;
 import com.moci_3d_backend.domain.user.entity.User;
 import com.moci_3d_backend.domain.user.service.UserService;
 import com.moci_3d_backend.global.rq.Rq;
@@ -25,7 +27,10 @@ public class UserController {
     private final UserService userService;
 
     // === 사용자 조회 ===
-    @Operation(summary = "내 정보 조회", description = "현재 로그인한 사용자의 정보를 조회합니다. (인증 필요)")
+    @Operation(
+        summary = "내 정보 조회", 
+        description = "현재 로그인한 사용자의 정보를 조회합니다. (인증 필요)"
+    )
     @GetMapping("/me")
     @Transactional(readOnly = true)
     public ResponseEntity<RsData<UserResponse>> getMe() {
@@ -46,6 +51,21 @@ public class UserController {
             @Valid @RequestBody UserPhoneCheckRequest request) {
         
         UserPhoneCheckResponse response = userService.checkPhoneDuplicate(request);
+        return ResponseEntity.ok(RsData.successOf(response));
+    }
+
+    // === 디지털 레벨 설정 ===
+    @Operation(
+        summary = "디지털 레벨 설정", 
+        description = "로그인 후 디지털 레벨 설문조사 응답을 제출하여 디지털 레벨을 설정합니다. (인증 필요)"
+    )
+    @PatchMapping("/digital-level")
+    @Transactional
+    public ResponseEntity<RsData<UserDigitalLevelResponse>> updateDigitalLevel(
+            @Valid @RequestBody UserDigitalLevelRequest request) {
+        
+        User actor = rq.getActor();
+        UserDigitalLevelResponse response = userService.updateDigitalLevel(actor, request);
         return ResponseEntity.ok(RsData.successOf(response));
     }
 }

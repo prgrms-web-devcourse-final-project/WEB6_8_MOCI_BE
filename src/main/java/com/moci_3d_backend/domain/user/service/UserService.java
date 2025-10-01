@@ -3,8 +3,10 @@ package com.moci_3d_backend.domain.user.service;
 import com.moci_3d_backend.domain.user.dto.request.UserLoginRequest;
 import com.moci_3d_backend.domain.user.dto.request.UserRegisterRequest;
 import com.moci_3d_backend.domain.user.dto.request.UserPhoneCheckRequest;
+import com.moci_3d_backend.domain.user.dto.request.UserDigitalLevelRequest;
 import com.moci_3d_backend.domain.user.dto.response.UserLoginResponse;
 import com.moci_3d_backend.domain.user.dto.response.UserPhoneCheckResponse;
+import com.moci_3d_backend.domain.user.dto.response.UserDigitalLevelResponse;
 import com.moci_3d_backend.domain.user.entity.User;
 import com.moci_3d_backend.domain.user.repository.UserRepository;
 import com.moci_3d_backend.global.exception.ServiceException;
@@ -13,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -44,40 +45,29 @@ public class UserService {
             String encodedPassword = PasswordUtil.encode(request.getPassword());
             user.setPassword(encodedPassword);
         }
-
-        // 디지털 레벨 계산
-        List<Boolean> answers = request.getDigitalLevelAnswers();
-        Integer digitalLevel = 0; // 기본값
-        if (answers != null && answers.size() == 5) {
-            // 5문항 중 true 개수로 레벨 계산 (0~5)
-            int Count = answers.stream().mapToInt(answer -> answer ? 1 : 0).sum();
-            digitalLevel = Count;
-        }
-        user.setDigitalLevel(digitalLevel);
-
         // 저장 및 반환
         return userRepository.save(user);
     }
 
 
     // === 로그인 ===
-    public UserLoginResponse login(UserLoginRequest request) {
-
-        // 1. UserId 검증
-        Optional<User> userOptional = userRepository.findByUserId(request.getUserId());
-        if (userOptional.isEmpty()) {
-            throw new ServiceException(400, "'아이디 또는 비밀번호가 틀렸습니다.'");
-        }
-        User user = userOptional.get();
-
-        // 비밀번호 검증 (BCrypt)
-        boolean isPasswordMatch = PasswordUtil.matches(request.getPassword(), user.getPassword());
-        if (!isPasswordMatch) {
-            throw new ServiceException(400, "'아이디 또는 비밀번호가 틀렸습니다.'");
-        }
-
-        return UserLoginResponse.from(user);
-    }
+//    public UserLoginResponse login(UserLoginRequest request) {
+//
+//        // 1. UserId 검증
+//        Optional<User> userOptional = userRepository.findByUserId(request.getUserId());
+//        if (userOptional.isEmpty()) {
+//            throw new ServiceException(400, "'아이디 또는 비밀번호가 틀렸습니다.'");
+//        }
+//        User user = userOptional.get();
+//
+//        // 비밀번호 검증 (BCrypt)
+//        boolean isPasswordMatch = PasswordUtil.matches(request.getPassword(), user.getPassword());
+//        if (!isPasswordMatch) {
+//            throw new ServiceException(400, "'아이디 또는 비밀번호가 틀렸습니다.'");
+//        }
+//
+//        return UserLoginResponse.from(user);
+//    }
 
     // === 사용자 조회 ===
     public User findByUserId(String userId) {
@@ -147,15 +137,33 @@ public class UserService {
             return UserPhoneCheckResponse.available();
         }
     }
-    
-    /**
-     * 전화번호를 정규화합니다. (하이픈 제거)
-     * 예: "010-1234-5678" → "01012345678"
-     */
+
+    // === 전화번호 정규화 ===
     private String normalizePhoneNumber(String phoneNumber) {
         if (phoneNumber == null) {
             return null;
         }
         return phoneNumber.replaceAll("-", "");
+    }
+    
+    // === 디지털 레벨 설정 ===
+    @Transactional
+    public UserDigitalLevelResponse updateDigitalLevel(User user, UserDigitalLevelRequest request) {
+        // 이미 디지털 레벨이 설정된 경우 재설정 불가
+        if (user.getDigitalLevel() != null) {
+            throw new ServiceException(400, "디지털 레벨은 이미 설정되었습니다. 재설정이 불가능합니다.");
+        }
+        
+        // 디지털 레벨 계산
+        Integer digitalLevel = request.calculateDigitalLevel();
+        
+        // 사용자 정보 업데이트
+        user.updateDigitalLevel(digitalLevel);
+        user.setUpdatedAt(java.time.LocalDateTime.now());
+        
+        // 저장
+        userRepository.save(user);
+        
+        return UserDigitalLevelResponse.of(digitalLevel);
     }
 }

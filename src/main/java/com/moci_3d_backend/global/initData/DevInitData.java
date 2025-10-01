@@ -113,7 +113,7 @@ public class DevInitData {
         user1.setName("박민수");
         user1.setEmail("park@example.com");
         user1.setRole(User.UserRole.USER);
-        user1.setDigitalLevel(5);
+        user1.setDigitalLevel(null);
         user1.setCreatedAt(LocalDateTime.now());
         user1.setUpdatedAt(LocalDateTime.now());
         userRepository.save(user1);

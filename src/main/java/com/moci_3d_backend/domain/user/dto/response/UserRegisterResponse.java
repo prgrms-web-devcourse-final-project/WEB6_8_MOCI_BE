@@ -15,13 +15,25 @@ public class UserRegisterResponse {
     private String name;
     private String email;
     private Integer digitalLevel;
+    private String redirectUrl;  // 리다이렉트할 URL
     
     public static UserRegisterResponse from(User user) {
         return new UserRegisterResponse(
             user.getId(),
             user.getName(),
             user.getEmail(),
-            user.getDigitalLevel()
+            user.getDigitalLevel(),
+            null  // Controller에서 설정
+        );
+    }
+    
+    public static UserRegisterResponse of(User user, String redirectUrl) {
+        return new UserRegisterResponse(
+            user.getId(),
+            user.getName(),
+            user.getEmail(),
+            user.getDigitalLevel(),
+            redirectUrl
         );
     }
 }
