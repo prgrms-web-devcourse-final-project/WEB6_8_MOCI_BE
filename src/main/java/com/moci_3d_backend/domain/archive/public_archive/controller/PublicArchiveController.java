@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
-@Tag(name = "교육 자료실", description = "교육 자료실 관련 API 입니다. **401의 경우 body에 credentials: \"include\" 필수 (쿠키 인증)**")
+@Tag(name = "교육 자료실", description = "교육 자료실 관련 API 입니다. **401의 경우 요청 시 credentials: \"include\" 필수 (쿠키 인증)**")
 public class PublicArchiveController {
 
     private final PublicArchiveService publicArchiveService;

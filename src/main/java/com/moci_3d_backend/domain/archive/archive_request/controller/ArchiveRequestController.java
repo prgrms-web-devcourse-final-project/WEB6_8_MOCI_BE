@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
-@Tag(name = "자료 요청 게시판", description = "자료 요청 게시판 관련 API 입니다. **401의 경우 body에 credentials: \"include\" 필수 (쿠키 인증)**")
+@Tag(name = "자료 요청 게시판", description = "자료 요청 게시판 관련 API 입니다. **401의 경우 요청 시 credentials: \"include\" 필수 (쿠키 인증)**")
 public class ArchiveRequestController {
     private final ArchiveRequestService archiveRequestService;
     private final Rq rq;
