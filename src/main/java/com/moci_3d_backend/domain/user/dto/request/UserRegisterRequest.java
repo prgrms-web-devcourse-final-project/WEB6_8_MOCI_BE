@@ -25,13 +25,16 @@ public class UserRegisterRequest {
     private String loginType;
     
     // ========================================
-    // 조건부
+    // 필수 정보
     // ========================================
     @NotBlank(message = "실명은 필수입니다")
     private String name;
     
+    // ========================================
+    // 선택 정보 (마이페이지에서 등록/수정 가능)
+    // ========================================
     @Email(message = "올바른 이메일 형식이 아닙니다")
-    private String email;
+    private String email;  // null 가능
     
     // ========================================
     // 일반 회원가입
@@ -49,7 +52,7 @@ public class UserRegisterRequest {
         user.setPassword(PasswordUtil.encode(this.password));
         user.setRefreshToken(UUID.randomUUID().toString());
         user.setName(this.name);
-        user.setEmail(this.email);
+        user.setEmail(this.email);  // null 가능 (선택사항)
         
         // 2. 기본값 설정 
         user.setRole(User.UserRole.USER);  // 기본 역할: USER

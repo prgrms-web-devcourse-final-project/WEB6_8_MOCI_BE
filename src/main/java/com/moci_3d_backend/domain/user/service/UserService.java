@@ -1,6 +1,7 @@
 package com.moci_3d_backend.domain.user.service;
 
 import com.moci_3d_backend.domain.user.dto.request.UserDigitalLevelRequest;
+import com.moci_3d_backend.domain.user.dto.request.UserEmailUpdateRequest;
 import com.moci_3d_backend.domain.user.dto.request.UserLoginRequest;
 import com.moci_3d_backend.domain.user.dto.request.UserPhoneCheckRequest;
 import com.moci_3d_backend.domain.user.dto.request.UserRegisterRequest;
@@ -144,5 +145,16 @@ public class UserService {
         userRepository.save(user);
         
         return UserDigitalLevelResponse.of(digitalLevel);
+    }
+    
+    // === 이메일 수정/등록 ===
+    @Transactional
+    public User updateEmail(User user, UserEmailUpdateRequest request) {
+        // 이메일 업데이트 (등록 또는 수정)
+        user.updateEmail(request.getEmail());
+        user.setUpdatedAt(java.time.LocalDateTime.now());
+        
+        // 저장
+        return userRepository.save(user);
     }
 }

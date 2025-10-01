@@ -1,10 +1,11 @@
 package com.moci_3d_backend.domain.user.controller;
 
-import com.moci_3d_backend.domain.user.dto.request.UserPhoneCheckRequest;
 import com.moci_3d_backend.domain.user.dto.request.UserDigitalLevelRequest;
-import com.moci_3d_backend.domain.user.dto.response.UserResponse;
-import com.moci_3d_backend.domain.user.dto.response.UserPhoneCheckResponse;
+import com.moci_3d_backend.domain.user.dto.request.UserEmailUpdateRequest;
+import com.moci_3d_backend.domain.user.dto.request.UserPhoneCheckRequest;
 import com.moci_3d_backend.domain.user.dto.response.UserDigitalLevelResponse;
+import com.moci_3d_backend.domain.user.dto.response.UserPhoneCheckResponse;
+import com.moci_3d_backend.domain.user.dto.response.UserResponse;
 import com.moci_3d_backend.domain.user.entity.User;
 import com.moci_3d_backend.domain.user.service.UserService;
 import com.moci_3d_backend.global.rq.Rq;
@@ -59,6 +60,7 @@ public class UserController {
         summary = "디지털 레벨 설정", 
         description = "로그인 후 디지털 레벨 설문조사 응답을 제출하여 디지털 레벨을 설정합니다. (인증 필요)"
     )
+    @ApiResponse(responseCode = "200", description = "디지털 레벨 설정 성공")
     @PatchMapping("/digital-level")
     @Transactional
     public ResponseEntity<RsData<UserDigitalLevelResponse>> updateDigitalLevel(
@@ -66,6 +68,23 @@ public class UserController {
         
         User actor = rq.getActor();
         UserDigitalLevelResponse response = userService.updateDigitalLevel(actor, request);
+        return ResponseEntity.ok(RsData.successOf(response));
+    }
+    
+    // === 이메일 수정/등록 ===
+    @Operation(
+        summary = "이메일 수정/등록", 
+        description = "사용자의 이메일을 등록하거나 수정합니다. (인증 필요)"
+    )
+    @ApiResponse(responseCode = "200", description = "이메일 수정 성공")
+    @PatchMapping("/email")
+    @Transactional
+    public ResponseEntity<RsData<UserResponse>> updateEmail(
+            @Valid @RequestBody UserEmailUpdateRequest request) {
+        
+        User actor = rq.getActor();
+        User updatedUser = userService.updateEmail(actor, request);
+        UserResponse response = UserResponse.from(updatedUser);
         return ResponseEntity.ok(RsData.successOf(response));
     }
 }
