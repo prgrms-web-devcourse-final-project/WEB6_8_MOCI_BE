@@ -44,13 +44,12 @@ public class SecurityConfig {
                                 "/actuator/**", // 헬스체크, 무중단배포에 필요
                                 "/api/v1/file/**",
                                 "/chat/room/**",
-                                "/sse/**"
+                                "/sse/**",
+                                "/uploads/**"
                         ).permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/*/archive/public/**")
                         .permitAll()
                         .requestMatchers("/api/*/auth/login", "/api/*/auth/register", "/api/*/auth/token")
-                        .permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/*/users/phone-check")
                         .permitAll()
                         .anyRequest().authenticated()
                 )
