@@ -19,6 +19,15 @@ spring:
         default_batch_fetch_size: 100
 
 # ============================================
+# 프로덕션 사이트 설정 (쿠키 도메인, URL)
+# ============================================
+custom:
+  site:
+    cookieDomain: "${custom.prod.cookieDomain}"
+    frontUrl: "${custom.prod.frontUrl}"
+    backUrl: "${custom.prod.backUrl}"
+
+# ============================================
 # 파일 저장 설정 (로컬 또는 S3)
 # ============================================
 file:
