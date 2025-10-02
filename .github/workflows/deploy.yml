@@ -39,11 +39,11 @@ jobs:
         echo "jar_name=$(basename $JAR_FILE)" >> $GITHUB_OUTPUT
         echo "Found JAR: $(basename $JAR_FILE)"
     
-    # 6. SSH 키 설정
+    # 6. SSH 키 설정 (Base64 디코딩)
     - name: Setup SSH key
       run: |
         mkdir -p ~/.ssh
-        echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/deploy_key.pem
+        echo "${{ secrets.EC2_SSH_KEY_BASE64 }}" | base64 -d > ~/.ssh/deploy_key.pem
         chmod 600 ~/.ssh/deploy_key.pem
         ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
     
