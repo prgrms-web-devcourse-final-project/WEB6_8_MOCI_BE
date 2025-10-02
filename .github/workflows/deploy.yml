@@ -149,27 +149,27 @@ jobs:
         echo "⏳ Waiting for application to be ready..."
         sleep 20
         
-        # 먼저 SSH로 로컬 확인
-        echo "=== Checking from EC2 localhost ==="
+        # EC2 localhost에서 Health Check
+        echo "=== Health Check via HealthController ==="
         ssh -i ~/.ssh/deploy_key.pem ubuntu@${{ secrets.EC2_HOST }} << 'ENDSSH'
-          for i in {1..5}; do
-            response=$(curl -s http://localhost:8080/actuator/health || echo "fail")
-            if echo "$response" | grep -q "UP"; then
-              echo "✅ Health check passed on localhost!"
+          for i in {1..10}; do
+            echo "Health check attempt $i/10..."
+            response=$(curl -s http://localhost:8080/health)
+            
+            # JSON 응답에 "200" 또는 "정상" 포함되면 성공
+            if echo "$response" | grep -q "200"; then
+              echo "✅ Health check passed!"
+              echo "Response: $response"
               exit 0
             fi
-            echo "Attempt $i/5 on localhost, waiting..."
+            
+            echo "⏳ Waiting 3 seconds..."
             sleep 3
           done
           
-          # Actuator가 없으면 메인 페이지 확인
-          echo "Trying main page..."
-          if curl -s http://localhost:8080/ | grep -q "html"; then
-            echo "✅ Application is responding!"
-            exit 0
-          fi
-          
-          echo "❌ Application not responding"
+          echo "❌ Health check failed"
+          echo "Last 100 lines of log:"
+          tail -100 ~/app.log
           exit 1
         ENDSSH
     
