@@ -41,6 +41,9 @@ public class MentorChatMessageService {
     @Transactional
     public ChatSendMessage saveMentorChatMessage(ChatReceiveMessage message, User sender, Long roomId){
         MentorChatRoom mentorChatRoom = mentorChatRoomService.getChatRoomById(roomId).orElseThrow(() -> new IllegalArgumentException("No chat room found"));
+        if (mentorChatRoom.isDeleted() || mentorChatRoom.isSolved()){
+            throw new IllegalArgumentException("The chat room is read-only");
+        }
         FileUpload fileUpload = fileUploadRepository.findById(message.getAttachmentId()).orElse(null);
         MentorChatMessage mentorChatMessage = mentorChatMessageDtoService.toEntity(message, sender, mentorChatRoom, fileUpload);
         mentorChatMessage = mentorChatMessageRepository.save(mentorChatMessage);
@@ -68,5 +71,4 @@ public class MentorChatMessageService {
         }
         messagingTemplate.convertAndSend("/api/v1/chat/topic/%d".formatted(roomId), chatSendMessage);
     }
-
 }
