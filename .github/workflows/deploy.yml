@@ -45,7 +45,30 @@ jobs:
         mkdir -p ~/.ssh
         echo "${{ secrets.EC2_SSH_KEY_BASE64 }}" | base64 -d > ~/.ssh/deploy_key.pem
         chmod 600 ~/.ssh/deploy_key.pem
+        
+        # 디버그: SSH 키 확인
+        echo "=== SSH Key Validation ==="
+        if [ -f ~/.ssh/deploy_key.pem ]; then
+          echo "✅ SSH key file created"
+          echo "File size: $(wc -c < ~/.ssh/deploy_key.pem) bytes"
+          echo "First line: $(head -1 ~/.ssh/deploy_key.pem)"
+          echo "Last line: $(tail -1 ~/.ssh/deploy_key.pem)"
+        else
+          echo "❌ SSH key file not found!"
+          exit 1
+        fi
+        
+        # SSH 키 형식 검증
+        if head -1 ~/.ssh/deploy_key.pem | grep -q "BEGIN"; then
+          echo "✅ SSH key format looks valid"
+        else
+          echo "❌ Invalid SSH key format!"
+          exit 1
+        fi
+        
+        echo "=== Adding EC2 host to known_hosts ==="
         ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+        echo "✅ Host key added"
     
     # 7. 기존 백업 생성 (롤백용)
     - name: Backup previous JAR on EC2
