@@ -43,7 +43,7 @@ jobs:
     - name: Setup SSH key
       run: |
         mkdir -p ~/.ssh
-        echo "${{ secrets.EC2_SSH_KEY }}" | base64 -d > ~/.ssh/deploy_key.pem
+        echo "${{ secrets.EC2_SSH_KEY_BASE64 }}" | base64 -d > ~/.ssh/deploy_key.pem
         chmod 600 ~/.ssh/deploy_key.pem
         
         # 디버그: SSH 키 확인
@@ -147,7 +147,7 @@ jobs:
     - name: Health Check
       run: |
         echo "⏳ Waiting for application to be ready..."
-        sleep 20
+        sleep 15
         
         # EC2 localhost에서 Health Check
         echo "=== Health Check via HealthController ==="
