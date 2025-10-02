@@ -20,7 +20,7 @@ public class Rq {
     private final HttpServletResponse resp;
     private final UserService userService;
     
-    @org.springframework.beans.factory.annotation.Value("${custom.site.cookieDomain}")
+    @org.springframework.beans.factory.annotation.Value("${custom.site.cookieDomain:localhost}")
     private String cookieDomain;
 
     public User getActor() {

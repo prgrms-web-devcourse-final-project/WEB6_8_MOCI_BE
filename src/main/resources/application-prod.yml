@@ -23,9 +23,9 @@ spring:
 # ============================================
 custom:
   site:
-    cookieDomain: "${custom.prod.cookieDomain}"
-    frontUrl: "${custom.prod.frontUrl}"
-    backUrl: "${custom.prod.backUrl}"
+    cookieDomain: "mydidimdol.com"
+    frontUrl: "https://www.mydidimdol.com"
+    backUrl: "https://api.mydidimdol.com"
 
 # ============================================
 # 파일 저장 설정 (로컬 또는 S3)
