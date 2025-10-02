@@ -56,7 +56,7 @@ public class Rq {
         cookie.setPath("/");
         cookie.setHttpOnly(true);
         cookie.setDomain("localhost");
-        cookie.setSecure(true);
+        cookie.setSecure(false);
         cookie.setMaxAge((value == null || value.isBlank()) ? 0 : 60 * 60 * 24 * 365);
 
         // SameSite 설정 (Servlet Cookie API에는 직접 없으므로 response header 조작 필요)
