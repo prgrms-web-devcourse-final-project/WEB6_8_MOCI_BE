@@ -89,7 +89,7 @@ custom:
   prod:
     cookieDomain: mydidimdol.com:8080
     frontUrl: "https://www.${custom.prod.cookieDomain}"
-    backUrl: "http://api.${custom.prod.cookieDomain}"
+    backUrl: "api.${custom.prod.cookieDomain}"
   site:
     cookieDomain: "${custom.dev.cookieDomain}"
     frontUrl: "${custom.dev.frontUrl}"
