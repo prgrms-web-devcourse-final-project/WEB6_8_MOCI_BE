@@ -55,24 +55,13 @@ public class Rq {
         Cookie cookie = new Cookie(name, value != null ? value : "");
         cookie.setPath("/");
         cookie.setHttpOnly(true);
-        
-        // 프로덕션에서는 점(.)으로 시작하는 도메인으로 설정하여 서브도메인 간 공유
-        // 예: .mydidimdol.com (www, api 모두에서 사용 가능)
-        if (!"localhost".equals(cookieDomain)) {
-            cookie.setDomain("." + cookieDomain);  // .mydidimdol.com
-        } else {
-            cookie.setDomain(cookieDomain);  // localhost
-        }
-        
-        // HTTP 환경에서는 Secure를 false로 설정
-        // TODO: HTTPS 적용 후 true로 변경 필요
-        cookie.setSecure(false);
-        
+        cookie.setDomain("localhost");
+        cookie.setSecure(true);
         cookie.setMaxAge((value == null || value.isBlank()) ? 0 : 60 * 60 * 24 * 365);
 
-        // HTTP 환경에서는 SameSite=Lax 사용
-        // HTTPS 적용 후에는 SameSite=None으로 변경 권장
-        cookie.setAttribute("SameSite", "Lax");
+        // SameSite 설정 (Servlet Cookie API에는 직접 없으므로 response header 조작 필요)
+        // Servlet 6.0 이상에서는 cookie.setAttribute("SameSite", "Strict") 가능
+        cookie.setAttribute("SameSite", "Strict");
 
         resp.addCookie(cookie);
     }
