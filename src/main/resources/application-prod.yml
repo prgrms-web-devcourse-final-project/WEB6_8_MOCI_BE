@@ -49,3 +49,15 @@ logging:
     com.moci_3d_backend: INFO
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+# ============================================
+# Actuator 설정 (Health Check)
+# ============================================
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
