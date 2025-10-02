@@ -137,16 +137,23 @@ public class SecurityConfig {
     public UrlBasedCorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         // 허용할 오리진 설정
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000")); // 추후 프론트엔드 도메인으로 변경
+        configuration.setAllowedOrigins(Arrays.asList(
+            "http://localhost:3000",           // 로컬 프론트엔드
+            "http://15.165.137.2:8080",       // EC2 IP (테스트용)
+            "https://www.moci.oa.gg",         // 프로덕션 프론트엔드 (나중에)
+            "https://api.moci.oa.gg"          // 프로덕션 백엔드 (나중에)
+        ));
         // 허용할 HTTP 메서드 설정
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         // 자격 증명 허용 설정
         configuration.setAllowCredentials(true);
         // 허용할 헤더 설정
         configuration.setAllowedHeaders(Arrays.asList("*"));
+        // 노출할 헤더 설정 (프론트엔드에서 읽을 수 있는 헤더)
+        configuration.setExposedHeaders(Arrays.asList("Authorization", "Set-Cookie"));
         // CORS 설정을 소스에 등록
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/api/**", configuration);
+        source.registerCorsConfiguration("/**", configuration);  // 모든 경로에 CORS 적용 -> 위의 도메인만 허용
         return source;
     }
 }
