@@ -30,11 +30,11 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew clean build -x test
     
-    # 5. JAR 파일명 확인
+    # 5. JAR 파일명 확인 (plain.jar 제외)
     - name: Get JAR filename
       id: jar
       run: |
-        JAR_FILE=$(ls build/libs/*.jar | head -n 1)
+        JAR_FILE=$(ls build/libs/*.jar | grep -v plain | head -n 1)
         echo "jar_file=$JAR_FILE" >> $GITHUB_OUTPUT
         echo "jar_name=$(basename $JAR_FILE)" >> $GITHUB_OUTPUT
         echo "Found JAR: $(basename $JAR_FILE)"
