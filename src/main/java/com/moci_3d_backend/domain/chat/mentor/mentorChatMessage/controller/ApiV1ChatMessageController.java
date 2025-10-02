@@ -33,7 +33,9 @@ public class ApiV1ChatMessageController {
         }
         Long roomId = Long.parseLong(roomIdStr);
         SecurityUser securityUser = (SecurityUser) principal;
-        User userRef = userService.getReferenceById(securityUser.getId());
-        mentorChatMessageService.sendMessage(roomId, message, Optional.of(userRef));
+        User user = new User();
+        user.setId(securityUser.getId());
+        user.setName(securityUser.getNickname());
+        mentorChatMessageService.sendMessage(roomId, message, Optional.of(user));
     }
 }
