@@ -139,9 +139,9 @@ public class SecurityConfig {
         // 허용할 오리진 설정
         configuration.setAllowedOrigins(Arrays.asList(
             "http://localhost:3000",           // 로컬 프론트엔드
-            "http://15.165.137.2:8080",       // EC2 IP (테스트용)
-            "https://www.moci.oa.gg",         // 프로덕션 프론트엔드 (나중에)
-            "https://api.moci.oa.gg"          // 프로덕션 백엔드 (나중에)
+//            "http://15.165.137.2:8080",       // EC2 IP (테스트용)
+//            "https://www.moci.oa.gg",         // 프로덕션 프론트엔드 (나중에)
+            "https://mydidimdol.com"          // 프로덕션 백엔드 (cloudflare 프록싱)
         ));
         // 허용할 HTTP 메서드 설정
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
