@@ -11,6 +11,8 @@ import com.moci_3d_backend.domain.fileUpload.entity.FileUpload;
 import com.moci_3d_backend.domain.fileUpload.repository.FileUploadRepository;
 import com.moci_3d_backend.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +30,9 @@ public class MentorChatMessageService {
     private final FileUploadRepository fileUploadRepository;
     private final MentorChatMessageDtoService mentorChatMessageDtoService;
     private final SimpMessagingTemplate messagingTemplate;
+    @Autowired
+    @Lazy
+    private MentorChatMessageService self;
 
     private MentorChatRoom getChatRoomByUser(Long roomId, User user){
         return switch (user.getRole()){
@@ -60,14 +65,13 @@ public class MentorChatMessageService {
         return mentorChatMessageDtoService.toSendMessages(chats);
     }
 
-    public void sendMessage(Long roomId, ChatReceiveMessage message, Optional<User> userRef){
-        String nickname;
+    public void sendMessage(Long roomId, ChatReceiveMessage message, Optional<User> user){
         ChatSendMessage chatSendMessage;
-        if (userRef.isEmpty()){
-            nickname = "System";
+        if (user.isEmpty()){
+            String nickname = "System";
             chatSendMessage = new ChatSendMessage(nickname, message);
         }else{
-            chatSendMessage = saveMentorChatMessage(message, userRef.get(), roomId);
+            chatSendMessage = self.saveMentorChatMessage(message, user.get(), roomId);
         }
         messagingTemplate.convertAndSend("/api/v1/chat/topic/%d".formatted(roomId), chatSendMessage);
     }

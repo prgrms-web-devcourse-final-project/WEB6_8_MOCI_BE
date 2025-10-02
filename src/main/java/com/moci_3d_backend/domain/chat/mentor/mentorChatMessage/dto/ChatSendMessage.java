@@ -4,6 +4,7 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 
+
 @Getter
 public class ChatSendMessage {
     private Long id;
@@ -21,8 +22,10 @@ public class ChatSendMessage {
     }
 
     public ChatSendMessage(String sender, ChatReceiveMessage receiveMessage) {
+        this.id = -1L;
         this.sender = sender;
         this.content = receiveMessage.getContent();
         this.attachmentId = receiveMessage.getAttachmentId();
+        this.createdAt = LocalDateTime.now();
     }
 }
