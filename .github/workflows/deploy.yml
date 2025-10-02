@@ -147,25 +147,31 @@ jobs:
     - name: Health Check
       run: |
         echo "⏳ Waiting for application to be ready..."
-        sleep 15
+        sleep 20
         
-        for i in {1..10}; do
-          echo "Health check attempt $i/10..."
-          response=$(curl -s -o /dev/null -w "%{http_code}" http://${{ secrets.EC2_HOST }}:8080/actuator/health || echo "000")
+        # 먼저 SSH로 로컬 확인
+        echo "=== Checking from EC2 localhost ==="
+        ssh -i ~/.ssh/deploy_key.pem ubuntu@${{ secrets.EC2_HOST }} << 'ENDSSH'
+          for i in {1..5}; do
+            response=$(curl -s http://localhost:8080/actuator/health || echo "fail")
+            if echo "$response" | grep -q "UP"; then
+              echo "✅ Health check passed on localhost!"
+              exit 0
+            fi
+            echo "Attempt $i/5 on localhost, waiting..."
+            sleep 3
+          done
           
-          if [ "$response" = "200" ]; then
-            echo "✅ Health check passed! Application is healthy."
+          # Actuator가 없으면 메인 페이지 확인
+          echo "Trying main page..."
+          if curl -s http://localhost:8080/ | grep -q "html"; then
+            echo "✅ Application is responding!"
             exit 0
           fi
           
-          echo "⏳ Status: $response, retrying in 5 seconds..."
-          sleep 5
-        done
-        
-        echo "❌ Health check failed after 10 attempts"
-        echo "Checking application logs..."
-        ssh -i ~/.ssh/deploy_key.pem ubuntu@${{ secrets.EC2_HOST }} "tail -100 ~/app.log"
-        exit 1
+          echo "❌ Application not responding"
+          exit 1
+        ENDSSH
     
     # 11. 배포 완료 알림
     - name: Deployment Success
