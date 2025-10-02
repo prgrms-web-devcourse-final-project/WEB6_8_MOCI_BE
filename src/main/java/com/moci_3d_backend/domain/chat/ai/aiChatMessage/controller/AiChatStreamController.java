@@ -20,7 +20,6 @@ import reactor.core.publisher.Flux;
 @RequiredArgsConstructor
 public class AiChatStreamController {
 
-    private final GeminiClient geminiClient;
     private final AiChatMessageService aiChatMessageService;
     private final Rq rq;
 

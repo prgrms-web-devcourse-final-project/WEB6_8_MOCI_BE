@@ -63,7 +63,8 @@ public class SecurityConfig {
                                 "/webjars/**",
                                 "/actuator/**", // 헬스체크, 무중단배포에 필요
                                 "/api/v1/file/**",
-                                "/uploads/**"
+                                "/uploads/**",
+                                "/api/v1/chat/ai/rooms/1/ask-stream"
                         ).permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/*/archive/public/**")
                         .permitAll()
