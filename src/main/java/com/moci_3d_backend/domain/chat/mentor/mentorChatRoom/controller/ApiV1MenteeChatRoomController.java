@@ -1,5 +1,7 @@
 package com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.controller;
 
+import com.moci_3d_backend.domain.chat.mentor.mentorChatMessage.dto.ChatReceiveMessage;
+import com.moci_3d_backend.domain.chat.mentor.mentorChatMessage.service.MentorChatMessageService;
 import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.dto.CreateMentorChatRoom;
 import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.dto.MentorChatRoomResponse;
 import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.service.MenteeChatRoomService;
@@ -9,11 +11,10 @@ import com.moci_3d_backend.global.rsData.RsData;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/chat/mentor/mentee/room")
@@ -22,6 +23,7 @@ import java.util.List;
 public class ApiV1MenteeChatRoomController {
     private final MenteeChatRoomService menteeChatRoomService;
     private final Rq rq;
+    private final MentorChatMessageService mentorChatMessageService;
 
     @PostMapping()
     @Operation(summary = "[멘티] 채팅방 생성", description = "멘티가 채팅방을 생성합니다.")
@@ -48,6 +50,8 @@ public class ApiV1MenteeChatRoomController {
     ){
         User user = rq.getActor();
         menteeChatRoomService.deleteMenteeChatRoom(roomId, user);
+        ChatReceiveMessage chatReceiveMessage = new ChatReceiveMessage("멘티님이 채팅방을 나가셨습니다.", 0L);
+        mentorChatMessageService.sendMessage(roomId, chatReceiveMessage, Optional.empty());
         return RsData.of(200, "success to delete chat room");
     }
 }

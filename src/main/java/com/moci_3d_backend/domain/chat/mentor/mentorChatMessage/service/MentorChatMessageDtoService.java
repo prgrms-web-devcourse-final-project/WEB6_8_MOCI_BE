@@ -16,9 +16,11 @@ public class MentorChatMessageDtoService {
     public ChatSendMessage toSendMessage(MentorChatMessage entity){
         FileUpload attachment = entity.getAttachment();
         return new ChatSendMessage(
+                entity.getId(),
                 entity.getSender().getName(),
                 entity.getContent(),
-                attachment != null ? attachment.getId() : null
+                attachment != null ? attachment.getId() : null,
+                entity.getCreatedAt()
         );
     }
 
