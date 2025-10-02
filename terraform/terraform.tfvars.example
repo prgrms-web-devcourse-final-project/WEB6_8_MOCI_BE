@@ -1,0 +1,51 @@
+# ============================================
+# Terraform 변수 값 설정 예시
+# ============================================
+# 이 파일을 복사하여 terraform.tfvars로 만들고 실제 값을 입력하세요.
+# terraform.tfvars는 .gitignore에 포함되어 있습니다.
+
+# AWS 리전
+aws_region = "ap-northeast-2"
+
+# 환경 (dev, staging, prod)
+environment = "prod"
+
+# 프로젝트 이름
+project_name = "moci-3d"
+
+# ============================================
+# 네트워크 설정
+# ============================================
+
+vpc_cidr           = "10.0.0.0/16"
+availability_zones = ["ap-northeast-2a", "ap-northeast-2c"]
+
+# ============================================
+# EC2 설정
+# ============================================
+
+ec2_instance_type = "t3.micro"
+ec2_key_name      = "moci-3d-ec2-key"
+
+# SSH 접속을 허용할 내 IP 주소 (CIDR 형식)
+# https://www.whatismyip.com/ 에서 확인
+# 예: my_ip = "123.456.789.0/32"
+my_ip = "YOUR_IP_ADDRESS/32"
+
+# ============================================
+# RDS 설정
+# ============================================
+
+db_instance_class    = "db.t3.micro"
+db_name              = "moci3d"
+db_username          = "admin"
+db_password          = "YOUR_STRONG_PASSWORD_HERE"  # 최소 8자, 영문+숫자+특수문자
+db_allocated_storage = 20
+
+# ============================================
+# S3 설정
+# ============================================
+
+# S3 버킷 이름은 전역적으로 고유해야 합니다.
+# 프로젝트명-용도-랜덤문자 형식 권장
+s3_bucket_name = "moci-3d-files"
