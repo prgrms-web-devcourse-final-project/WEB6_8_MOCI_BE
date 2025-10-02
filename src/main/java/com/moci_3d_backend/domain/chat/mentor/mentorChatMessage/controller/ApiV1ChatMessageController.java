@@ -1,7 +1,6 @@
 package com.moci_3d_backend.domain.chat.mentor.mentorChatMessage.controller;
 
 import com.moci_3d_backend.domain.chat.mentor.mentorChatMessage.dto.ChatReceiveMessage;
-import com.moci_3d_backend.domain.chat.mentor.mentorChatMessage.dto.ChatSendMessage;
 import com.moci_3d_backend.domain.chat.mentor.mentorChatMessage.service.MentorChatMessageService;
 import com.moci_3d_backend.domain.user.entity.User;
 import com.moci_3d_backend.domain.user.service.UserService;
@@ -13,12 +12,12 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Controller;
 
 import java.security.Principal;
+import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
 public class ApiV1ChatMessageController {
 
-    private final SimpMessagingTemplate messagingTemplate;
     private final MentorChatMessageService mentorChatMessageService;
     private final UserService userService;
 
@@ -34,9 +33,9 @@ public class ApiV1ChatMessageController {
         }
         Long roomId = Long.parseLong(roomIdStr);
         SecurityUser securityUser = (SecurityUser) principal;
-        User userRef = userService.getReferenceById(securityUser.getId());
-        ChatSendMessage chatSendMessage = new ChatSendMessage(securityUser.getNickname(), message);
-        mentorChatMessageService.saveMentorChatMessage(message, userRef, roomId);
-        messagingTemplate.convertAndSend("/api/v1/chat/topic/%d".formatted(roomId), chatSendMessage);
+        User user = new User();
+        user.setId(securityUser.getId());
+        user.setName(securityUser.getNickname());
+        mentorChatMessageService.sendMessage(roomId, message, Optional.of(user));
     }
 }

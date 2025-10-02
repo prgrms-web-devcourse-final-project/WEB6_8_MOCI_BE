@@ -30,6 +30,7 @@ public class MentorChatRoomRepositoryImpl implements MentorChatRoomRepositoryCus
         if (user != null){
             if (isMentor){
                 builder.and(chatRoom.mentor.eq(user));
+                builder.and(chatRoom.solved.isFalse());
                 joinBuilder.and(message.createdAt.after(chatRoom.mentorLastAt));
             }else{
                 builder.and(chatRoom.mentee.eq(user));
@@ -43,6 +44,7 @@ public class MentorChatRoomRepositoryImpl implements MentorChatRoomRepositoryCus
         return jpaQueryFactory
                 .select(new QMentorChatRoomResponse(
                         chatRoom.id,
+                        chatRoom.category,
                         chatRoom.question,
                         message.count().as("unread_count"),
                         chatRoom.createdAt
