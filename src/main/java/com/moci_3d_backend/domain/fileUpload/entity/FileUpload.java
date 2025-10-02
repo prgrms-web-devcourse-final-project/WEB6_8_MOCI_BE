@@ -4,8 +4,6 @@ import com.moci_3d_backend.domain.archive.public_archive.entity.PublicArchive;
 import jakarta.persistence.*;
 import lombok.*;
 
-import static jakarta.persistence.GenerationType.IDENTITY;
-
 @Entity
 @Getter
 @Setter
@@ -15,7 +13,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 public class FileUpload {
 
     @Id
-    @GeneratedValue(strategy = IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String file_name;
