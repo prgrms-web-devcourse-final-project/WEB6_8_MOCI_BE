@@ -48,9 +48,9 @@ resource "aws_s3_bucket_cors_configuration" "main" {
     allowed_headers = ["*"]
     allowed_methods = ["GET", "PUT", "POST", "DELETE", "HEAD"]
     allowed_origins = [
-      "http://localhost:3000",           # 로컬 프론트엔드
-      "https://www.moci.oa.gg",         # 운영 프론트엔드
-      "https://api.moci.oa.gg"          # 백엔드
+      "http://localhost:3000",              # 로컬 프론트엔드
+      "https://www.mydidimdol.com",        # 프로덕션 프론트엔드
+      "https://api.mydidimdol.com"         # 백엔드 API
     ]
     expose_headers  = ["ETag"]
     max_age_seconds = 3000

@@ -110,9 +110,9 @@ output "env_file_template" {
     # ========================================
     # Domain & CORS
     # ========================================
-    COOKIE_DOMAIN=moci.oa.gg
-    FRONT_URL=https://www.moci.oa.gg
-    BACK_URL=https://api.moci.oa.gg
+    COOKIE_DOMAIN=mydidimdol.com
+    FRONT_URL=https://www.mydidimdol.com
+    BACK_URL=https://api.mydidimdol.com
   EOT
   sensitive   = true
 }
