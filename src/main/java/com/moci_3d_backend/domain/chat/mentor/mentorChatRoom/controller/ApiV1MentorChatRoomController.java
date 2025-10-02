@@ -1,5 +1,7 @@
 package com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.controller;
 
+import com.moci_3d_backend.domain.chat.mentor.mentorChatMessage.dto.ChatReceiveMessage;
+import com.moci_3d_backend.domain.chat.mentor.mentorChatMessage.service.MentorChatMessageService;
 import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.dto.MentorChatRoomResponse;
 import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.dto.DetailMentorChatRoom;
 import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.service.MentorChatRoomService;
@@ -13,6 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/chat/mentor/mentor/room")
@@ -21,6 +24,7 @@ import java.util.List;
 public class ApiV1MentorChatRoomController {
     private final MentorChatRoomService mentorChatRoomService;
     private final Rq rq;
+    private final MentorChatMessageService mentorChatMessageService;
 
     @PutMapping("/join/{roomId}")
     @PreAuthorize("hasRole('MENTOR')")
@@ -56,5 +60,17 @@ public class ApiV1MentorChatRoomController {
     public RsData<List<DetailMentorChatRoom>> getAllChatRooms(){
         List<DetailMentorChatRoom> chatRooms = mentorChatRoomService.getAllMentorChatRooms();
         return RsData.of(200, "success to load chat rooms", chatRooms);
+    }
+
+    @PutMapping("/exit/{roomId}")
+    @PreAuthorize("hasRole('MENTOR')")
+    @Operation(summary = "[멘토] 채팅방이 해결되었음 ")
+    public RsData<Void> closeChatRoom(
+            @PathVariable(value = "roomId") Long roomId
+    ){
+        ChatReceiveMessage chatreceiveMessage = new ChatReceiveMessage("멘토님이 채팅방을 나가셨습니다.", 0L);
+        mentorChatMessageService.sendMessage(roomId, chatreceiveMessage, Optional.empty());
+        mentorChatRoomService.setSolved(roomId);
+        return RsData.of(200, "success to close chat room");
     }
 }

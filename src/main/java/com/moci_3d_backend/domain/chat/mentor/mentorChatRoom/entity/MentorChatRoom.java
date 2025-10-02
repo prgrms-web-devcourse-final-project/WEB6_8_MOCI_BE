@@ -4,12 +4,10 @@ import com.moci_3d_backend.domain.chat.mentor.mentorChatMessage.entity.MentorCha
 import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.dto.CreateMentorChatRoom;
 import com.moci_3d_backend.domain.user.entity.User;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
@@ -59,6 +57,9 @@ public class MentorChatRoom {
     @Setter
     private boolean deleted;
 
+    @Setter
+    private boolean solved;
+
     @OneToMany(mappedBy = "room")
     List<MentorChatMessage> mentorChatMessageList;
 
@@ -69,6 +70,7 @@ public class MentorChatRoom {
         this.status = true;
         this.menteeLastAt = LocalDateTime.now();
         this.deleted = false;
+        this.solved = false;
     }
 
     public MentorChatRoom(CreateMentorChatRoom createMentorChatRoom, User mentee){
@@ -78,6 +80,7 @@ public class MentorChatRoom {
         this.mentee = mentee;
         this.menteeLastAt = LocalDateTime.now();
         this.deleted = false;
+        this.solved = false;
     }
 
     public void joinMentor(User mentor){

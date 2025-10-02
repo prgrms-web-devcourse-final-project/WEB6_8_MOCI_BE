@@ -60,6 +60,14 @@ public class MentorChatRoomService {
         return mentorChatRoomRepository.findByIdAndDeletedFalse(roomId);
     }
 
+    @Transactional
+    public void setSolved(Long roomId){
+        MentorChatRoom mentorChatRoom = mentorChatRoomRepository.findByIdAndDeletedFalse(roomId).orElseThrow(
+                () -> new NoSuchElementException("No chat room found with id: " + roomId)
+        );
+        mentorChatRoom.setSolved(true);
+    }
+
     public Long getChatRoomCount(){
         return mentorChatRoomRepository.count();
     }

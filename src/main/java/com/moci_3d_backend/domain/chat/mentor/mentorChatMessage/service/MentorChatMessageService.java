@@ -11,10 +11,12 @@ import com.moci_3d_backend.domain.fileUpload.entity.FileUpload;
 import com.moci_3d_backend.domain.fileUpload.repository.FileUploadRepository;
 import com.moci_3d_backend.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +27,7 @@ public class MentorChatMessageService {
     private final MentorChatRoomService mentorChatRoomService;
     private final FileUploadRepository fileUploadRepository;
     private final MentorChatMessageDtoService mentorChatMessageDtoService;
+    private final SimpMessagingTemplate messagingTemplate;
 
     private MentorChatRoom getChatRoomByUser(Long roomId, User user){
         return switch (user.getRole()){
@@ -36,12 +39,13 @@ public class MentorChatMessageService {
 
 
     @Transactional
-    public void saveMentorChatMessage(ChatReceiveMessage message, User sender, Long roomId){
+    public ChatSendMessage saveMentorChatMessage(ChatReceiveMessage message, User sender, Long roomId){
         MentorChatRoom mentorChatRoom = mentorChatRoomService.getChatRoomById(roomId).orElseThrow(() -> new IllegalArgumentException("No chat room found"));
         FileUpload fileUpload = fileUploadRepository.findById(message.getAttachmentId()).orElse(null);
         MentorChatMessage mentorChatMessage = mentorChatMessageDtoService.toEntity(message, sender, mentorChatRoom, fileUpload);
-        mentorChatMessageRepository.save(mentorChatMessage);
+        mentorChatMessage = mentorChatMessageRepository.save(mentorChatMessage);
         mentorChatRoom.updateLastMessageAt();
+        return mentorChatMessageDtoService.toSendMessage(mentorChatMessage);
     }
 
     public List<ChatSendMessage> getMentorChatMessages(Long roomId, User user){
@@ -51,6 +55,18 @@ public class MentorChatMessageService {
         }
         List<MentorChatMessage> chats = mentorChatMessageRepository.findByRoomIdOrderByCreatedAtAsc(roomId);
         return mentorChatMessageDtoService.toSendMessages(chats);
+    }
+
+    public void sendMessage(Long roomId, ChatReceiveMessage message, Optional<User> userRef){
+        String nickname;
+        ChatSendMessage chatSendMessage;
+        if (userRef.isEmpty()){
+            nickname = "System";
+            chatSendMessage = new ChatSendMessage(nickname, message);
+        }else{
+            chatSendMessage = saveMentorChatMessage(message, userRef.get(), roomId);
+        }
+        messagingTemplate.convertAndSend("/api/v1/chat/topic/%d".formatted(roomId), chatSendMessage);
     }
 
 }
