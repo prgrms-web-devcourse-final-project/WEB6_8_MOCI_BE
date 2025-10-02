@@ -147,7 +147,7 @@ jobs:
     - name: Health Check
       run: |
         echo "⏳ Waiting for application to be ready..."
-        sleep 20
+        sleep 15
         
         # EC2 localhost에서 Health Check
         echo "=== Health Check via HealthController ==="
