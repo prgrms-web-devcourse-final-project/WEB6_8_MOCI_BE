@@ -70,3 +70,15 @@ management:
   endpoint:
     health:
       show-details: always
+
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui/index.html
+    urls:
+      - url: /v3/api-docs
+        name: API Docs
+  swagger-ui.disable-swagger-default-url: false
+  show-actuator: false
