@@ -55,22 +55,16 @@ public class Rq {
         Cookie cookie = new Cookie(name, value != null ? value : "");
         cookie.setPath("/");
         cookie.setHttpOnly(true);
-
-        // Domain 제거 → 현재 요청 도메인 기준 자동 설정됨
-        // cookie.setDomain("localhost"); ❌
-
-        // HTTP 환경에서는 Secure=false
-        cookie.setSecure(false);
-
-        // 1년 유지
+        //cookie.setDomain("localhost");
+        cookie.setSecure(true);
         cookie.setMaxAge((value == null || value.isBlank()) ? 0 : 60 * 60 * 24 * 365);
 
-        // SameSite=None 으로 설정 (Servlet 6 이상)
-        cookie.setAttribute("SameSite", "None");
+        // SameSite 설정 (Servlet Cookie API에는 직접 없으므로 response header 조작 필요)
+        // Servlet 6.0 이상에서는 cookie.setAttribute("SameSite", "Strict") 가능
+        //cookie.setAttribute("SameSite", "Strict");
 
         resp.addCookie(cookie);
     }
-
 
     // 쿠키 삭제 (값 null로 설정)
     public void deleteCookie(String name) {
