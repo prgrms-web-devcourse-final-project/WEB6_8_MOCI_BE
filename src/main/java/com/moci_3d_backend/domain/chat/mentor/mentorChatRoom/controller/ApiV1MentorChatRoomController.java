@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+import static com.moci_3d_backend.domain.chat.mentor.mentorChatMessage.service.MentorChatMessageService.MENTOR_LEFT_MESSAGE;
+
 @RestController
 @RequestMapping("/api/v1/chat/mentor/mentor/room")
 @RequiredArgsConstructor
@@ -64,11 +66,11 @@ public class ApiV1MentorChatRoomController {
 
     @PutMapping("/exit/{roomId}")
     @PreAuthorize("hasRole('MENTOR')")
-    @Operation(summary = "[멘토] 채팅방이 해결되었음 ")
+    @Operation(summary = "[멘토] 채팅방이 해결되었음 ", description = "채팅방이 해결되었다고 표시합니다.")
     public RsData<Void> closeChatRoom(
             @PathVariable(value = "roomId") Long roomId
     ){
-        ChatReceiveMessage chatreceiveMessage = new ChatReceiveMessage("멘토님이 채팅방을 나가셨습니다.", 0L);
+        ChatReceiveMessage chatreceiveMessage = new ChatReceiveMessage(MENTOR_LEFT_MESSAGE, 0L);
         mentorChatMessageService.sendMessage(roomId, chatreceiveMessage, Optional.empty());
         mentorChatRoomService.setSolved(roomId);
         return RsData.of(200, "success to close chat room");

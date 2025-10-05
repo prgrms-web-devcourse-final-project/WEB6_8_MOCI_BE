@@ -39,7 +39,7 @@ public class MenteeChatRoomService {
     @Transactional
     public void deleteMenteeChatRoom(Long roomId, User mentee){
         MentorChatRoom mentorChatRoom = getMenteeChatRoom(roomId, mentee);
-        mentorChatRoom.setDeleted(true);
+        mentorChatRoom.setMenteeLeft(true);
     }
 
     public MentorChatRoom getMenteeChatRoom(Long roomId, User mentee){
