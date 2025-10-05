@@ -33,6 +33,8 @@ public class MentorChatMessageService {
     @Autowired
     @Lazy
     private MentorChatMessageService self;
+    public static final String MENTOR_LEFT_MESSAGE = "멘토님이 채팅방을 나가셨습니다.";
+    public static final String MENTEE_LEFT_MESSAGE = "멘티님이 채팅방을 나가셨습니다.";
 
     private MentorChatRoom getChatRoomByUser(Long roomId, User user){
         return switch (user.getRole()){
@@ -62,6 +64,12 @@ public class MentorChatMessageService {
             throw new IllegalArgumentException("The user is not a member of the chat room");
         }
         List<MentorChatMessage> chats = mentorChatMessageRepository.findByRoomIdOrderByCreatedAtAsc(roomId);
+        if (mentorChatRoom.isMentorLeft()){
+            chats.add(new MentorChatMessage(mentorChatRoom, user, MENTOR_LEFT_MESSAGE, null));
+        }
+        if (mentorChatRoom.isMenteeLeft()){
+            chats.add(new MentorChatMessage(mentorChatRoom, user, MENTEE_LEFT_MESSAGE, null));
+        }
         return mentorChatMessageDtoService.toSendMessages(chats);
     }
 

@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+import static com.moci_3d_backend.domain.chat.mentor.mentorChatMessage.service.MentorChatMessageService.MENTEE_LEFT_MESSAGE;
+
 @RestController
 @RequestMapping("/api/v1/chat/mentor/mentee/room")
 @RequiredArgsConstructor
@@ -50,7 +52,7 @@ public class ApiV1MenteeChatRoomController {
     ){
         User user = rq.getActor();
         menteeChatRoomService.deleteMenteeChatRoom(roomId, user);
-        ChatReceiveMessage chatReceiveMessage = new ChatReceiveMessage("멘티님이 채팅방을 나가셨습니다.", 0L);
+        ChatReceiveMessage chatReceiveMessage = new ChatReceiveMessage(MENTEE_LEFT_MESSAGE, 0L);
         mentorChatMessageService.sendMessage(roomId, chatReceiveMessage, Optional.empty());
         return RsData.of(200, "success to delete chat room");
     }
