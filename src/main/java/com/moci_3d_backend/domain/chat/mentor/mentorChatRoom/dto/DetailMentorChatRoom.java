@@ -12,6 +12,8 @@ public class DetailMentorChatRoom {
     private String category;
     private Integer digital_level;
     private LocalDateTime createdAt;
+    private Boolean mentor_left;
+    private Boolean mentee_left;
 
     public DetailMentorChatRoom(MentorChatRoom mentorChatRoom){
         this.id = mentorChatRoom.getId();
@@ -19,5 +21,7 @@ public class DetailMentorChatRoom {
         this.category = mentorChatRoom.getCategory();
         this.digital_level = mentorChatRoom.getMentee().getDigitalLevel();
         this.createdAt = mentorChatRoom.getCreatedAt();
+        this.mentor_left = mentorChatRoom.isMentorLeft();
+        this.mentee_left = mentorChatRoom.isMenteeLeft();
     }
 }

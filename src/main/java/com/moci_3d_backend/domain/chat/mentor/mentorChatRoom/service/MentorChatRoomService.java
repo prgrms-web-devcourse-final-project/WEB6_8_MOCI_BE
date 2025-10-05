@@ -65,7 +65,7 @@ public class MentorChatRoomService {
         MentorChatRoom mentorChatRoom = mentorChatRoomRepository.findByIdAndDeletedFalse(roomId).orElseThrow(
                 () -> new NoSuchElementException("No chat room found with id: " + roomId)
         );
-        mentorChatRoom.setSolved(true);
+        mentorChatRoom.setMentorLeft(true);
     }
 
     public Long getChatRoomCount(){

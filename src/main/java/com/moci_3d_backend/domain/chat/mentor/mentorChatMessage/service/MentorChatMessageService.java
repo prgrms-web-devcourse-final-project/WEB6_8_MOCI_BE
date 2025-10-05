@@ -48,7 +48,7 @@ public class MentorChatMessageService {
     @Transactional
     public ChatSendMessage saveMentorChatMessage(ChatReceiveMessage message, User sender, Long roomId){
         MentorChatRoom mentorChatRoom = mentorChatRoomService.getChatRoomById(roomId).orElseThrow(() -> new IllegalArgumentException("No chat room found"));
-        if (mentorChatRoom.isDeleted() || mentorChatRoom.isSolved()){
+        if (mentorChatRoom.isMenteeLeft() || mentorChatRoom.isMentorLeft()){
             throw new IllegalArgumentException("The chat room is read-only");
         }
         FileUpload fileUpload = fileUploadRepository.findById(message.getAttachmentId()).orElse(null);

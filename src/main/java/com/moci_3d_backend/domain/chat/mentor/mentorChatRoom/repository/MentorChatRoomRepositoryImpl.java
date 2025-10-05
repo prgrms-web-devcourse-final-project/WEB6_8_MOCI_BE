@@ -24,16 +24,16 @@ public class MentorChatRoomRepositoryImpl implements MentorChatRoomRepositoryCus
 
         BooleanBuilder builder = new BooleanBuilder();
         BooleanBuilder joinBuilder = new BooleanBuilder();
-        builder.and(chatRoom.deleted.isFalse());
         joinBuilder.and(message.room.eq(chatRoom));
 
         if (user != null){
             if (isMentor){
                 builder.and(chatRoom.mentor.eq(user));
-                builder.and(chatRoom.solved.isFalse());
+                builder.and(chatRoom.mentorLeft.isFalse());
                 joinBuilder.and(message.createdAt.after(chatRoom.mentorLastAt));
             }else{
                 builder.and(chatRoom.mentee.eq(user));
+                builder.and(chatRoom.menteeLeft.isFalse());
                 joinBuilder.and(message.createdAt.after(chatRoom.menteeLastAt));
             }
         }else{

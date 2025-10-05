@@ -55,10 +55,10 @@ public class MentorChatRoom {
     private LocalDateTime menteeLastAt;
 
     @Setter
-    private boolean deleted;
+    private boolean menteeLeft;
 
     @Setter
-    private boolean solved;
+    private boolean mentorLeft;
 
     @OneToMany(mappedBy = "room")
     List<MentorChatMessage> mentorChatMessageList;
@@ -69,8 +69,8 @@ public class MentorChatRoom {
         this.mentee = mentee;
         this.status = true;
         this.menteeLastAt = LocalDateTime.now();
-        this.deleted = false;
-        this.solved = false;
+        this.setMenteeLeft(false);
+        this.setMentorLeft(false);
     }
 
     public MentorChatRoom(CreateMentorChatRoom createMentorChatRoom, User mentee){
@@ -79,8 +79,8 @@ public class MentorChatRoom {
         this.status = true;
         this.mentee = mentee;
         this.menteeLastAt = LocalDateTime.now();
-        this.deleted = false;
-        this.solved = false;
+        this.setMenteeLeft(false);
+        this.setMentorLeft(false);
     }
 
     public void joinMentor(User mentor){
