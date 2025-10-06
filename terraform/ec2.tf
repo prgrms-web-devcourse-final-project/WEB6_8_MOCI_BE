@@ -104,7 +104,7 @@ resource "aws_instance" "main" {
               EOF
 
   tags = {
-    Name = "${var.project_name}-backend-server"
+    Name = "devcos-team06-${var.project_name}-ec2"
   }
 }
 
