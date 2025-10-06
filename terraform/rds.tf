@@ -48,7 +48,7 @@ resource "aws_db_instance" "main" {
 
   # 엔진 설정
   engine         = "mysql"
-  engine_version = "8.0.39"  # 최신 안정 버전
+  engine_version = "8.0.42"  # 최신 안정 버전
   instance_class = var.db_instance_class
 
   # 스토리지 설정
