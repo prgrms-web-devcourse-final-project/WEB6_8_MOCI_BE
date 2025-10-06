@@ -43,7 +43,7 @@ public class MenteeChatRoomService {
     }
 
     public MentorChatRoom getMenteeChatRoom(Long roomId, User mentee){
-        MentorChatRoom mentorChatRoom =  mentorChatRoomRepository.findByIdAndDeletedFalse(roomId).orElseThrow(
+        MentorChatRoom mentorChatRoom =  mentorChatRoomRepository.findByIdAndMenteeLeftFalse(roomId).orElseThrow(
                 () -> new NoSuchElementException("No chat room found with id: " + roomId)
         );
         if (!mentorChatRoom.getMentee().equals(mentee)){
