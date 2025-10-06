@@ -22,7 +22,7 @@ public class MentorChatRoomService {
     private final MentorChatRoomDtoService mentorChatRoomDtoService;
 
     public MentorChatRoom getMentorChatRoom(Long roomId, User user){
-        MentorChatRoom mentorChatRoom =  mentorChatRoomRepository.findByIdAndDeletedFalse(roomId).orElseThrow(
+        MentorChatRoom mentorChatRoom =  mentorChatRoomRepository.findByIdAndMenteeLeftFalse(roomId).orElseThrow(
                 () -> new NoSuchElementException("No chat room found with id: " + roomId)
         );
         if (!mentorChatRoom.getMentor().equals(user)){
@@ -33,7 +33,7 @@ public class MentorChatRoomService {
 
     @Transactional
     public MentorChatRoomResponse joinMentorChatRoom(Long roomId, User mentor) {
-        MentorChatRoom mentorChatRoom = mentorChatRoomRepository.findByIdAndDeletedFalse(roomId).orElse(null);
+        MentorChatRoom mentorChatRoom = mentorChatRoomRepository.findByIdAndMenteeLeftFalse(roomId).orElse(null);
         if (mentorChatRoom == null){
             throw new ServiceException(400, "chat room does not exist");
         }
@@ -43,7 +43,7 @@ public class MentorChatRoomService {
 
 
     public List<DetailMentorChatRoom> getDetailMentorChatRooms(){
-        List<MentorChatRoom> mentorChatRoomList = mentorChatRoomRepository.findByMentorNullAndDeletedFalse();
+        List<MentorChatRoom> mentorChatRoomList = mentorChatRoomRepository.findByMentorNullAndMenteeLeftFalse();
         return mentorChatRoomDtoService.toDetailMentorChatRoomList(mentorChatRoomList);
     }
 
@@ -52,17 +52,17 @@ public class MentorChatRoomService {
     }
 
     public List<DetailMentorChatRoom> getAllMentorChatRooms(){
-        List<MentorChatRoom> mentorChatRoomList = mentorChatRoomRepository.findByDeletedFalse();
+        List<MentorChatRoom> mentorChatRoomList = mentorChatRoomRepository.findByMenteeLeftFalse();
         return mentorChatRoomDtoService.toDetailMentorChatRoomList(mentorChatRoomList);
     }
 
     public Optional<MentorChatRoom> getChatRoomById(Long roomId) {
-        return mentorChatRoomRepository.findByIdAndDeletedFalse(roomId);
+        return mentorChatRoomRepository.findByIdAndMenteeLeftFalse(roomId);
     }
 
     @Transactional
     public void setSolved(Long roomId){
-        MentorChatRoom mentorChatRoom = mentorChatRoomRepository.findByIdAndDeletedFalse(roomId).orElseThrow(
+        MentorChatRoom mentorChatRoom = mentorChatRoomRepository.findByIdAndMenteeLeftFalse(roomId).orElseThrow(
                 () -> new NoSuchElementException("No chat room found with id: " + roomId)
         );
         mentorChatRoom.setMentorLeft(true);
