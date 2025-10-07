@@ -24,6 +24,11 @@ public class AiChatStreamController {
     private final AiChatMessageService aiChatMessageService;
     private final Rq rq;
 
+    public record AiStreamChatRequest(
+            @NotBlank(message = "content는 필수입니다.")
+            String content
+    ) {}
+
     @Operation(summary = "사람이 메시지 보내고, AI 응답까지 한 번에 받기(비동기)",
             description = """
                     사람이 메시지를 보내고, AI의 응답을 스트리밍으로 받습니다.
@@ -33,16 +38,16 @@ public class AiChatStreamController {
                     4. 스트리밍 종료후, 서버쪽에서 최종 AI 메세지를 DB에 저장
                     스트리밍 응답은 계속 이어지는 텍스트 스트림이지 완성된 JSON 객체가 아님 
                     """)
-    @GetMapping(value = "{roomId}/ask-stream")
+    @PostMapping(value = "{roomId}/ask-stream")
     public Flux<ServerSentEvent<String>> askAiStream(@PathVariable Long roomId,
-                                                     @RequestParam String content) {
+                                                     @RequestBody AiStreamChatRequest req) {
         User actor = rq.getActor();
 
         if (actor == null) {
             throw new ServiceException(401, "로그인이 필요합니다.(AI 채팅 불가)");
         }
 
-        return aiChatMessageService.askStream(actor, roomId, content)
+        return aiChatMessageService.askStream(actor, roomId, req.content)
                 .map(chunk -> ServerSentEvent.builder(chunk)
                         .event("delta")
                         .build())
