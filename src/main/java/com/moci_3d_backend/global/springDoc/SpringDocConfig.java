@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Configuration;
                 description = "API 서버 문서입니다."
         ),
         servers = {
+                @Server(url = "http://localhost:8080", description = "Local Server"),
                 @Server(url = "https://api.mydidimdol.com", description = "Production Server")
         }
 )
