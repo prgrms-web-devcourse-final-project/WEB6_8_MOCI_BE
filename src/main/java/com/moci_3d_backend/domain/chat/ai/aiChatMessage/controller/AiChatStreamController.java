@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
 @RestController
-@RequestMapping("api/v1/chat/ai/rooms") //TODO: 나중에 api패스 바꿔야함
+@RequestMapping("api/v1/chat/ai/rooms")
 @Validated
 @Tag(name = "AiChatStreamController", description = "AI 메시지 관리 엔드포인트2(스트리밍)")
 @RequiredArgsConstructor
