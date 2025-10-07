@@ -3,6 +3,7 @@ package com.moci_3d_backend.domain.chat.ai.aiChatMessage.controller;
 import com.moci_3d_backend.domain.chat.ai.aiChatMessage.service.AiChatMessageService;
 import com.moci_3d_backend.domain.user.entity.User;
 import com.moci_3d_backend.external.ai.client.GeminiClient;
+import com.moci_3d_backend.global.exception.ServiceException;
 import com.moci_3d_backend.global.rq.Rq;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -36,6 +37,10 @@ public class AiChatStreamController {
     public Flux<ServerSentEvent<String>> askAiStream(@PathVariable Long roomId,
                                                      @RequestParam String content) {
         User actor = rq.getActor();
+
+        if (actor == null) {
+            throw new ServiceException(401, "로그인이 필요합니다.(AI 채팅 불가)");
+        }
 
         return aiChatMessageService.askStream(actor, roomId, content)
                 .map(chunk -> ServerSentEvent.builder(chunk)
