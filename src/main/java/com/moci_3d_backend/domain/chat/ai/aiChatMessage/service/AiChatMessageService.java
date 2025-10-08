@@ -18,6 +18,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Flux;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -77,6 +78,31 @@ public class AiChatMessageService {
                 new AiChatMessageDto(aiMessage)
         );
     }
+
+    @Transactional
+    public Flux<String> askStream(User actor, Long roomId, String content) {
+        // 1. 토큰 수 추정 & RateLimit 체크
+        long tokensNeeded = Math.max(1, content.length());
+        aiChatMessageRateLimitService.checkRateLimitsOrThrow(actor.getId(), tokensNeeded);
+
+        // 2. 사용자 메시지 저장
+        AiChatMessage userMessage = create(actor, roomId, SenderType.HUMAN, content);
+
+        // 3. 직전 히스토리 기반 프롬프트 구성
+        List<AiChatMessage> history = aiChatMessageRepository.findByRoomIdOrderByIdAsc(roomId);
+        String prompt = buildPrompt(history);
+
+        // 4. AI 스트리밍 호출
+        StringBuilder buffer = new StringBuilder();
+
+        return geminiClient.streamChatResponse(prompt)
+                .doOnNext(buffer::append) // chunk 누적
+                .doOnComplete(() -> {
+                    // 5. 스트리밍 완료 후 AI 메시지 저장
+                    create(actor, roomId, SenderType.AI, buffer.toString());
+                });
+    }
+
 
 
     private String buildPrompt(List<AiChatMessage> history) {

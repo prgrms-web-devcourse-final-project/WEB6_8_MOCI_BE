@@ -1,5 +1,6 @@
 package com.moci_3d_backend.external.ai.client;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.moci_3d_backend.external.ai.dto.GeminiRequest;
 import com.moci_3d_backend.external.ai.dto.GeminiResponse;
 import com.moci_3d_backend.global.exception.GeminiApiException;
@@ -10,7 +11,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
@@ -22,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 public class GeminiClient {
 
     private final RestTemplate restTemplate;
+    private final WebClient webClient;
 
     @Value("${gemini.api.key}")
     private String apiKey;
@@ -29,13 +34,17 @@ public class GeminiClient {
     @Value("${gemini.api.url}")
     private String apiUrl;
 
+    @Value("${gemini.api.url-stream}")
+    private String streamUrl;
+
+
     private static final int MAX_CONCURRENT_REQUESTS = 10;
     private static final long TIMEOUT_MS = 300;
 
     // 동시성 제한 설정 (최대 10개)
     private final Semaphore permits = new Semaphore(MAX_CONCURRENT_REQUESTS,true);
 
-
+    // 동기식 요청 처리
     public String generateChatResponse(String prompt) {
         boolean acquired = false;
 
@@ -82,6 +91,34 @@ public class GeminiClient {
                 permits.release();
             }
         }
+    }
+
+    // 비동기 스트리밍 요청 처리
+    public Flux<String> streamChatResponse(String prompt) {
+
+        GeminiRequest request = GeminiRequest.of(prompt);
+
+        return webClient.post()
+                .uri(streamUrl + "?key=" + apiKey)
+                .bodyValue(request)
+                .retrieve()
+                // HTTP 오류 응답 처리
+                .onStatus(HttpStatusCode::isError, clientResponse ->
+                        clientResponse.bodyToMono(String.class)
+                                .flatMap(errorBody -> {
+                                    log.error("Gemini API 오류 응답: {}", errorBody);
+                                    return Mono.error(new GeminiApiException("Gemini API 오류: " + errorBody));
+                                })
+                )
+                .bodyToFlux(GeminiResponse.class)
+                .map(GeminiResponse::getGeneratedText)
+                .filter(text -> !text.isBlank())
+                // 네트워크/파싱 에러 처리
+                .onErrorResume(e -> {
+                    log.error("Gemini 스트리밍 호출 오류", e);
+                    return Flux.error(new GeminiApiException("스트리밍 실패: " + e.getMessage()));
+                });
+
     }
 
     private String buildApiUrl() {
