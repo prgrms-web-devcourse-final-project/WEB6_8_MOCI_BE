@@ -256,5 +256,4 @@ public class ApiV1MentorChatRoomControllerTest {
                 .andExpect(jsonPath("$.msg").value("로그인이 필요합니다."))
         ;
     }
-    
 }
