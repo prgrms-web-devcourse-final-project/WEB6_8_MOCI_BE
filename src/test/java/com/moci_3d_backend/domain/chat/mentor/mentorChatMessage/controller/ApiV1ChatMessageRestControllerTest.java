@@ -45,4 +45,17 @@ public class ApiV1ChatMessageRestControllerTest {
                 .andExpect(jsonPath("$.message").value("success to get messages"))
                 ;
     }
+
+    @Test
+    @DisplayName("채팅 내역 조회-실패(refresh token 없이)")
+    void t1_1() throws Exception {
+        ResultActions resultActions = mvc
+                .perform(
+                        get("/api/v1/chat/mentor/message/%d".formatted(1L))
+                ).andDo(print());
+        resultActions
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.msg").value("로그인이 필요합니다."))
+        ;
+    }
 }
