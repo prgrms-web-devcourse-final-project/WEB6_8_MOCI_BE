@@ -10,6 +10,7 @@ import com.moci_3d_backend.global.rq.Rq;
 import com.moci_3d_backend.global.rsData.RsData;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,7 +31,7 @@ public class ApiV1MenteeChatRoomController {
     @PostMapping()
     @Operation(summary = "[멘티] 채팅방 생성", description = "멘티가 채팅방을 생성합니다.")
     public RsData<MentorChatRoomResponse> createMentorChatRoom(
-            @RequestBody CreateMentorChatRoom createMentorChatRoom
+            @Valid @RequestBody CreateMentorChatRoom createMentorChatRoom
     ) {
         User user = rq.getActor();
         MentorChatRoomResponse response = menteeChatRoomService.createMenteeChatRoom(createMentorChatRoom, user);

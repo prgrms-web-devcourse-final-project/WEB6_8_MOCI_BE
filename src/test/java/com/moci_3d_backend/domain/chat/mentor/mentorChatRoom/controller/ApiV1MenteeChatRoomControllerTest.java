@@ -58,7 +58,7 @@ public class ApiV1MenteeChatRoomControllerTest {
     }
 
     @Test
-    @DisplayName("채팅방 생성 - 실패(body 없이)")
+    @DisplayName("채팅방 생성 - 실패(refresh token 없이)")
     void t1_1() throws Exception {
         ResultActions resultActions = mvc
                 .perform(
@@ -80,7 +80,7 @@ public class ApiV1MenteeChatRoomControllerTest {
     }
 
     @Test
-    @DisplayName("채팅방 생성")
+    @DisplayName("채팅방 생성 - 실패(body 없이)")
     void t1_2() throws Exception {
         User user = userService.findByUserId("01045678901");
         String refreshToken = user.getRefreshToken();
@@ -97,6 +97,33 @@ public class ApiV1MenteeChatRoomControllerTest {
                 .andExpect(handler().methodName("createMentorChatRoom"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("요청 본문이 올바르지 않습니다."))
+        ;
+    }
+
+    @Test
+    @DisplayName("채팅방 생성 - 실패(빈칸)")
+    void t1_3() throws Exception {
+        User user = userService.findByUserId("01045678901");
+        String refreshToken = user.getRefreshToken();
+        ResultActions resultActions = mvc
+                .perform(
+                        post("/api/v1/chat/mentor/mentee/room")
+                                .contentType("application/json")
+                                .content("""
+{
+  "category" : "",
+  "question" : ""
+}
+""")
+                                .cookie(new Cookie("refreshToken", refreshToken))
+                )
+                .andDo(print());
+
+        resultActions
+                .andExpect(handler().handlerType(ApiV1MenteeChatRoomController.class))
+                .andExpect(handler().methodName("createMentorChatRoom"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("category-NotBlank-must not be blank\nquestion-NotBlank-must not be blank"))
         ;
     }
 
