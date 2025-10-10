@@ -206,13 +206,14 @@ public class AiChatMessageService {
         AiChatRoom room = aiChatRoomRepository.findById(roomId)
                 .orElseThrow(() -> new ServiceException(404, "존재하지 않는 AI 채팅방입니다."));
 
-        AiChatMessage message = aiChatMessageRepository.findById(messageId)
-                .orElseThrow(() -> new ServiceException(404, "존재하지 않는 메시지입니다."));
-
         if (!actor.getRole().equals(User.UserRole.ADMIN) &&
                 !room.getUser().getId().equals(actor.getId())) {
             throw new ServiceException(403, "해당 채팅방 메시지에 접근할 권한이 없습니다.");
         }
+
+        AiChatMessage message = aiChatMessageRepository.findById(messageId)
+                .orElseThrow(() -> new ServiceException(404, "존재하지 않는 메시지입니다."));
+
 
         // 메시지가 해당 채팅방에 속하는지 검증
         if (!message.getRoom().getId().equals(room.getId())) {
