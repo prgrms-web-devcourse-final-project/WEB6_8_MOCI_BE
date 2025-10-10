@@ -1,6 +1,8 @@
 package com.moci_3d_backend.domain.archive.archive_request.dto;
 
+import com.moci_3d_backend.domain.archive.archive_request.entity.RequestCategory;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,4 +21,7 @@ public abstract class ArchiveRequestBaseDto {
     
     @NotBlank(message = "설명은 필수입니다")
     private String description;
+    
+    @NotNull(message = "카테고리는 필수입니다")
+    private RequestCategory category;
 }

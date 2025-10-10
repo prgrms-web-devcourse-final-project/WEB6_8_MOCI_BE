@@ -2,6 +2,7 @@ package com.moci_3d_backend.domain.archive.archive_request.service;
 
 import com.moci_3d_backend.domain.archive.archive_request.dto.*;
 import com.moci_3d_backend.domain.archive.archive_request.entity.ArchiveRequest;
+import com.moci_3d_backend.domain.archive.archive_request.entity.RequestCategory;
 import com.moci_3d_backend.domain.archive.archive_request.entity.RequestStatus;
 import com.moci_3d_backend.domain.archive.archive_request.mapper.ArchiveRequestMapper;
 import com.moci_3d_backend.domain.archive.archive_request.repository.ArchiveRequestRepository;
@@ -33,6 +34,7 @@ public class ArchiveRequestService {
                 .user(actor)
                 .title(createDto.getTitle())
                 .description(createDto.getDescription())
+                .category(createDto.getCategory())
                 .status(RequestStatus.PENDING)
                 .build();
 
@@ -69,7 +71,7 @@ public class ArchiveRequestService {
         return archiveRequestMapper.toResponseDto(archiveRequest);
     }
 
-    // 자료 요청 수정 (제목, 설명)
+    // 자료 요청 수정 (제목, 설명, 카테고리)
     @Transactional
     public ArchiveRequestResponseDto updateArchiveRequestWithOwnerCheck(Long requestId, ArchiveRequestUpdateDto updateDto, User actor) {
         authValidator.validateMentor(actor);
@@ -79,12 +81,17 @@ public class ArchiveRequestService {
 
         authValidator.validateOwner(archiveRequest.getUser(), actor);
 
-        if (!archiveRequest.isPending()) {
-            throw new IllegalStateException("완료된 요청은 수정할 수 없습니다.");
+        // REJECTED 상태인 경우 수정 시 PENDING으로 변경
+        if (archiveRequest.isRejected()) {
+            archiveRequest.setStatus(RequestStatus.PENDING);
+            archiveRequest.setReviewedBy(null);
+        } else if (!archiveRequest.isPending()) {
+            throw new IllegalStateException("승인된 요청은 수정할 수 없습니다.");
         }
 
         archiveRequest.setTitle(updateDto.getTitle());
         archiveRequest.setDescription(updateDto.getDescription());
+        archiveRequest.setCategory(updateDto.getCategory());
 
         return archiveRequestMapper.toResponseDto(archiveRequest);
     }
@@ -131,8 +138,13 @@ public class ArchiveRequestService {
             return;
         }
 
-        // 수정: AuthValidator 사용
+        // 멘토의 경우: 본인 요청만 삭제 가능 (PENDING 또는 REJECTED 상태)
         authValidator.validateOwner(archiveRequest.getUser(), actor);
+        
+        if (archiveRequest.isApproved()) {
+            throw new IllegalStateException("승인된 요청은 삭제할 수 없습니다.");
+        }
+        
         archiveRequestRepository.deleteById(requestId);
     }
 
@@ -179,5 +191,69 @@ public class ArchiveRequestService {
         authValidator.validateAdmin(actor);
 
         return archiveRequestRepository.countByStatus(RequestStatus.PENDING);
+    }
+
+    // 카테고리별 자료 요청 목록 조회
+    @Transactional(readOnly = true)
+    public ArchiveRequestListResponseDto getArchiveRequestsByCategory(RequestCategory category, Pageable pageable, User actor) {
+        authValidator.validateMentorOrAdmin(actor);
+
+        Page<ArchiveRequest> requestPage = archiveRequestRepository.findByCategory(category, pageable);
+
+        Page<ArchiveRequestListResponseDto.RequestSummaryDto> summaryPage =
+                requestPage.map(archiveRequestMapper::toSummaryDto);
+
+        return ArchiveRequestListResponseDto.builder()
+                .totalPages(summaryPage.getTotalPages())
+                .totalElements(summaryPage.getTotalElements())
+                .currentPage(summaryPage.getNumber())
+                .requests(summaryPage.getContent())
+                .build();
+    }
+
+    // 상태와 카테고리별 자료 요청 목록 조회
+    @Transactional(readOnly = true)
+    public ArchiveRequestListResponseDto getArchiveRequestsByStatusAndCategory(
+            RequestStatus status, RequestCategory category, Pageable pageable, User actor) {
+        authValidator.validateMentorOrAdmin(actor);
+
+        Page<ArchiveRequest> requestPage = archiveRequestRepository.findByStatusAndCategory(status, category, pageable);
+
+        Page<ArchiveRequestListResponseDto.RequestSummaryDto> summaryPage =
+                requestPage.map(archiveRequestMapper::toSummaryDto);
+
+        return ArchiveRequestListResponseDto.builder()
+                .totalPages(summaryPage.getTotalPages())
+                .totalElements(summaryPage.getTotalElements())
+                .currentPage(summaryPage.getNumber())
+                .requests(summaryPage.getContent())
+                .build();
+    }
+
+    // 사용자별, 카테고리별 자료 요청 목록 조회
+    @Transactional(readOnly = true)
+    public ArchiveRequestListResponseDto getArchiveRequestsByUserAndCategory(
+            Long userId, RequestCategory category, Pageable pageable, User actor) {
+        authValidator.validateMentorOrAdmin(actor);
+
+        Page<ArchiveRequest> requestPage = archiveRequestRepository.findByUserIdAndCategory(userId, category, pageable);
+
+        Page<ArchiveRequestListResponseDto.RequestSummaryDto> summaryPage =
+                requestPage.map(archiveRequestMapper::toSummaryDto);
+
+        return ArchiveRequestListResponseDto.builder()
+                .totalPages(summaryPage.getTotalPages())
+                .totalElements(summaryPage.getTotalElements())
+                .currentPage(summaryPage.getNumber())
+                .requests(summaryPage.getContent())
+                .build();
+    }
+
+    // 카테고리별 요청 개수 조회
+    @Transactional(readOnly = true)
+    public long getRequestCountByCategory(RequestCategory category, User actor) {
+        authValidator.validateMentorOrAdmin(actor);
+
+        return archiveRequestRepository.countByCategory(category);
     }
 }
