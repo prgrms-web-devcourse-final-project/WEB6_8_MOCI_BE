@@ -13,7 +13,7 @@ import lombok.Setter;
 public class UserLoginRequest {
     
     @NotNull(message = "로그인 타입은 필수입니다")
-    @Pattern(regexp = "^(PHONE|KAKAO|NAVER)$", message = "지원하지 않는 로그인 타입입니다")
+    @Pattern(regexp = "^(PHONE|KAKAO|NAVER|GOOGLE)$", message = "지원하지 않는 로그인 타입입니다")
     private String loginType;
     
     // === 일반 로그인 ===
