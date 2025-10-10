@@ -34,10 +34,12 @@ public class MentorChatRoom {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mentor_id", nullable = true)
+    @Setter
     private User mentor;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mentee_id")
+    @Setter
     private User mentee;
 
     private boolean status;
