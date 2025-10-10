@@ -252,7 +252,7 @@ public class ArchiveRequestControllerTest {
         // given
         User mentor = userService.findByUserId("01023456789");
         String refreshToken = mentor.getRefreshToken();
-        ArchiveRequest request = archiveRequestRepository.findAll().get(0);
+        ArchiveRequest request = archiveRequestRepository.findAll().getFirst();
 
         // when
         ResultActions resultActions = mvc
@@ -278,7 +278,7 @@ public class ArchiveRequestControllerTest {
         // given
         User mentor = userService.findByUserId("01023456789");
         String refreshToken = mentor.getRefreshToken();
-        Long targetUserId = 2L; // mentor1 ID
+        Long targetUserId = mentor.getId(); // mentor1 ID
 
         // when
         ResultActions resultActions = mvc
@@ -423,7 +423,7 @@ public class ArchiveRequestControllerTest {
         // given
         User mentor = userService.findByUserId("01023456789");
         String refreshToken = mentor.getRefreshToken();
-        ArchiveRequest request = archiveRequestRepository.findAll().get(0);
+        ArchiveRequest request = archiveRequestRepository.findAll().getFirst();
 
         // when
         ResultActions resultActions = mvc
