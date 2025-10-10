@@ -119,10 +119,14 @@ jobs:
             --cloud.aws.region.static=${{ secrets.AWS_REGION }} \
             --file.storage.type=s3 \
             --custom.jwt.secretKey=${{ secrets.JWT_SECRET_KEY }} \
+            --spring.security.oauth2.client.registration.kakao.client-id=${{ secrets.KAKAO_CLIENT_ID }} \
+            --spring.security.oauth2.client.registration.naver.client-id=${{ secrets.NAVER_CLIENT_ID }} \
+            --spring.security.oauth2.client.registration.naver.client-secret='${{ secrets.NAVER_CLIENT_SECRET }}' \
+            --spring.security.oauth2.client.registration.google.client-id=${{ secrets.GOOGLE_CLIENT_ID }} \
+            --spring.security.oauth2.client.registration.google.client-secret='${{ secrets.GOOGLE_CLIENT_SECRET }}' \
             --gemini.api.key=${{ secrets.GEMINI_API_KEY }} \
             --gemini.api.url=${{ secrets.GEMINI_API_URL }} \
             --gemini.api.url-stream=${{ secrets.GEMINI_API_URL_STREAM }} \
-            --spring.security.oauth2.client.registration.kakao.client-id=${{ secrets.KAKAO_CLIENT_ID }} \
             --custom.site.cookieDomain=${{ secrets.COOKIE_DOMAIN }} \
             --custom.site.frontUrl=${{ secrets.FRONT_URL }} \
             --custom.site.backUrl=${{ secrets.BACK_URL }} \
