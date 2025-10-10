@@ -37,12 +37,32 @@ public class FileUploadController {
         log.info("FileController.fileUpload() - 파일명: {}", uploadFile.getOriginalFilename());
         try {
             // Service에서 반환하는 FileUploadDto를 그대로 클라이언트에게 전달
-            FileUploadDto uploadedFile = fileUploadService.uploadFile(uploadFile);
+            FileUploadDto uploadedFile = fileUploadService.uploadFileS3(uploadFile);
             return RsData.of(201, "파일 업로드가 완료되었습니다.", uploadedFile);
 
         } catch (Exception e) {
             log.error("파일 업로드 중 오류 발생: {}", e.getMessage(), e);
             return RsData.failOf("파일 업로드 중 오류가 발생했습니다: " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping(value = "/file")
+    @Transactional
+    @Operation(summary = "파일 삭제", description = "파일을 삭제합니다.")
+    public RsData<String> fileDelete(
+            @Parameter(
+                    description = "삭제할 파일의 URL",
+                    required = true
+            )
+            @RequestParam("fileName") String fileName
+    ) {
+        log.info("FileController.fileDelete() - 삭제할 파일명: {}", fileName);
+        try {
+            fileUploadService.deleteFile(fileName);
+            return RsData.of(200, "파일 삭제가 완료되었습니다.", fileName);
+        } catch (Exception e) {
+            log.error("파일 삭제 중 오류 발생: {}", e.getMessage(), e);
+            return RsData.failOf("파일 삭제 중 오류가 발생했습니다: " + e.getMessage());
         }
     }
 }
