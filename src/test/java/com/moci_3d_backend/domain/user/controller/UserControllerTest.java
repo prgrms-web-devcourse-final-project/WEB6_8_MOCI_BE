@@ -10,14 +10,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -143,5 +143,128 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.data.role").value(user.getRole().name()))
                 .andExpect(jsonPath("$.data.digitalLevel").value(user.getDigitalLevel()))
                 .andExpect(jsonPath("$.data.createdAt").value(Matchers.startsWith(user.getCreatedAt().toString().substring(0, 20))));
+    }
+
+    @Test
+    @DisplayName("전화번호 중복 확인 - 사용 가능")
+    void t5() throws Exception {
+        ResultActions resultActions = mvc
+                .perform(
+                        post("/api/v1/users/phone-check")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("""
+                                        {
+                                            "phoneNumber": "01099999999"
+                                        }
+                                        """.stripIndent())
+                )
+                .andDo(print());
+
+        resultActions
+                .andExpect(handler().handlerType(UserController.class))
+                .andExpect(handler().methodName("checkPhoneDuplicate"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("200"))
+                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.data.available").value(true))
+                .andExpect(jsonPath("$.data.message").value("사용 가능한 전화번호입니다."));
+    }
+
+    @Test
+    @DisplayName("전화번호 중복 확인 - 이미 사용 중")
+    void t6() throws Exception {
+        ResultActions resultActions = mvc
+                .perform(
+                        post("/api/v1/users/phone-check")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("""
+                                        {
+                                            "phoneNumber": "01012345678"
+                                        }
+                                        """.stripIndent())
+                )
+                .andDo(print());
+
+        resultActions
+                .andExpect(handler().handlerType(UserController.class))
+                .andExpect(handler().methodName("checkPhoneDuplicate"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("200"))
+                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.data.available").value(false))
+                .andExpect(jsonPath("$.data.message").value("이미 사용 중인 전화번호입니다."));
+    }
+
+    @Test
+    @DisplayName("비밀번호 변경 - 성공")
+    void t7() throws Exception {
+        User user = userService.findByUserId("01012345678");
+
+        ResultActions resultActions = mvc
+                .perform(
+                        patch("/api/v1/users/password")
+                                .header(HttpHeaders.AUTHORIZATION, "Bearer " + user.getRefreshToken())
+                                .contentType(MediaType.APPLICATION_JSON)
+                            .content("""
+                                    {
+                                        "currentPassword": "admin123",
+                                        "newPassword": "newPassword123",
+                                        "newPasswordConfirm": "newPassword123"
+                                    }
+                                    """.stripIndent())
+                )
+                .andDo(print());
+
+        resultActions
+                .andExpect(handler().handlerType(UserController.class))
+                .andExpect(handler().methodName("updatePassword"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("200"))
+                .andExpect(jsonPath("$.message").value("비밀번호가 성공적으로 변경되었습니다."));
+
+        // 새 비밀번호로 로그인 시도
+        ResultActions loginResult = mvc
+                .perform(
+                        post("/api/v1/auth/login")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("""
+                                        {
+                                            "loginType": "PHONE",
+                                            "userId": "01012345678",
+                                            "password": "newPassword123"
+                                        }
+                                        """.stripIndent())
+                )
+                .andDo(print());
+
+        loginResult
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("200"));
+    }
+
+    @Test
+    @DisplayName("비밀번호 변경 - 실패(기존 비밀번호 틀림)")
+    void t8() throws Exception {
+        User user = userService.findByUserId("01012345678");
+
+        ResultActions resultActions = mvc
+                .perform(
+                        patch("/api/v1/users/password")
+                                .header(HttpHeaders.AUTHORIZATION, "Bearer " + user.getRefreshToken())
+                                .contentType(MediaType.APPLICATION_JSON)
+                            .content("""
+                                    {
+                                        "currentPassword": "wrongPassword",
+                                        "newPassword": "newPassword123",
+                                        "newPasswordConfirm": "newPassword123"
+                                    }
+                                    """.stripIndent())
+                )
+                .andDo(print());
+
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("200"))
+                .andExpect(jsonPath("$.message").value("비밀번호가 성공적으로 변경되었습니다."));
     }
 }
