@@ -71,7 +71,7 @@ public class AiChatMessageService {
         String aiText = geminiClient.generateChatResponse(prompt);
 
         // Ai 메시지 저장
-        AiChatMessage aiMessage = create(actor, roomId, SenderType.AI, aiText);
+        AiChatMessage aiMessage = create(null, roomId, SenderType.AI, aiText);
 
         return new AiExchangeDto(
                 new AiChatMessageDto(userMessage),
@@ -99,7 +99,7 @@ public class AiChatMessageService {
                 .doOnNext(buffer::append) // chunk 누적
                 .doOnComplete(() -> {
                     // 5. 스트리밍 완료 후 AI 메시지 저장
-                    create(actor, roomId, SenderType.AI, buffer.toString());
+                    create(null, roomId, SenderType.AI, buffer.toString());
                 });
     }
 
