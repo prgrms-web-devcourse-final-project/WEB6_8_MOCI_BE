@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -77,7 +78,7 @@ public class PublicArchiveService {
     @Transactional(readOnly = true)
     public PublicArchiveResponse getPublicArchive(Long archiveId) {
         PublicArchive archive = publicArchiveRepository.findById(archiveId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 ID의 교육 자료실 글을 찾을 수 없습니다: " + archiveId));
+                .orElseThrow(() -> new NoSuchElementException("해당 ID의 교육 자료실 글을 찾을 수 없습니다: " + archiveId));
 
         return publicArchiveMapper.toResponseDto(archive);
     }
