@@ -40,7 +40,7 @@ public class User {
     @Column(name = "password", length = 255)
     private String password;
 
-    @Column(name = "name", nullable = false, length = 10)
+    @Column(name = "name", nullable = false, length = 20)
     private String name;
 
     @Column(name = "email", length = 50)
