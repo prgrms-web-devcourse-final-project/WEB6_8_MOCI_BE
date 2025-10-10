@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface MentorChatMessageRepository extends JpaRepository<MentorChatMessage, Long> {
+    List<MentorChatMessage> findByRoomIdOrderByCreatedAtAsc(Long roomId);
 
-    public List<MentorChatMessage> findByRoomIdOrderByCreatedAtAsc(Long roomId);
+    Long countByRoomId(Long roomId);
 }

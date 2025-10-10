@@ -4,6 +4,7 @@ import com.moci_3d_backend.domain.chat.mentor.mentorChatMessage.dto.ChatReceiveM
 import com.moci_3d_backend.domain.chat.mentor.mentorChatMessage.service.MentorChatMessageService;
 import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.dto.CreateMentorChatRoom;
 import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.dto.MentorChatRoomResponse;
+import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.dto.SimpleMentorChatRoom;
 import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.service.MenteeChatRoomService;
 import com.moci_3d_backend.domain.user.entity.User;
 import com.moci_3d_backend.global.rq.Rq;
@@ -44,6 +45,16 @@ public class ApiV1MenteeChatRoomController {
         User user = rq.getActor();
         List<MentorChatRoomResponse> mentorChatRoomResponsePage = menteeChatRoomService.getMenteeChatRooms(user);
         return RsData.of(200, "success to get chat rooms", mentorChatRoomResponsePage);
+    }
+
+    @GetMapping("{room_id}")
+    @Operation(summary ="[멘티] 채팅방 하나를 조회합니다.", description = "멘티가 참여한 채팅방을 조회합니다.")
+    public RsData<SimpleMentorChatRoom> getMenteeChatRoom(
+            @PathVariable("room_id") Long roomId
+    ){
+        User user = rq.getActor();
+        SimpleMentorChatRoom detailMentorChatRoom = menteeChatRoomService.getSimpleMenteeChatRoom(roomId, user);
+        return RsData.of(200, "success to get chat room", detailMentorChatRoom);
     }
 
     @DeleteMapping("{room_id}")

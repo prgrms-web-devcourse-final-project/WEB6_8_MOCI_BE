@@ -4,6 +4,7 @@ import com.moci_3d_backend.domain.chat.mentor.mentorChatMessage.entity.MentorCha
 import com.moci_3d_backend.domain.chat.mentor.mentorChatMessage.repository.MentorChatMessageRepository;
 import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.dto.CreateMentorChatRoom;
 import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.dto.MentorChatRoomResponse;
+import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.dto.SimpleMentorChatRoom;
 import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.entity.MentorChatRoom;
 import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.repository.MentorChatRoomRepository;
 import com.moci_3d_backend.domain.user.entity.User;
@@ -50,5 +51,10 @@ public class MenteeChatRoomService {
             throw new IllegalArgumentException("The user is not a mentee of the chat room");
         }
         return mentorChatRoom;
+    }
+
+    public SimpleMentorChatRoom getSimpleMenteeChatRoom(Long roomId, User mentee){
+        MentorChatRoom mentorChatRoom = getMenteeChatRoom(roomId, mentee);
+        return mentorChatRoomDtoService.toSimpleMentorChatRoom(mentorChatRoom);
     }
 }
