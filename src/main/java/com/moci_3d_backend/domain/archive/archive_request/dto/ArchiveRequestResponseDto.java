@@ -1,5 +1,6 @@
 package com.moci_3d_backend.domain.archive.archive_request.dto;
 
+import com.moci_3d_backend.domain.archive.archive_request.entity.RequestCategory;
 import com.moci_3d_backend.domain.archive.archive_request.entity.RequestStatus;
 import com.moci_3d_backend.domain.user.dto.response.UserDetailResponse;
 import lombok.Builder;
@@ -14,6 +15,7 @@ public class ArchiveRequestResponseDto {
     private final UserDetailResponse requester;
     private final String title;
     private final String description;
+    private final RequestCategory category;
     private final RequestStatus status;
     private final UserDetailResponse reviewedBy;
     private final LocalDateTime createdAt;

@@ -19,6 +19,7 @@ public class ArchiveRequestMapper {
                 .requester(createUserDetailResponse(archiveRequest.getUser()))
                 .title(archiveRequest.getTitle())
                 .description(archiveRequest.getDescription())
+                .category(archiveRequest.getCategory())
                 .status(archiveRequest.getStatus())
                 .reviewedBy(createUserDetailResponse(archiveRequest.getReviewedBy()))
                 .createdAt(archiveRequest.getCreatedAt())
@@ -34,6 +35,7 @@ public class ArchiveRequestMapper {
                 .id(archiveRequest.getId())
                 .title(archiveRequest.getTitle())
                 .requesterName(getUserName(archiveRequest.getUser()))
+                .category(archiveRequest.getCategory())
                 .status(archiveRequest.getStatus())
                 .createdAt(archiveRequest.getCreatedAt())
                 .build();

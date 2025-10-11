@@ -1,6 +1,7 @@
 package com.moci_3d_backend.global.initData;
 
 import com.moci_3d_backend.domain.archive.archive_request.entity.ArchiveRequest;
+import com.moci_3d_backend.domain.archive.archive_request.entity.RequestCategory;
 import com.moci_3d_backend.domain.archive.archive_request.entity.RequestStatus;
 import com.moci_3d_backend.domain.archive.archive_request.repository.ArchiveRequestRepository;
 import com.moci_3d_backend.domain.archive.public_archive.entity.ArchiveCategory;
@@ -231,6 +232,7 @@ public class DevInitData {
                         "- 사진 전송하는 방법\n" +
                         "- 카카오톡 설정 변경하기\n\n" +
                         "초보자도 쉽게 따라할 수 있는 스크린샷이 많이 포함된 자료를 부탁드립니다.")
+                .category(RequestCategory.KAKAO_TALK)
                 .status(RequestStatus.PENDING)
                 .build();
         archiveRequestRepository.save(request1);
@@ -248,6 +250,7 @@ public class DevInitData {
                         "- 예매 확인 및 취소 방법\n" +
                         "- QR코드로 승차하는 방법\n\n" +
                         "특히 60대 이상 어르신들도 쉽게 이해할 수 있도록 단계별로 자세히 설명된 자료를 요청드립니다.")
+                .category(RequestCategory.KTX)
                 .status(RequestStatus.PENDING)
                 .build();
         archiveRequestRepository.save(request2);
@@ -266,6 +269,7 @@ public class DevInitData {
                         "- 주문 확인 및 배달 상태 확인\n" +
                         "- 리뷰 작성하기\n\n" +
                         "디지털에 익숙하지 않은 어르신들도 따라할 수 있는 친절한 설명서를 부탁드립니다.")
+                .category(RequestCategory.BAEMIN)
                 .status(RequestStatus.PENDING)
                 .build();
         archiveRequestRepository.save(request3);
@@ -284,6 +288,7 @@ public class DevInitData {
                         "- 재생목록 만들기\n" +
                         "- 시청 기록 확인하기\n\n" +
                         "특히 건강, 요리, 뉴스 등 어르신들이 관심 있어 할 만한 채널 추천도 함께 포함해 주시면 좋겠습니다.")
+                .category(RequestCategory.YOUTUBE)
                 .status(RequestStatus.PENDING)
                 .build();
         archiveRequestRepository.save(request4);
@@ -303,6 +308,7 @@ public class DevInitData {
                         "- 주문 확인 및 배송 추적\n" +
                         "- 반품/교환 신청 방법\n\n" +
                         "온라인 쇼핑이 처음인 분들도 안전하게 이용할 수 있는 가이드를 부탁드립니다.")
+                .category(RequestCategory.COUPANG)
                 .status(RequestStatus.PENDING)
                 .build();
         archiveRequestRepository.save(request5);
@@ -321,6 +327,7 @@ public class DevInitData {
                         "- 예매 확인서 출력 또는 모바일 티켓\n" +
                         "- 예매 취소 및 변경 방법\n\n" +
                         "컴퓨터와 스마트폰 양쪽 모두에서 사용할 수 있는 방법을 알려주시면 더욱 좋겠습니다.")
+                .category(RequestCategory.INTERCITY_BUS)
                 .status(RequestStatus.PENDING)
                 .build();
         archiveRequestRepository.save(request6);
@@ -662,9 +669,9 @@ public class DevInitData {
 
     }
 
-     @Transactional
-    public void chatRoomInit(){
-        if (mentorChatRoomService.getChatRoomCount() >0){
+    @Transactional
+    public void chatRoomInit() {
+        if (mentorChatRoomService.getChatRoomCount() > 0) {
             return;
         }
         User mentee = userRepository.findById(4L).get();
