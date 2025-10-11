@@ -37,6 +37,7 @@ public class ArchiveRequest {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @Builder.Default
     private RequestCategory category = RequestCategory.ETC;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -81,7 +81,7 @@ public class ArchiveRequestService {
 
         authValidator.validateOwner(archiveRequest.getUser(), actor);
 
-        // REJECTED 상태인 경우 수정 시 PENDING으로 변경
+        // REJECTED 상태인 경우 수정 시 PENDING으로 변경(재검토를 하기 위함)
         if (archiveRequest.isRejected()) {
             archiveRequest.setStatus(RequestStatus.PENDING);
             archiveRequest.setReviewedBy(null);
