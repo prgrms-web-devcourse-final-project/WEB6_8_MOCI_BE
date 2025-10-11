@@ -15,10 +15,8 @@ spring:
   # JPA 설정
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
-
-# ============================================
-# 로컬 개발용 frontend 설정
-# ============================================
+ 
+  # 로컬 개발용 설정
 custom:
   frontend:
     baseUrl: "http://localhost:3000"
