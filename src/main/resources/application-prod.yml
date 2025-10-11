@@ -1,4 +1,16 @@
 spring:
+  # OAuth2 baseUrl 명시적 설정
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            redirect-uri: "${KAKAO_REDIRECT_URI:https://api.mydidimdol.com/oauth2/code/kakao}"
+          google:
+            redirect-uri: "${GOOGLE_REDIRECT_URI:https://api.mydidimdol.com/oauth2/code/google}"
+          naver:
+            redirect-uri: "${NAVER_REDIRECT_URI:https://api.mydidimdol.com/oauth2/code/naver}"
+
   # MySQL Database 설정 (RDS)
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
