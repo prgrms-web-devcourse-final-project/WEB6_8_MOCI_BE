@@ -34,12 +34,12 @@ public class MentorChatRoom {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mentor_id", nullable = true)
-    @Setter
+    // @Setter removed to protect encapsulation
     private User mentor;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mentee_id")
-    @Setter
+    // @Setter removed to protect encapsulation
     private User mentee;
 
     private boolean status;

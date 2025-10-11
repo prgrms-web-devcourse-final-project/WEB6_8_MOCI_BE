@@ -1,7 +1,6 @@
 package com.moci_3d_backend.domain.chat.mentor.mentorChatMessage.controller;
 
 import com.moci_3d_backend.domain.chat.mentor.mentorChatMessage.dto.ChatReceiveMessage;
-import com.moci_3d_backend.domain.chat.mentor.mentorChatMessage.dto.ChatSendMessage;
 import com.moci_3d_backend.domain.chat.mentor.mentorChatMessage.service.MentorChatMessageService;
 import com.moci_3d_backend.domain.user.entity.User;
 import com.moci_3d_backend.domain.user.service.UserService;
@@ -14,7 +13,6 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.*;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.socket.WebSocketHttpHeaders;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
@@ -23,9 +21,7 @@ import org.springframework.web.socket.sockjs.client.SockJsClient;
 import org.springframework.web.socket.sockjs.client.Transport;
 import org.springframework.web.socket.sockjs.client.WebSocketTransport;
 
-import java.lang.reflect.Type;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -87,10 +83,19 @@ public class ApiV1ChatMessageControllerTest {
         session.send(sendHeaders, message);
 
         // Then: DB에서 메시지 카운트가 증가했는지 확인
-        // 비동기 처리 시간을 고려하여 잠시 대기
-        Thread.sleep(1000); // A short delay to allow the message to be processed and saved.
-
-        long finalMessageCount = mentorChatMessageService.getChatRoomMessageCount(roomId);
+        // 비동기 처리 시간을 고려하여 메시지 저장을 polling으로 확인
+        long finalMessageCount = initialMessageCount;
+        int maxWaitMillis = 2000;
+        int pollIntervalMillis = 100;
+        int waited = 0;
+        while (waited < maxWaitMillis) {
+            finalMessageCount = mentorChatMessageService.getChatRoomMessageCount(roomId);
+            if (finalMessageCount == initialMessageCount + 1) {
+                break;
+            }
+            Thread.sleep(pollIntervalMillis);
+            waited += pollIntervalMillis;
+        }
         assertThat(finalMessageCount).isEqualTo(initialMessageCount + 1);
     }
 }
