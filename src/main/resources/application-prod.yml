@@ -86,3 +86,11 @@ management:
   endpoint:
     health:
       show-details: always
+
+# https 설정(확인용)
+server:
+  forward-headers-strategy: framework
+  tomcat:
+    remoteip:
+      protocol-header: X-Forwarded-Proto
+      remote-ip-header: X-Forwarded-For
