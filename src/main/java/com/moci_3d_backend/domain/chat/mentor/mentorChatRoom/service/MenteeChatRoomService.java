@@ -38,7 +38,7 @@ public class MenteeChatRoomService {
     }
 
     @Transactional
-    public void deleteMenteeChatRoom(Long roomId, User mentee){
+    public void menteeLeftChatRoom(Long roomId, User mentee){
         MentorChatRoom mentorChatRoom = getMenteeChatRoom(roomId, mentee);
         mentorChatRoom.setMenteeLeft(true);
     }
@@ -56,5 +56,11 @@ public class MenteeChatRoomService {
     public SimpleMentorChatRoom getSimpleMenteeChatRoom(Long roomId, User mentee){
         MentorChatRoom mentorChatRoom = getMenteeChatRoom(roomId, mentee);
         return mentorChatRoomDtoService.toSimpleMentorChatRoom(mentorChatRoom);
+    }
+
+    @Transactional
+    public void deleteMenteeChatRoom(Long roomId, User mentee){
+        MentorChatRoom mentorChatRoom = getMenteeChatRoom(roomId, mentee);
+        mentorChatRoomRepository.delete(mentorChatRoom);
     }
 }
