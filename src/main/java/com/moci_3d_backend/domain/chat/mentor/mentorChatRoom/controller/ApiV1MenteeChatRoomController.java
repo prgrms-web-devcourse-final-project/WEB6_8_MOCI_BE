@@ -60,10 +60,15 @@ public class ApiV1MenteeChatRoomController {
     @DeleteMapping("{room_id}")
     @Operation(summary = "[멘티] 채팅방을 나갑니다.", description = "멘티가 참여한 채팅방을 나갑니다.")
     public RsData<Void> deleteMenteeChatRoom(
-            @PathVariable("room_id") Long roomId
+            @PathVariable("room_id") Long roomId,
+            @RequestParam(value = "movedToAI", required = false, defaultValue = "false") Boolean movedToAI
     ){
         User user = rq.getActor();
-        menteeChatRoomService.deleteMenteeChatRoom(roomId, user);
+        if (movedToAI == true){
+            menteeChatRoomService.deleteMenteeChatRoom(roomId, user);
+            return RsData.of(200, "success to delete chat room");
+        }
+        menteeChatRoomService.menteeLeftChatRoom(roomId, user);
         ChatReceiveMessage chatReceiveMessage = new ChatReceiveMessage(MENTEE_LEFT_MESSAGE, 0L);
         mentorChatMessageService.sendMessage(roomId, chatReceiveMessage, Optional.empty());
         return RsData.of(200, "success to delete chat room");
