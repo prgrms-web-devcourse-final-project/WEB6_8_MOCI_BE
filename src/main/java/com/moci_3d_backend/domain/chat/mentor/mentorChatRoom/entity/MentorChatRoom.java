@@ -62,7 +62,7 @@ public class MentorChatRoom {
     @Setter
     private boolean mentorLeft;
 
-    @OneToMany(mappedBy = "room")
+    @OneToMany(mappedBy = "room", cascade = CascadeType.REMOVE, orphanRemoval = true)
     List<MentorChatMessage> mentorChatMessageList;
 
 
