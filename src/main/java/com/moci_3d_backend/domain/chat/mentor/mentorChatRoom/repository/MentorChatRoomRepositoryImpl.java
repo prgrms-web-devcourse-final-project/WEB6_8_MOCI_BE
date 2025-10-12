@@ -47,7 +47,9 @@ public class MentorChatRoomRepositoryImpl implements MentorChatRoomRepositoryCus
                         chatRoom.category,
                         chatRoom.question,
                         message.count().as("unread_count"),
-                        chatRoom.createdAt
+                        chatRoom.createdAt,
+                        chatRoom.menteeLeft,
+                        chatRoom.mentorLeft
                 ))
                 .from(chatRoom)
                 .leftJoin(message).on(

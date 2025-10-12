@@ -26,11 +26,13 @@ public class MentorChatRoomResponse {
         this.createdAt = entity.getCreatedAt();
     }
     @QueryProjection
-    public MentorChatRoomResponse(Long id, String category, String question, Long unread_count, LocalDateTime createdAt){
+    public MentorChatRoomResponse(Long id, String category, String question, Long unread_count, LocalDateTime createdAt, Boolean mentee_left, Boolean mentor_left){
         this.id = id;
         this.category = category;
         this.question = question;
         this.unread_count = unread_count;
         this.createdAt = createdAt;
+        this.mentee_left = mentee_left;
+        this.mentor_left = mentor_left;
     }
 }
