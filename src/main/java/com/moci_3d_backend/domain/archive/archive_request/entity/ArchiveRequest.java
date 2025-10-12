@@ -35,6 +35,11 @@ public class ArchiveRequest {
     @Column(nullable = false)
     private RequestStatus status = RequestStatus.PENDING;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @Builder.Default
+    private RequestCategory category = RequestCategory.ETC;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reviewed_by_id")
     private User reviewedBy;

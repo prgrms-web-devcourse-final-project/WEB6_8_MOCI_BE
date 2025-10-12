@@ -56,7 +56,8 @@ public class ArchiveRequestControllerTest {
                                 .content("""
                                         {
                                             "title": "새로운 자료 요청",
-                                            "description": "이 자료가 필요합니다"
+                                            "description": "이 자료가 필요합니다",
+                                            "category": "KAKAO_TALK"
                                         }
                                         """)
                 )
@@ -69,7 +70,8 @@ public class ArchiveRequestControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.code").value(201))
                 .andExpect(jsonPath("$.message").value("자료 요청글이 생성되었습니다."))
-                .andExpect(jsonPath("$.data.title").value("새로운 자료 요청"));
+                .andExpect(jsonPath("$.data.title").value("새로운 자료 요청"))
+                .andExpect(jsonPath("$.data.category").value("KAKAO_TALK"));
     }
 
     @Test
@@ -88,7 +90,8 @@ public class ArchiveRequestControllerTest {
                                 .content("""
                                         {
                                             "title": "",
-                                            "description": "설명"
+                                            "description": "설명",
+                                            "category": "YOUTUBE"
                                         }
                                         """)
                 )
@@ -119,7 +122,8 @@ public class ArchiveRequestControllerTest {
                                 .content("""
                                         {
                                             "title": "수정된 제목",
-                                            "description": "수정된 설명"
+                                            "description": "수정된 설명",
+                                            "category": "KTX"
                                         }
                                         """)
                 )
@@ -132,7 +136,8 @@ public class ArchiveRequestControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(200))
                 .andExpect(jsonPath("$.message").value("자료 요청글이 수정되었습니다."))
-                .andExpect(jsonPath("$.data.title").value("수정된 제목"));
+                .andExpect(jsonPath("$.data.title").value("수정된 제목"))
+                .andExpect(jsonPath("$.data.category").value("KTX"));
     }
 
     @Test
@@ -179,7 +184,8 @@ public class ArchiveRequestControllerTest {
                                 .content("""
                                         {
                                             "title": "권한 없는 요청",
-                                            "description": "설명"
+                                            "description": "설명",
+                                            "category": "BAEMIN"
                                         }
                                         """)
                 )
@@ -455,7 +461,8 @@ public class ArchiveRequestControllerTest {
                                 .content("""
                                         {
                                             "title": "인증 없는 요청",
-                                            "description": "설명"
+                                            "description": "설명",
+                                            "category": "COUPANG"
                                         }
                                         """)
                 )
@@ -465,5 +472,210 @@ public class ArchiveRequestControllerTest {
         resultActions
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.msg").value("로그인이 필요합니다."));
+    }
+
+    // ========================================
+    // 카테고리 필터링 테스트
+    // ========================================
+
+    @Test
+    @DisplayName("[멘토] 자료 요청 목록 조회 - 카테고리 필터(KAKAO_TALK)")
+    void t16() throws Exception {
+        // given
+        User mentor = userService.findByUserId("01023456789");
+        String refreshToken = mentor.getRefreshToken();
+
+        // when
+        ResultActions resultActions = mvc
+                .perform(
+                        get("/api/v1/archive-requests")
+                                .cookie(new Cookie("refreshToken", refreshToken))
+                                .param("category", "KAKAO_TALK")
+                                .param("page", "0")
+                                .param("size", "10")
+                )
+                .andDo(print());
+
+        // then
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.message").value("자료 요청 목록을 성공적으로 조회했습니다."))
+                .andExpect(jsonPath("$.data.requests").isArray());
+    }
+
+    @Test
+    @DisplayName("[멘토] 자료 요청 목록 조회 - 상태+카테고리 복합 필터")
+    void t17() throws Exception {
+        // given
+        User mentor = userService.findByUserId("01023456789");
+        String refreshToken = mentor.getRefreshToken();
+
+        // when
+        ResultActions resultActions = mvc
+                .perform(
+                        get("/api/v1/archive-requests")
+                                .cookie(new Cookie("refreshToken", refreshToken))
+                                .param("status", "PENDING")
+                                .param("category", "YOUTUBE")
+                                .param("page", "0")
+                                .param("size", "10")
+                )
+                .andDo(print());
+
+        // then
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.data.requests").isArray());
+    }
+
+    @Test
+    @DisplayName("[멘토] 사용자별 자료 요청 목록 조회 - 카테고리 필터")
+    void t18() throws Exception {
+        // given
+        User mentor = userService.findByUserId("01023456789");
+        String refreshToken = mentor.getRefreshToken();
+        Long targetUserId = mentor.getId();
+
+        // when
+        ResultActions resultActions = mvc
+                .perform(
+                        get("/api/v1/users/{userId}/archive-requests", targetUserId)
+                                .cookie(new Cookie("refreshToken", refreshToken))
+                                .param("category", "KTX")
+                                .param("page", "0")
+                                .param("size", "10")
+                )
+                .andDo(print());
+
+        // then
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.message").value("사용자별 자료 요청 목록을 성공적으로 조회했습니다."))
+                .andExpect(jsonPath("$.data.requests").isArray());
+    }
+
+    @Test
+    @DisplayName("[멘토] 카테고리별 요청 개수 조회")
+    void t19() throws Exception {
+        // given
+        User mentor = userService.findByUserId("01023456789");
+        String refreshToken = mentor.getRefreshToken();
+
+        // when
+        ResultActions resultActions = mvc
+                .perform(
+                        get("/api/v1/archive-requests/categories/{category}/count", "KAKAO_TALK")
+                                .cookie(new Cookie("refreshToken", refreshToken))
+                )
+                .andDo(print());
+
+        // then
+        resultActions
+                .andExpect(handler().handlerType(ArchiveRequestController.class))
+                .andExpect(handler().methodName("getRequestCountByCategory"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.message").value("카카오톡 카테고리의 자료 요청 개수를 성공적으로 조회했습니다."))
+                .andExpect(jsonPath("$.data").isNumber());
+    }
+
+    // ========================================
+    // REJECTED 상태 수정/삭제 테스트
+    // ========================================
+
+    @Test
+    @DisplayName("[멘토] REJECTED 상태 요청글 수정 - 자동으로 PENDING 변경")
+    void t20() throws Exception {
+        // given
+        User admin = userService.findByUserId("01012345678");
+        User mentor = userService.findByUserId("01023456789");
+        String mentorRefreshToken = mentor.getRefreshToken();
+        String adminRefreshToken = admin.getRefreshToken();
+
+        // 먼저 PENDING 상태의 요청을 찾아 REJECTED로 변경
+        ArchiveRequest request = archiveRequestRepository.findAll().stream()
+                .filter(r -> r.getUser().getId().equals(mentor.getId()) && r.getStatus() == RequestStatus.PENDING)
+                .findFirst()
+                .orElseThrow();
+
+        // 관리자가 REJECTED로 변경
+        mvc.perform(
+                patch("/api/v1/archive-requests/{requestId}/status", request.getId())
+                        .cookie(new Cookie("refreshToken", adminRefreshToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "status": "REJECTED"
+                                }
+                                """)
+        );
+
+        // when - 멘토가 REJECTED 상태의 요청을 수정
+        ResultActions resultActions = mvc
+                .perform(
+                        put("/api/v1/archive-requests/{requestId}", request.getId())
+                                .cookie(new Cookie("refreshToken", mentorRefreshToken))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("""
+                                        {
+                                            "title": "REJECTED에서 수정한 제목",
+                                            "description": "재심사 요청합니다",
+                                            "category": "INTERCITY_BUS"
+                                        }
+                                        """)
+                )
+                .andDo(print());
+
+        // then - 상태가 PENDING으로 변경되어야 함
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.data.title").value("REJECTED에서 수정한 제목"))
+                .andExpect(jsonPath("$.data.status").value("PENDING"));
+    }
+
+    @Test
+    @DisplayName("[멘토] REJECTED 상태 요청글 삭제 - 성공")
+    void t21() throws Exception {
+        // given
+        User admin = userService.findByUserId("01012345678");
+        User mentor = userService.findByUserId("01023456789");
+        String mentorRefreshToken = mentor.getRefreshToken();
+        String adminRefreshToken = admin.getRefreshToken();
+
+        // 먼저 PENDING 상태의 요청을 찾아 REJECTED로 변경
+        ArchiveRequest request = archiveRequestRepository.findAll().stream()
+                .filter(r -> r.getUser().getId().equals(mentor.getId()) && r.getStatus() == RequestStatus.PENDING)
+                .findFirst()
+                .orElseThrow();
+
+        // 관리자가 REJECTED로 변경
+        mvc.perform(
+                patch("/api/v1/archive-requests/{requestId}/status", request.getId())
+                        .cookie(new Cookie("refreshToken", adminRefreshToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "status": "REJECTED"
+                                }
+                                """)
+        );
+
+        // when - 멘토가 REJECTED 상태의 요청을 삭제
+        ResultActions resultActions = mvc
+                .perform(
+                        delete("/api/v1/archive-requests/{requestId}", request.getId())
+                                .cookie(new Cookie("refreshToken", mentorRefreshToken))
+                )
+                .andDo(print());
+
+        // then
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.message").value("자료 요청글이 성공적으로 삭제되었습니다."));
     }
 }

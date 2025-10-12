@@ -1,6 +1,7 @@
 package com.moci_3d_backend.domain.archive.archive_request.controller;
 
 import com.moci_3d_backend.domain.archive.archive_request.dto.*;
+import com.moci_3d_backend.domain.archive.archive_request.entity.RequestCategory;
 import com.moci_3d_backend.domain.archive.archive_request.entity.RequestStatus;
 import com.moci_3d_backend.domain.archive.archive_request.service.ArchiveRequestService;
 import com.moci_3d_backend.domain.user.entity.User;
@@ -70,19 +71,31 @@ public class ArchiveRequestController {
     // 자료 요청 목록 조회 (관리자, 멘토)
     @GetMapping("/archive-requests")
     @PreAuthorize("hasRole('MENTOR')")
-    @Operation(summary = "[관리자/멘토] 자료 요청 목록 조회", description = "관리자와 멘토가 자료 요청 목록을 조회할 수 있습니다.")
+    @Operation(summary = "[관리자/멘토] 자료 요청 목록 조회", description = "관리자와 멘토가 자료 요청 목록을 조회할 수 있습니다. 상태와 카테고리로 필터링 가능합니다.")
     public RsData<ArchiveRequestListResponseDto> getArchiveRequests(
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
             @Parameter(description = "페이징 정보 (기본: 10개씩, 최신순)",
                     example = "{\n  \"page\": 0,\n  \"size\": 10,\n  \"sort\": \"createdAt\"\n}"
             ) Pageable pageable,
-            @RequestParam(required = false) @Parameter(description = "상태 필터 (PENDING, APPROVED, REJECTED)") RequestStatus status) {
+            @RequestParam(required = false) @Parameter(description = "상태 필터 (PENDING, APPROVED, REJECTED)") RequestStatus status,
+            @RequestParam(required = false) @Parameter(description = "카테고리 필터 (KAKAO_TALK, YOUTUBE, KTX, INTERCITY_BUS, BAEMIN, COUPANG, ETC)") RequestCategory category) {
         ArchiveRequestListResponseDto response;
         User actor = rq.getActor();
 
-        if (status != null) {
+        // 상태와 카테고리 모두 있는 경우
+        if (status != null && category != null) {
+            response = archiveRequestService.getArchiveRequestsByStatusAndCategory(status, category, pageable, actor);
+        }
+        // 상태만 있는 경우
+        else if (status != null) {
             response = archiveRequestService.getArchiveRequestsByStatus(status, pageable, actor);
-        } else {
+        }
+        // 카테고리만 있는 경우
+        else if (category != null) {
+            response = archiveRequestService.getArchiveRequestsByCategory(category, pageable, actor);
+        }
+        // 필터 없는 경우
+        else {
             response = archiveRequestService.getArchiveRequests(pageable, actor);
         }
 
@@ -104,15 +117,23 @@ public class ArchiveRequestController {
     // 사용자별 자료 요청 목록 조회 (관리자, 멘토)
     @GetMapping("/users/{userId}/archive-requests")
     @PreAuthorize("hasRole('MENTOR')")
-    @Operation(summary = "[관리자/멘토] 사용자별(멘토) 자료 요청 목록 조회", description = "관리자와 멘토가 특정 사용자(멘토)의 자료 요청 목록을 조회할 수 있습니다.")
+    @Operation(summary = "[관리자/멘토] 사용자별(멘토) 자료 요청 목록 조회", description = "관리자와 멘토가 특정 사용자(멘토)의 자료 요청 목록을 조회할 수 있습니다. 카테고리로 필터링 가능합니다.")
     public RsData<ArchiveRequestListResponseDto> getUserArchiveRequestByUser(
             @PathVariable @Parameter(description = "조회할 멘토 ID", example = "2") Long userId,
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
             @Parameter(description = "페이징 정보 (기본: 10개씩, 최신순)", example = "{\n  \"page\": 0,\n  \"size\": 10,\n  \"sort\": \"createdAt\"\n}"
-            ) Pageable pageable
+            ) Pageable pageable,
+            @RequestParam(required = false) @Parameter(description = "카테고리 필터 (KAKAO_TALK, YOUTUBE, KTX, INTERCITY_BUS, BAEMIN, COUPANG, ETC)") RequestCategory category
     ) {
         User actor = rq.getActor();
-        ArchiveRequestListResponseDto response = archiveRequestService.getArchiveRequestsByUser(userId, pageable, actor);
+        ArchiveRequestListResponseDto response;
+        
+        if (category != null) {
+            response = archiveRequestService.getArchiveRequestsByUserAndCategory(userId, category, pageable, actor);
+        } else {
+            response = archiveRequestService.getArchiveRequestsByUser(userId, pageable, actor);
+        }
+        
         return RsData.of(200, "사용자별 자료 요청 목록을 성공적으로 조회했습니다.", response);
     }
 
@@ -148,5 +169,17 @@ public class ArchiveRequestController {
         User actor = rq.getActor();
         long count = archiveRequestService.getPendingRequestCount(actor);
         return RsData.of(200, "대기중인 자료 요청 개수를 성공적으로 조회했습니다.", count);
+    }
+
+    // 카테고리별 요청 개수 조회 (관리자, 멘토)
+    @GetMapping("/archive-requests/categories/{category}/count")
+    @PreAuthorize("hasRole('MENTOR')")
+    @Operation(summary = "[관리자/멘토] 카테고리별 자료 요청 개수 조회", description = "관리자와 멘토가 특정 카테고리의 자료 요청글 개수를 조회합니다.")
+    public RsData<Long> getRequestCountByCategory(
+            @PathVariable @Parameter(description = "조회할 카테고리 (KAKAO_TALK, YOUTUBE, KTX, INTERCITY_BUS, BAEMIN, COUPANG, ETC)") RequestCategory category
+    ) {
+        User actor = rq.getActor();
+        long count = archiveRequestService.getRequestCountByCategory(category, actor);
+        return RsData.of(200, String.format("%s 카테고리의 자료 요청 개수를 성공적으로 조회했습니다.", category.getDescription()), count);
     }
 }

@@ -70,6 +70,11 @@ public class SecurityConfig {
                         .permitAll()
                         .requestMatchers("/api/*/auth/login", "/api/*/auth/register", "/api/*/auth/token", "/api/*/users/phone-check")
                         .permitAll()
+                        // OAuth2 소셜 로그인 경로 허용
+                        .requestMatchers(
+                                "/oauth2/**",
+                                "/login/oauth2/**"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
 
