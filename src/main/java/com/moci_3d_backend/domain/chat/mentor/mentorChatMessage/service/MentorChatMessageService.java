@@ -83,4 +83,8 @@ public class MentorChatMessageService {
         }
         messagingTemplate.convertAndSend("/api/v1/chat/topic/%d".formatted(roomId), chatSendMessage);
     }
+
+    public Long getChatRoomMessageCount(Long roomId){
+        return mentorChatMessageRepository.countByRoomId(roomId);
+    }
 }

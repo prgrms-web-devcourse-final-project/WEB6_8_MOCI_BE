@@ -161,4 +161,37 @@ public class ApiV1MenteeChatRoomControllerTest {
                 .andExpect(jsonPath("$.msg").value("로그인이 필요합니다."))
         ;
     }
+
+    @Test
+    @DisplayName("채팅방 단일 조회")
+    void t3() throws Exception {
+        User user = userService.findByUserId("01045678901");
+        String refreshToken = user.getRefreshToken();
+        ResultActions resultActions = mvc
+                .perform(
+                        get("/api/v1/chat/mentor/mentee/room/%d".formatted(1L))
+                                .contentType("application/json")
+                                .cookie(new Cookie("refreshToken", refreshToken))
+                ).andDo(print());
+        resultActions
+                .andExpect(handler().handlerType(ApiV1MenteeChatRoomController.class))
+                .andExpect(handler().methodName("getMenteeChatRoom"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("success to get chat room"))
+        ;
+    }
+
+    @Test
+    @DisplayName("채팅방 단일 조회-실패(토큰 없이)")
+    void t3_1() throws Exception {
+        ResultActions resultActions = mvc
+                .perform(
+                        get("/api/v1/chat/mentor/mentee/room/%d".formatted(1L))
+                                .contentType("application/json")
+                ).andDo(print());
+        resultActions
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.msg").value("로그인이 필요합니다."))
+        ;
+    }
 }
