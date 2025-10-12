@@ -7,6 +7,9 @@ import com.moci_3d_backend.domain.archive.archive_request.repository.ArchiveRequ
 import com.moci_3d_backend.domain.archive.public_archive.entity.ArchiveCategory;
 import com.moci_3d_backend.domain.archive.public_archive.entity.PublicArchive;
 import com.moci_3d_backend.domain.archive.public_archive.repository.PublicArchiveRepository;
+import com.moci_3d_backend.domain.chat.ai.aiChatMessage.enums.SenderType;
+import com.moci_3d_backend.domain.chat.ai.aiChatMessage.repository.AiChatMessageRepository;
+import com.moci_3d_backend.domain.chat.ai.aiChatMessage.service.AiChatMessageService;
 import com.moci_3d_backend.domain.chat.ai.aiChatRoom.repository.AiChatRoomRepository;
 import com.moci_3d_backend.domain.chat.ai.aiChatRoom.service.AiChatRoomService;
 import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.dto.CreateMentorChatRoom;
@@ -43,6 +46,8 @@ public class DevInitData {
     private final AiChatRoomService aiChatRoomService;
     private final MenteeChatRoomService menteeChatRoomService;
     private final MentorChatRoomService mentorChatRoomService;
+    private final AiChatMessageService aiChatMessageService;
+    private final AiChatMessageRepository aiChatMessageRepository;
 
     @Bean
     ApplicationRunner devInitDataApplicationRunner() {
@@ -52,6 +57,7 @@ public class DevInitData {
             self.publicArchiveInit();
             self.aiRoomInit();
             self.chatRoomInit();
+            self.aiRoomMessageInit();
         };
     }
 
@@ -670,8 +676,54 @@ public class DevInitData {
     }
 
     @Transactional
-    public void chatRoomInit() {
-        if (mentorChatRoomService.getChatRoomCount() > 0) {
+    public void aiRoomMessageInit() {
+        if (aiChatMessageRepository.count() > 0) {
+            return;
+        }
+        Long roomId = 1L;
+        Long roomId2 = 3L;
+
+        User user4 = userRepository.findById(4L).get();
+        User user5 = userRepository.findById(5L).get();
+
+        // 사람 메시지 (user4가 질문)
+        aiChatMessageService.create(
+                user4,
+                roomId,
+                SenderType.HUMAN,
+                "안녕!"
+        );
+
+        // AI 메시지 (AI 응답)
+        aiChatMessageService.create(
+                null, // sender가 사람이 아니므로 null (or System user)
+                roomId,
+                SenderType.AI,
+                "네, 반갑습니다! 무엇을 도와드릴까요?"
+        );
+
+        aiChatMessageService.create(
+                user5,
+                roomId2,
+                SenderType.HUMAN,
+                "반가워 질문좀할께"
+        );
+
+        // AI 메시지 (AI 응답)
+        aiChatMessageService.create(
+                null, // sender가 사람이 아니므로 null (or System user)
+                roomId2,
+                SenderType.AI,
+                "네, 반갑워요 질문 편하게 질문 주시면 감사하겠습니다~"
+        );
+
+
+
+    }
+
+     @Transactional
+    public void chatRoomInit(){
+        if (mentorChatRoomService.getChatRoomCount() >0){
             return;
         }
         User mentee = userRepository.findById(4L).get();
