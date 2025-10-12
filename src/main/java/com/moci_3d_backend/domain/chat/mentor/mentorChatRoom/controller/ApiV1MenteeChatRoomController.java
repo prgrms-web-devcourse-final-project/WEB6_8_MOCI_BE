@@ -64,13 +64,13 @@ public class ApiV1MenteeChatRoomController {
             @RequestParam(value = "movedToAI", required = false, defaultValue = "false") Boolean movedToAI
     ){
         User user = rq.getActor();
-        if (movedToAI == true){
+        if (movedToAI){
             menteeChatRoomService.deleteMenteeChatRoom(roomId, user);
-            return RsData.of(200, "success to delete chat room");
+            return RsData.of(200, "Chat room deleted successfully");
         }
         menteeChatRoomService.menteeLeftChatRoom(roomId, user);
         ChatReceiveMessage chatReceiveMessage = new ChatReceiveMessage(MENTEE_LEFT_MESSAGE, 0L);
         mentorChatMessageService.sendMessage(roomId, chatReceiveMessage, Optional.empty());
-        return RsData.of(200, "success to delete chat room");
+        return RsData.of(200, "Left chat room successfully");
     }
 }
