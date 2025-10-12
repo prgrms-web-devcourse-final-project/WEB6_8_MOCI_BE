@@ -3,7 +3,6 @@ package com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.dto;
 import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.entity.MentorChatRoom;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
-import software.amazon.awssdk.services.s3.endpoints.internal.Value;
 
 import java.time.LocalDateTime;
 
