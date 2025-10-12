@@ -4,3 +4,9 @@ spring:
     username: sa
     password:
     driver-class-name: org.h2.Driver
+
+custom:
+  frontend:
+    baseUrl: "http://localhost:3000"
+    registerPath: "/register/ox-test"
+    mainPath: "/main"
