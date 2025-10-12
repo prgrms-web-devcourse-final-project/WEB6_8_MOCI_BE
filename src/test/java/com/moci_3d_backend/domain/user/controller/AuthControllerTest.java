@@ -36,7 +36,7 @@ public class AuthControllerTest {
     void t2() throws Exception {
         ResultActions resultActions = mvc
                 .perform(
-                        post("/api/v1/auth/token")
+                        post("/api/v1/auth/login")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content("""
                                         {
@@ -84,9 +84,30 @@ public class AuthControllerTest {
     @Test
     @DisplayName("로그아웃")
     void t3() throws Exception {
+        // 1단계: 로그인해서 토큰 발급
+        ResultActions loginResult = mvc
+                .perform(
+                        post("/api/v1/auth/login")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("""
+                                        {
+                                            "loginType": "PHONE",
+                                            "userId": "01012345678",
+                                            "password": "admin123"
+                                        }
+                                        """.stripIndent())
+                );
+
+        // 2단계: 로그인후 쿠키 추출
+        Cookie accessTokenCookie = loginResult.andReturn().getResponse().getCookie("accessToken");
+        Cookie refreshTokenCookie = loginResult.andReturn().getResponse().getCookie("refreshToken");
+
+        // 3단계: 로그아웃 요청
         ResultActions resultActions = mvc
                 .perform(
-                        delete("/api/v1/auth/token")
+                        delete("/api/v1/auth/logout")
+                                .cookie(accessTokenCookie)
+                                .cookie(refreshTokenCookie)
                 )
                 .andDo(print());
 
@@ -95,17 +116,17 @@ public class AuthControllerTest {
                 .andExpect(handler().methodName("deleteToken"))
                 .andExpect(status().isOk())
                 .andExpect(result -> {
-                    Cookie refreshTokenCookie = result.getResponse().getCookie("refreshToken");
-                    assertThat(refreshTokenCookie.getValue()).isEmpty();
-                    assertThat(refreshTokenCookie.getMaxAge()).isEqualTo(0);
-                    assertThat(refreshTokenCookie.getPath()).isEqualTo("/");
-                    assertThat(refreshTokenCookie.isHttpOnly()).isTrue();
+                    Cookie refreshTokenCookieResponse = result.getResponse().getCookie("refreshToken");
+                    assertThat(refreshTokenCookieResponse.getValue()).isEmpty();
+                    assertThat(refreshTokenCookieResponse.getMaxAge()).isEqualTo(0);
+                    assertThat(refreshTokenCookieResponse.getPath()).isEqualTo("/");
+                    assertThat(refreshTokenCookieResponse.isHttpOnly()).isTrue();
 
-                    Cookie accessTokenCookie = result.getResponse().getCookie("accessToken");
-                    assertThat(accessTokenCookie.getValue()).isEmpty();
-                    assertThat(accessTokenCookie.getMaxAge()).isEqualTo(0);
-                    assertThat(accessTokenCookie.getPath()).isEqualTo("/");
-                    assertThat(accessTokenCookie.isHttpOnly()).isTrue();
+                    Cookie accessTokenCookieResponse = result.getResponse().getCookie("accessToken");
+                    assertThat(accessTokenCookieResponse.getValue()).isEmpty();
+                    assertThat(accessTokenCookieResponse.getMaxAge()).isEqualTo(0);
+                    assertThat(accessTokenCookieResponse.getPath()).isEqualTo("/");
+                    assertThat(accessTokenCookieResponse.isHttpOnly()).isTrue();
                 });
     }
 }
