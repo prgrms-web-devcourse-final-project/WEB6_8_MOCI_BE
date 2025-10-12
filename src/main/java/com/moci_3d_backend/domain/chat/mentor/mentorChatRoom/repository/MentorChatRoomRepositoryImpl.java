@@ -25,6 +25,7 @@ public class MentorChatRoomRepositoryImpl implements MentorChatRoomRepositoryCus
         BooleanBuilder builder = new BooleanBuilder();
         BooleanBuilder joinBuilder = new BooleanBuilder();
         joinBuilder.and(message.room.eq(chatRoom));
+        joinBuilder.and(message.sender.ne(user));
 
         if (user != null){
             if (isMentor){

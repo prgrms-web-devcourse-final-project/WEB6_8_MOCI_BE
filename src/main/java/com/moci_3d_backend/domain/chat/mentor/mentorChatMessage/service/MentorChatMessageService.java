@@ -55,6 +55,7 @@ public class MentorChatMessageService {
         MentorChatMessage mentorChatMessage = mentorChatMessageDtoService.toEntity(message, sender, mentorChatRoom, fileUpload);
         mentorChatMessage = mentorChatMessageRepository.save(mentorChatMessage);
         mentorChatRoom.updateLastMessageAt();
+        mentorChatRoom.updateLastAt(sender);
         return mentorChatMessageDtoService.toSendMessage(mentorChatMessage);
     }
 
