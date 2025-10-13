@@ -58,7 +58,7 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
                 userId,
                 "",
                 name,
-                List.of(new SimpleGrantedAuthority(role))
+                List.of(new SimpleGrantedAuthority("ROLE_" + role))
         );
         attributes.put("user", userDetails);
 
