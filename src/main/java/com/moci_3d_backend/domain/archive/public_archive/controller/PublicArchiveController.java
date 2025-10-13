@@ -111,14 +111,68 @@ public class PublicArchiveController {
 
     @PutMapping("/admin/archive/public/{archiveId}")
     @PreAuthorize("hasRole('ADMIN')") // 관리자 권한 필요
-    @Operation(summary = "[관리자] 교육 자료실 수정", description = "관리자만 교육자료실 글을 수정할 수 있습니다.\n\n" +
-            "**파일 업데이트 동작:**\n" +
-            "- fileIds가 null: 파일 변경하지 않음 (기존 파일 유지)\n" +
-            "- fileIds가 빈 배열 []: 모든 파일 삭제\n" +
-            "- fileIds에 값이 있는 경우: 기존 파일을 삭제하고 새 파일로 교체\n\n" +
-            "⚠️ 주의사항:\n" +
-            "- **credentials: \"include\" 필수** (쿠키 인증)\n" +
-            "- 파일 업데이트 시 파일 업로드 API를 먼저 호출하여 fileIds를 받아야 합니다.")
+    @Operation(
+            summary = "[관리자] 교육 자료실 수정",
+            description = """
+                    관리자만 교육자료실 글을 수정할 수 있습니다.
+                    
+                    ## 📁 파일 업데이트 방식 (중요!)
+                    
+                    ### 1️⃣ 파일 변경하지 않음 (기존 파일 유지)
+                    ```json
+                    {
+                      "title": "수정된 제목",
+                      "fileIds": null  // 또는 fileIds 필드를 아예 보내지 않음
+                    }
+                    ```
+                    
+                    ### 2️⃣ 모든 파일 삭제
+                    ```json
+                    {
+                      "title": "수정된 제목",
+                      "fileIds": []
+                    }
+                    ```
+                    
+                    ### 3️⃣ 기존 파일 유지 + 새 파일 추가
+                    **플로우:**
+                    1. 상세 조회로 기존 파일 ID 확인: `GET /api/v1/archive/public/{archiveId}`
+                       - 응답 예시: `"files": [{"id": 1}, {"id": 2}, {"id": 3}]`
+                    2. 새 파일 업로드: `POST /api/v1/file`
+                       - 응답 예시: `{"id": 4}`
+                    3. 수정 요청 시 기존 ID + 새 ID 합쳐서 전송
+                    ```json
+                    {
+                      "title": "수정된 제목",
+                      "fileIds": [1, 2, 4]  // 기존(1,2) 유지 + 새(4) 추가, 3은 삭제됨
+                    }
+                    ```
+                    
+                    ### 4️⃣ 일부 파일 삭제 + 일부 유지
+                    ```json
+                    {
+                      "title": "수정된 제목",
+                      "fileIds": [1, 3]  // 1, 3만 유지, 2는 삭제됨
+                    }
+                    ```
+                    
+                    ### 5️⃣ 모든 파일 교체
+                    1. 새 파일들 업로드: `POST /api/v1/file` (여러 번)
+                    2. 새 파일 ID만 전송
+                    ```json
+                    {
+                      "title": "수정된 제목",
+                      "fileIds": [10, 11, 12]  // 전부 새 파일, 기존 파일은 모두 삭제됨
+                    }
+                    ```
+                    
+                    ## ⚠️ 주의사항
+                    - **credentials: "include" 필수** (쿠키 인증)
+                    - fileIds에 포함된 ID만 최종적으로 게시물에 연결됩니다
+                    - fileIds에 포함되지 않은 기존 파일은 **자동으로 S3에서 삭제**됩니다
+                    - 새 파일을 추가하려면 먼저 파일 업로드 API를 호출하여 ID를 받아야 합니다
+                    """
+    )
     public RsData<PublicArchiveResponse> updatePublicArchive(
             @PathVariable @Parameter(description = "수정할 자료실 ID") Long archiveId,
             @Valid @RequestBody PublicArchiveUpdateRequest request

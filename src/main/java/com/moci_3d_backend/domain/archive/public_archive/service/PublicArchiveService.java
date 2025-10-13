@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -259,58 +260,77 @@ public class PublicArchiveService {
             return;
         }
 
-        // 기존 파일들의 연결 해제 및 제거 (orphanRemoval = true 대응)
-        // clear() 대신 개별 요소를 하나씩 제거하여 Hibernate가 정확히 추적하도록 함
-        while (!archive.getFileUploads().isEmpty()) {
-            FileUpload file = archive.getFileUploads().removeFirst();
+        // 기존 파일 목록
+        List<FileUpload> existingFiles = new ArrayList<>(archive.getFileUploads());
 
-            // S3에서 물리 파일 삭제
-            if (file.getFile_url() != null) {
-                fileUploadService.deleteFile(file.getFile_url());
-            }
-
-            file.setPublicArchive(null);
-        }
-
-        // fileIds가 빈 배열이면 모든 파일 삭제 (위에서 이미 처리됨)
-        if (fileIds.isEmpty()) {
-            return;
-        }
-
-        // 새로운 파일 처리
-        List<Long> validFileIds = fileIds.stream()
+        // 요청된 파일 ID 목록 (유효한 ID만)
+        List<Long> requestedFileIds = fileIds.stream()
                 .filter(id -> id != null && id > 0)
                 .toList();
 
-        if (validFileIds.isEmpty()) {
+        // fileIds가 빈 배열이면 모든 파일 삭제
+        if (requestedFileIds.isEmpty()) {
+            for (FileUpload file : existingFiles) {
+                if (file.getFile_url() != null) {
+                    fileUploadService.deleteFile(file.getFile_url());
+                }
+                archive.getFileUploads().remove(file);
+                file.setPublicArchive(null);
+            }
             return;
         }
 
-        // 실제 파일들 조회 및 검증
-        List<FileUpload> newFileUploads = fileUploadRepository.findAllById(validFileIds);
-
-        // 요청한 파일 수와 실제 조회된 파일 수 비교
-        if (newFileUploads.size() != validFileIds.size()) {
-            List<Long> foundIds = newFileUploads.stream().map(FileUpload::getId).toList();
-            List<Long> notFoundIds = validFileIds.stream()
-                    .filter(id -> !foundIds.contains(id))
-                    .toList();
-            throw new EntityNotFoundException("다음 ID의 파일을 찾을 수 없습니다: " + notFoundIds);
-        }
-
-        // 이미 다른 게시글에 연결된 파일 확인
-        List<FileUpload> alreadyUsedFiles = newFileUploads.stream()
-                .filter(file -> file.getPublicArchive() != null && !file.getPublicArchive().getId().equals(archive.getId()))
+        // 기존 파일 ID 목록
+        List<Long> existingFileIds = existingFiles.stream()
+                .map(FileUpload::getId)
                 .toList();
 
-        if (!alreadyUsedFiles.isEmpty()) {
-            List<Long> usedIds = alreadyUsedFiles.stream().map(FileUpload::getId).toList();
-            throw new IllegalStateException("이미 다른 게시글에 사용된 파일들입니다: " + usedIds);
+        // 삭제할 파일들 찾기 (기존 파일 중 요청에 없는 것들)
+        List<FileUpload> filesToRemove = existingFiles.stream()
+                .filter(file -> !requestedFileIds.contains(file.getId()))
+                .toList();
+
+        // S3에서 삭제 및 DB 연결 해제
+        for (FileUpload file : filesToRemove) {
+            if (file.getFile_url() != null) {
+                fileUploadService.deleteFile(file.getFile_url());
+            }
+            archive.getFileUploads().remove(file);
+            file.setPublicArchive(null);
         }
 
-        // 새 파일들을 현재 게시글에 연결
-        archive.getFileUploads().addAll(newFileUploads);
-        newFileUploads.forEach(file -> file.setPublicArchive(archive));
+        // 새로 추가할 파일 ID들 찾기 (요청된 파일 중 기존에 없는 것들)
+        List<Long> fileIdsToAdd = requestedFileIds.stream()
+                .filter(id -> !existingFileIds.contains(id))
+                .toList();
+
+        // 새 파일이 있으면 추가
+        if (!fileIdsToAdd.isEmpty()) {
+            List<FileUpload> newFileUploads = fileUploadRepository.findAllById(fileIdsToAdd);
+
+            // 요청한 파일 수와 실제 조회된 파일 수 비교
+            if (newFileUploads.size() != fileIdsToAdd.size()) {
+                List<Long> foundIds = newFileUploads.stream().map(FileUpload::getId).toList();
+                List<Long> notFoundIds = fileIdsToAdd.stream()
+                        .filter(id -> !foundIds.contains(id))
+                        .toList();
+                throw new EntityNotFoundException("다음 ID의 파일을 찾을 수 없습니다: " + notFoundIds);
+            }
+
+            // 이미 다른 게시글에 연결된 파일 확인
+            List<FileUpload> alreadyUsedFiles = newFileUploads.stream()
+                    .filter(file -> file.getPublicArchive() != null && !file.getPublicArchive().getId().equals(archive.getId()))
+                    .toList();
+
+            if (!alreadyUsedFiles.isEmpty()) {
+                List<Long> usedIds = alreadyUsedFiles.stream().map(FileUpload::getId).toList();
+                throw new IllegalStateException("이미 다른 게시글에 사용된 파일들입니다: " + usedIds);
+            }
+
+            // 새 파일들을 현재 게시글에 연결
+            archive.getFileUploads().addAll(newFileUploads);
+            newFileUploads.forEach(file -> file.setPublicArchive(archive));
+        }
     }
 
     private final FileUploadService fileUploadService;
