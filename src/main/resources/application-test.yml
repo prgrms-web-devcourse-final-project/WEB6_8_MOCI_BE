@@ -8,6 +8,10 @@ spring:
 custom:
   jwt:
     secretKey: test-secret
+  frontend:
+    baseUrl: "http://localhost:3000"
+    registerPath: "/register/ox-test"
+    mainPath: "/main"
 
 gemini:
   api:
