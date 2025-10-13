@@ -28,7 +28,7 @@ jobs:
     
     # 4. 빌드 (테스트 제외)
     - name: Build with Gradle
-      run: ./gradlew clean build -x test
+      run: ./gradlew clean build
     
     # 5. JAR 파일명 확인 (plain.jar 제외)
     - name: Get JAR filename
