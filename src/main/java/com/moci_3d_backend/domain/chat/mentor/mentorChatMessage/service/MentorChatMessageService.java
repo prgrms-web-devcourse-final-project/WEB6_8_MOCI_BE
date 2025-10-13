@@ -40,7 +40,7 @@ public class MentorChatMessageService {
         return switch (user.getRole()){
             case MENTOR -> mentorChatRoomService.getMentorChatRoom(roomId, user);
             case USER -> menteeChatRoomService.getMenteeChatRoom(roomId, user);
-            default -> null;
+            case ADMIN -> mentorChatRoomService.getChatRoomById(roomId).orElseThrow(()-> new IllegalArgumentException("No chat room found"));
         };
     }
 
