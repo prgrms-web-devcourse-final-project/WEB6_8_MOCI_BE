@@ -102,4 +102,14 @@ public class MentorChatRoom {
     public void updateLastMessageAt(){
         this.lastMessageAt = LocalDateTime.now();
     }
+
+    public void updateLastAt(User sender) {
+        if(sender.getId().equals(mentor.getId())) {
+            this.mentorLastAt = LocalDateTime.now();
+        } else if (sender.getId().equals(mentee.getId())) {
+            this.menteeLastAt = LocalDateTime.now();
+        } else {
+            throw new IllegalArgumentException("Sender is neither mentor nor mentee in this chat room.");
+        }
+    }
 }
