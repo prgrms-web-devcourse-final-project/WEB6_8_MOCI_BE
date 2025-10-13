@@ -30,6 +30,7 @@ public class MenteeChatRoomService {
         MentorChatMessage message = new MentorChatMessage(mentorChatRoom, mentee, createMentorChatRoom.getQuestion(), null);
         mentorChatMessageRepository.save(message);
         mentorChatRoom.updateLastMessageAt();
+        mentorChatRoom.updateMenteeLastAt();
         return mentorChatRoomDtoService.toMentorChatRoomResponse(mentorChatRoom);
     }
 
