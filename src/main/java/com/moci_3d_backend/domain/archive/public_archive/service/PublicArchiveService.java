@@ -163,10 +163,15 @@ public class PublicArchiveService {
 
         PublicArchive existingArchive = publicArchiveRepository.findById(archiveId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 ID의 교육 자료실 글을 찾을 수 없습니다: " + archiveId));
+
+        // 텍스트 필드 업데이트
         if (request.getTitle() != null) existingArchive.setTitle(request.getTitle());
         if (request.getDescription() != null) existingArchive.setDescription(request.getDescription());
         if (request.getCategory() != null) existingArchive.setCategory(request.getCategory());
         if (request.getSubCategory() != null) existingArchive.setSubCategory(request.getSubCategory());
+
+        // 파일 업데이트 처리
+        updateFiles(existingArchive, request.getFileIds());
 
         return publicArchiveMapper.toResponseDto(existingArchive);
     }
@@ -234,5 +239,60 @@ public class PublicArchiveService {
         // 파일들을 현재 게시글에 연결
         archive.setFileUploads(fileUploads);
         fileUploads.forEach(file -> file.setPublicArchive(archive));
+    }
+
+    // 파일 업데이트 메서드 (수정용)
+    private void updateFiles(PublicArchive archive, List<Long> fileIds) {
+        // fileIds가 null이면 파일을 변경하지 않음 (기존 파일 유지)
+        if (fileIds == null) {
+            return;
+        }
+
+        // 기존 파일들의 연결 해제 및 제거 (orphanRemoval = true 대응)
+        // clear() 대신 개별 요소를 하나씩 제거하여 Hibernate가 정확히 추적하도록 함
+        while (!archive.getFileUploads().isEmpty()) {
+            FileUpload file = archive.getFileUploads().removeFirst();
+            file.setPublicArchive(null);
+        }
+
+        // fileIds가 빈 배열이면 모든 파일 삭제 (위에서 이미 처리됨)
+        if (fileIds.isEmpty()) {
+            return;
+        }
+
+        // 새로운 파일 처리
+        List<Long> validFileIds = fileIds.stream()
+                .filter(id -> id != null && id > 0)
+                .toList();
+
+        if (validFileIds.isEmpty()) {
+            return;
+        }
+
+        // 실제 파일들 조회 및 검증
+        List<FileUpload> newFileUploads = fileUploadRepository.findAllById(validFileIds);
+
+        // 요청한 파일 수와 실제 조회된 파일 수 비교
+        if (newFileUploads.size() != validFileIds.size()) {
+            List<Long> foundIds = newFileUploads.stream().map(FileUpload::getId).toList();
+            List<Long> notFoundIds = validFileIds.stream()
+                    .filter(id -> !foundIds.contains(id))
+                    .toList();
+            throw new EntityNotFoundException("다음 ID의 파일을 찾을 수 없습니다: " + notFoundIds);
+        }
+
+        // 이미 다른 게시글에 연결된 파일 확인
+        List<FileUpload> alreadyUsedFiles = newFileUploads.stream()
+                .filter(file -> file.getPublicArchive() != null && !file.getPublicArchive().getId().equals(archive.getId()))
+                .toList();
+
+        if (!alreadyUsedFiles.isEmpty()) {
+            List<Long> usedIds = alreadyUsedFiles.stream().map(FileUpload::getId).toList();
+            throw new IllegalStateException("이미 다른 게시글에 사용된 파일들입니다: " + usedIds);
+        }
+
+        // 새 파일들을 현재 게시글에 연결
+        archive.getFileUploads().addAll(newFileUploads);
+        newFileUploads.forEach(file -> file.setPublicArchive(archive));
     }
 }
