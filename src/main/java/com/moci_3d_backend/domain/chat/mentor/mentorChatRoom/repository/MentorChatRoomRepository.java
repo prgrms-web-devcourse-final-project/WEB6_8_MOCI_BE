@@ -8,10 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface MentorChatRoomRepository extends JpaRepository<MentorChatRoom, Long>, MentorChatRoomRepositoryCustom {
-    List<MentorChatRoom> findByMenteeAndMenteeLeftFalse(User mentee);
     List<MentorChatRoom> findByMentorNullAndMenteeLeftFalse();
-    List<MentorChatRoom> findByMentorAndMenteeLeftFalse(User mentor);
-    List<MentorChatRoom> findByMenteeLeftFalse();
 
     Optional<MentorChatRoom> findByIdAndMenteeLeftFalse(Long roomId);
 }
