@@ -7,6 +7,7 @@ import com.moci_3d_backend.domain.archive.public_archive.mapper.PublicArchiveMap
 import com.moci_3d_backend.domain.archive.public_archive.repository.PublicArchiveRepository;
 import com.moci_3d_backend.domain.fileUpload.entity.FileUpload;
 import com.moci_3d_backend.domain.fileUpload.repository.FileUploadRepository;
+import com.moci_3d_backend.domain.fileUpload.service.FileUploadService;
 import com.moci_3d_backend.domain.user.entity.User;
 import com.moci_3d_backend.domain.user.repository.UserRepository;
 import com.moci_3d_backend.global.util.KoreanTextAnalyzer;
@@ -181,10 +182,20 @@ public class PublicArchiveService {
     public void deletePublicArchive(Long archiveId, User actor) {
         authValidator.validateAdmin(actor);
 
-        if (!publicArchiveRepository.existsById(archiveId)) {
-            throw new EntityNotFoundException("해당 ID의 교육 자료실 글을 찾을 수 없습니다: " + archiveId);
-        }
+        PublicArchive archive = publicArchiveRepository.findById(archiveId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 ID의 교육 자료실 글을 찾을 수 없습니다: " + archiveId));
+
+        // 삭제 전에 S3 파일들을 먼저 삭제
+        List<String> fileUrls = archive.getFileUploads().stream()
+                .map(FileUpload::getFile_url)
+                .filter(url -> url != null)
+                .toList();
+
+        // 게시물 삭제 (orphanRemoval로 FileUpload DB 레코드도 삭제됨)
         publicArchiveRepository.deleteById(archiveId);
+
+        // S3에서 물리 파일 삭제
+        fileUrls.forEach(fileUploadService::deleteFile);
     }
 
 
@@ -252,6 +263,12 @@ public class PublicArchiveService {
         // clear() 대신 개별 요소를 하나씩 제거하여 Hibernate가 정확히 추적하도록 함
         while (!archive.getFileUploads().isEmpty()) {
             FileUpload file = archive.getFileUploads().removeFirst();
+
+            // S3에서 물리 파일 삭제
+            if (file.getFile_url() != null) {
+                fileUploadService.deleteFile(file.getFile_url());
+            }
+
             file.setPublicArchive(null);
         }
 
@@ -295,4 +312,6 @@ public class PublicArchiveService {
         archive.getFileUploads().addAll(newFileUploads);
         newFileUploads.forEach(file -> file.setPublicArchive(archive));
     }
+
+    private final FileUploadService fileUploadService;
 }
