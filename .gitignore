@@ -57,3 +57,6 @@ terraform/.terraform.lock.hcl
 **/secrets.*
 **/*secret*
 **/*password*
+
+### MacOS ###
+.DS_Store

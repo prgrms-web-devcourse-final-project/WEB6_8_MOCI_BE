@@ -47,12 +47,30 @@ public class FileUploadService {
             String fileUrl = "https://" + bucketName + ".s3.ap-northeast-2.amazonaws.com/" + saveName;
 
             log.info("✅ S3 업로드 완료: {}", fileUrl);
+
+            // local에 임시 저장
+            File uploadDir = new File(filePath).getAbsoluteFile();
+            if (!uploadDir.exists()) {
+                boolean created = uploadDir.mkdirs();
+                if (created) {
+                    log.info("업로드 디렉토리 생성: {}", uploadDir.getAbsolutePath());
+                } else if (!uploadDir.exists()) {
+                    log.error("업로드 디렉토리 생성 실패: {}", uploadDir.getAbsolutePath());
+                    throw new RuntimeException("업로드 디렉토리 생성 실패: " + uploadDir.getAbsolutePath());
+                }
+            }
+
+            File localFile = new File(uploadDir, saveName);
+            file.transferTo(localFile);
+            log.info("파일 저장 완료: {}", localFile.getCanonicalPath());
+
             // DB 저장
             FileUpload fileUpload = new FileUpload(
                     file.getOriginalFilename(),
                     saveName,
                     file.getContentType()
             );
+
             return FileUploadDto.from(fileUploadRepository.save(fileUpload));
         } catch (IOException e) {
             log.error("❌ 파일 업로드 실패: {}", e.getMessage(), e);
