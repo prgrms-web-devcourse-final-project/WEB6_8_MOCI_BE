@@ -22,7 +22,7 @@ public class MentorChatRoomService {
     private final MentorChatRoomDtoService mentorChatRoomDtoService;
 
     public MentorChatRoom getMentorChatRoom(Long roomId, User user){
-        MentorChatRoom mentorChatRoom =  mentorChatRoomRepository.findByIdAndMenteeLeftFalse(roomId).orElseThrow(
+        MentorChatRoom mentorChatRoom =  mentorChatRoomRepository.findById(roomId).orElseThrow(
                 () -> new NoSuchElementException("No chat room found with id: " + roomId)
         );
         if (!mentorChatRoom.getMentor().equals(user)){
@@ -62,7 +62,7 @@ public class MentorChatRoomService {
 
     @Transactional
     public void setSolved(Long roomId){
-        MentorChatRoom mentorChatRoom = mentorChatRoomRepository.findByIdAndMenteeLeftFalse(roomId).orElseThrow(
+        MentorChatRoom mentorChatRoom = mentorChatRoomRepository.findById(roomId).orElseThrow(
                 () -> new NoSuchElementException("No chat room found with id: " + roomId)
         );
         mentorChatRoom.setMentorLeft(true);
