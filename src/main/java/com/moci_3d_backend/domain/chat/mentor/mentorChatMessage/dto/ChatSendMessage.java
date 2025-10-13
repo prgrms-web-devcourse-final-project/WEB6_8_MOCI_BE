@@ -11,13 +11,15 @@ public class ChatSendMessage {
     private String sender;
     private String content;
     private Long attachmentId;
+    private String attachmentUrl;
     private LocalDateTime createdAt;
 
-    public ChatSendMessage(Long id, String sender, String content, Long attachmentId, LocalDateTime createdAt) {
+    public ChatSendMessage(Long id, String sender, String content, Long attachmentId,String attachmentUrl ,LocalDateTime createdAt) {
         this.id = id;
         this.sender = sender;
         this.content = content;
         this.attachmentId = attachmentId;
+        this.attachmentUrl = attachmentUrl;
         this.createdAt = createdAt;
     }
 
@@ -26,6 +28,7 @@ public class ChatSendMessage {
         this.sender = sender;
         this.content = receiveMessage.getContent();
         this.attachmentId = receiveMessage.getAttachmentId();
+        this.attachmentUrl = "";
         this.createdAt = LocalDateTime.now();
     }
 }
