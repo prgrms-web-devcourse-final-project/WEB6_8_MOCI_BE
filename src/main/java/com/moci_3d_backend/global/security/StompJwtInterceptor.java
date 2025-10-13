@@ -49,13 +49,16 @@ public class StompJwtInterceptor implements ChannelInterceptor {
         switch (command) {
             case CONNECT -> {
                 Long roomId = getRoomId(accessor);
-                MentorChatRoom room = mentorChatRoomService.getChatRoomById(roomId).orElseThrow();
+                MentorChatRoom room = mentorChatRoomService.getChatRoomById(roomId).orElseThrow(()-> new IllegalArgumentException("No chat room found"));
                 User mentee = room.getMentee();
                 User mentor = room.getMentor();
+                accessor.getSessionAttributes().put("roomId", roomId);
+                if (user.getAuthorities().contains("ROLE_ADMIN")){
+                    return message;
+                }
                 if (!mentee.getId().equals(user.getId()) && !mentor.getId().equals(user.getId())){
                     throw new IllegalArgumentException("user is not mentee or mentor");
                 }
-                accessor.getSessionAttributes().put("roomId", roomId);
             }
             case SEND -> {
                 Long roomId = getRoomId(accessor);

@@ -40,7 +40,8 @@ public class MentorChatMessageService {
         return switch (user.getRole()){
             case MENTOR -> mentorChatRoomService.getMentorChatRoom(roomId, user);
             case USER -> menteeChatRoomService.getMenteeChatRoom(roomId, user);
-            default -> null;
+            case ADMIN -> mentorChatRoomService.getChatRoomById(roomId).orElseThrow(() -> new IllegalArgumentException("No chat room found"));
+            default -> throw new IllegalArgumentException("Unsupported user role: " + user.getRole());
         };
     }
 
