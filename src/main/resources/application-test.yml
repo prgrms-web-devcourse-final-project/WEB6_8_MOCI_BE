@@ -7,7 +7,7 @@ spring:
 
 custom:
   jwt:
-    secretKey: test-secret
+    secretKey: abcdefghijklmnopqrstuvwxyz1234567890
   frontend:
     baseUrl: "http://localhost:3000"
     registerPath: "/register/ox-test"
