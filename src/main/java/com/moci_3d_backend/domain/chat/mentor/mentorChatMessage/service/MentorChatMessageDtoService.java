@@ -20,8 +20,8 @@ public class MentorChatMessageDtoService {
                 entity.getSender().getName(),
                 entity.getContent(),
                 attachment != null ? attachment.getId() : null,
-                entity.getCreatedAt(),
-                attachment != null ? attachment.getFile_url() : ""
+                attachment != null ? attachment.getFile_url() :  null,
+                entity.getCreatedAt()
         );
     }
 

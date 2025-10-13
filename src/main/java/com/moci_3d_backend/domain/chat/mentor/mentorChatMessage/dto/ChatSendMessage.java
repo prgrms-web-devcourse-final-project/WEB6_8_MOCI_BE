@@ -14,13 +14,13 @@ public class ChatSendMessage {
     private String attachmentUrl;
     private LocalDateTime createdAt;
 
-    public ChatSendMessage(Long id, String sender, String content, Long attachmentId, LocalDateTime createdAt, String attachmentUrl) {
+    public ChatSendMessage(Long id, String sender, String content, Long attachmentId,String attachmentUrl ,LocalDateTime createdAt) {
         this.id = id;
         this.sender = sender;
         this.content = content;
         this.attachmentId = attachmentId;
-        this.createdAt = createdAt;
         this.attachmentUrl = attachmentUrl;
+        this.createdAt = createdAt;
     }
 
     public ChatSendMessage(String sender, ChatReceiveMessage receiveMessage) {
