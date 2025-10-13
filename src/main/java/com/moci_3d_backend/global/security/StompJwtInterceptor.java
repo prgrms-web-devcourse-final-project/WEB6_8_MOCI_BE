@@ -10,6 +10,7 @@ import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageHeaderAccessor;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -53,7 +54,7 @@ public class StompJwtInterceptor implements ChannelInterceptor {
                 User mentee = room.getMentee();
                 User mentor = room.getMentor();
                 accessor.getSessionAttributes().put("roomId", roomId);
-                if (user.getAuthorities().contains("ROLE_ADMIN")){
+                if (user.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
                     return message;
                 }
                 if (!mentee.getId().equals(user.getId()) && !mentor.getId().equals(user.getId())){
