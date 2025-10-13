@@ -26,9 +26,29 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x ./gradlew
     
-    # 4. 빌드 (테스트 제외)
+    # 4. 빌드 (환경변수 주입)
     - name: Build with Gradle
-      run: ./gradlew clean build
+    env:
+      SPRING_PROFILES_ACTIVE: test
+      DB_HOST: ${{ secrets.DB_HOST }}
+      DB_NAME: ${{ secrets.DB_NAME }}
+      DB_USERNAME: ${{ secrets.DB_USERNAME }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+      KAKAO_CLIENT_ID: ${{ secrets.KAKAO_CLIENT_ID }}
+      NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
+      NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+      GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+      GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      GEMINI_API_URL: ${{ secrets.GEMINI_API_URL }}
+      GEMINI_API_URL_STREAM: ${{ secrets.GEMINI_API_URL_STREAM }}
+      S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      COOKIE_DOMAIN: ${{ secrets.COOKIE_DOMAIN }}
+      FRONT_URL: ${{ secrets.FRONT_URL }}
+      BACK_URL: ${{ secrets.BACK_URL }}
+    run: ./gradlew clean build
     
     # 5. JAR 파일명 확인 (plain.jar 제외)
     - name: Get JAR filename
