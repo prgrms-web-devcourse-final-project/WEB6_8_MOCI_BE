@@ -45,7 +45,7 @@ public class PublicArchiveController {
             @RequestParam(required = false)
             @Parameter(
                     description = "카테고리 필터",
-            example = "KAKAO_TALK") ArchiveCategory category,
+                    example = "KAKAO_TALK") ArchiveCategory category,
 
             @RequestParam(required = false)
             @Parameter(
@@ -111,7 +111,14 @@ public class PublicArchiveController {
 
     @PutMapping("/admin/archive/public/{archiveId}")
     @PreAuthorize("hasRole('ADMIN')") // 관리자 권한 필요
-    @Operation(summary = "[관리자] 교육 자료실 수정", description = "관리자만 교육자료실 글을 수정할 수 있습니다.")
+    @Operation(summary = "[관리자] 교육 자료실 수정", description = "관리자만 교육자료실 글을 수정할 수 있습니다.\n\n" +
+            "**파일 업데이트 동작:**\n" +
+            "- fileIds가 null: 파일 변경하지 않음 (기존 파일 유지)\n" +
+            "- fileIds가 빈 배열 []: 모든 파일 삭제\n" +
+            "- fileIds에 값이 있는 경우: 기존 파일을 삭제하고 새 파일로 교체\n\n" +
+            "⚠️ 주의사항:\n" +
+            "- **credentials: \"include\" 필수** (쿠키 인증)\n" +
+            "- 파일 업데이트 시 파일 업로드 API를 먼저 호출하여 fileIds를 받아야 합니다.")
     public RsData<PublicArchiveResponse> updatePublicArchive(
             @PathVariable @Parameter(description = "수정할 자료실 ID") Long archiveId,
             @Valid @RequestBody PublicArchiveUpdateRequest request
