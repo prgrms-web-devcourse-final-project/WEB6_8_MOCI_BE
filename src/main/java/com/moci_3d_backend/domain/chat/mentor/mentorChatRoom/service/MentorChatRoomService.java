@@ -52,12 +52,12 @@ public class MentorChatRoomService {
     }
 
     public List<DetailMentorChatRoom> getAllMentorChatRooms(){
-        List<MentorChatRoom> mentorChatRoomList = mentorChatRoomRepository.findByMenteeLeftFalse();
+        List<MentorChatRoom> mentorChatRoomList = mentorChatRoomRepository.findAll();
         return mentorChatRoomDtoService.toDetailMentorChatRoomList(mentorChatRoomList);
     }
 
     public Optional<MentorChatRoom> getChatRoomById(Long roomId) {
-        return mentorChatRoomRepository.findByIdAndMenteeLeftFalse(roomId);
+        return mentorChatRoomRepository.findById(roomId);
     }
 
     @Transactional
