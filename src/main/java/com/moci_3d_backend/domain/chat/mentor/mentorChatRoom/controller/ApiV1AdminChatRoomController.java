@@ -1,9 +1,7 @@
 package com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.controller;
 
-import com.moci_3d_backend.domain.chat.mentor.mentorChatMessage.service.MentorChatMessageService;
 import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.dto.DetailMentorChatRoom;
 import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.service.MentorChatRoomService;
-import com.moci_3d_backend.global.rq.Rq;
 import com.moci_3d_backend.global.rsData.RsData;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
