@@ -56,6 +56,11 @@ public class MentorChatRoomService {
         return mentorChatRoomDtoService.toDetailMentorChatRoomList(mentorChatRoomList);
     }
 
+    public List<DetailMentorChatRoom> getAllFromMentorChatRooms(User mentor){
+        List<MentorChatRoom> mentorChatRoomList = mentorChatRoomRepository.findByMentor(mentor);
+        return mentorChatRoomDtoService.toDetailMentorChatRoomList(mentorChatRoomList);
+    }
+
     public Optional<MentorChatRoom> getChatRoomById(Long roomId) {
         return mentorChatRoomRepository.findById(roomId);
     }

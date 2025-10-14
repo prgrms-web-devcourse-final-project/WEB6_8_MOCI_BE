@@ -11,4 +11,5 @@ public interface MentorChatRoomRepository extends JpaRepository<MentorChatRoom, 
     List<MentorChatRoom> findByMentorNullAndMenteeLeftFalse();
 
     Optional<MentorChatRoom> findByIdAndMenteeLeftFalse(Long roomId);
+    List<MentorChatRoom> findByMentor(User mentor);
 }
