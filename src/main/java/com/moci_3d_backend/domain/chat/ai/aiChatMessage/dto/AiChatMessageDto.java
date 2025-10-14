@@ -14,6 +14,7 @@ public class AiChatMessageDto {
     private LocalDateTime readAt;
     private Long roomId;
     private Long senderId; //사람이면 User, AI면 null
+    private String senderName; //사람이면 User, AI면 null
     private String senderType;
     private String content;
     private String status;
@@ -24,6 +25,7 @@ public class AiChatMessageDto {
         this.readAt = message.getReadAt();
         this.roomId = message.getRoom().getId();
         this.senderId = message.getSender() != null ? message.getSender().getId() : null;
+        this.senderName = message.getSender() != null ? message.getSender().getName() : "챗봇 딤돌이";
         this.senderType = message.getSenderType().name();
         this.content = message.getContent();
         this.status = message.getStatus().name();
