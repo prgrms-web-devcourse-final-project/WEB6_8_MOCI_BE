@@ -18,6 +18,7 @@ public class MentorChatMessageDtoService {
         return new ChatSendMessage(
                 entity.getId(),
                 entity.getSender().getName(),
+                entity.getSender().getRole().name(),
                 entity.getContent(),
                 attachment != null ? attachment.getId() : null,
                 attachment != null ? attachment.getFile_url() :  null,
