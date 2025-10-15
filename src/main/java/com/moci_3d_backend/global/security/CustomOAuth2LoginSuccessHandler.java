@@ -33,6 +33,12 @@ public class CustomOAuth2LoginSuccessHandler implements AuthenticationSuccessHan
     
     @Value("${custom.frontend.mainPath}")
     private String mainPath;
+    
+    @Value("${custom.accessToken.expirationSeconds}")
+    private int accessTokenExpirationSeconds;
+    
+    @Value("${custom.refreshToken.expirationSeconds}")
+    private int refreshTokenExpirationSeconds;
 
     @Override
     @Transactional
@@ -55,8 +61,8 @@ public class CustomOAuth2LoginSuccessHandler implements AuthenticationSuccessHan
             String accessToken = userService.genAccessToken(actor);
 
             // 쿠키 설정
-            rq.setCookie("accessToken", accessToken);
-            rq.setCookie("refreshToken", actor.getRefreshToken());
+            rq.setCookie("accessToken", accessToken, accessTokenExpirationSeconds);
+            rq.setCookie("refreshToken", actor.getRefreshToken(), refreshTokenExpirationSeconds);
             
             log.info("OAuth2 로그인 완료 - 사용자: {}", actor.getUserId());
         } else {

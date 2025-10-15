@@ -165,24 +165,36 @@ public class UserService {
     // === 비밀번호 변경 ===
     @Transactional
     public User updatePassword(User user, UserPasswordUpdateRequest request) {
-        // 소셜 로그인 사용자 체크 (비밀번호 없음)
+        // 1. 소셜 로그인 사용자 체크 (비밀번호 없음)
         if (user.getPassword() == null || !user.getLoginType().equals("PHONE")) {
             throw new ServiceException(400, "소셜 로그인 사용자는 비밀번호를 변경할 수 없습니다.");
         }
         
-        // TODO: 보안 강화 - 현재 비밀번호 확인 
+        // 2. ⭐ 현재 비밀번호 확인 (보안 강화)
+        boolean isCurrentPasswordCorrect = PasswordUtil.matches(
+            request.getCurrentPassword(), 
+            user.getPassword()
+        );
+        if (!isCurrentPasswordCorrect) {
+            throw new ServiceException(400, "현재 비밀번호가 일치하지 않습니다.");
+        }
         
-        // 새 비밀번호와 확인 일치 검증
+        // 3. 새 비밀번호와 확인 일치 검증
         if (!request.getNewPassword().equals(request.getNewPasswordConfirm())) {
             throw new ServiceException(400, "새 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
         }
         
-        // 비밀번호 암호화 후 업데이트
+        // 4. 현재 비밀번호와 새 비밀번호가 같은지 확인 (추가 검증)
+        if (request.getCurrentPassword().equals(request.getNewPassword())) {
+            throw new ServiceException(400, "새 비밀번호는 현재 비밀번호와 달라야 합니다.");
+        }
+        
+        // 5. 비밀번호 암호화 후 업데이트
         String encodedPassword = PasswordUtil.encode(request.getNewPassword());
         user.updatePassword(encodedPassword);
         user.setUpdatedAt(java.time.LocalDateTime.now());
         
-        // 저장
+        // 6. 저장
         return userRepository.save(user);
     }
     

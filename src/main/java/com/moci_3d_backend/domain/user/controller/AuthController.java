@@ -31,6 +31,12 @@ public class AuthController {
 
     @Value("${custom.frontend.mainPath}")
     private String mainPath;
+    
+    @Value("${custom.accessToken.expirationSeconds}")
+    private int accessTokenExpirationSeconds;
+    
+    @Value("${custom.refreshToken.expirationSeconds}")
+    private int refreshTokenExpirationSeconds;
 
     // === 회원가입 ===
     @Operation(summary = "회원가입", description = "새로운 사용자를 등록하고 자동으로 로그인합니다.")
@@ -39,8 +45,8 @@ public class AuthController {
         User user = userService.register(request);
 
         // ⭐ 회원가입 후 자동 로그인: JWT 토큰 생성 및 쿠키 설정
-        rq.setCookie("accessToken", userService.genAccessToken(user));
-        rq.setCookie("refreshToken", user.getRefreshToken());
+        rq.setCookie("accessToken", userService.genAccessToken(user), accessTokenExpirationSeconds);
+        rq.setCookie("refreshToken", user.getRefreshToken(), refreshTokenExpirationSeconds);
 
         // 디지털 레벨에 따라 리다이렉트 URL 결정
         String redirectUrl = determineRedirectUrl(user);
@@ -57,8 +63,8 @@ public class AuthController {
 
         String refreshToken = user.getRefreshToken();
 
-        rq.setCookie("accessToken", userService.genAccessToken(user));
-        rq.setCookie("refreshToken", refreshToken);
+        rq.setCookie("accessToken", userService.genAccessToken(user), accessTokenExpirationSeconds);
+        rq.setCookie("refreshToken", refreshToken, refreshTokenExpirationSeconds);
 
         // 디지털 레벨에 따라 리다이렉트 URL 결정
         String redirectUrl = determineRedirectUrl(user);
