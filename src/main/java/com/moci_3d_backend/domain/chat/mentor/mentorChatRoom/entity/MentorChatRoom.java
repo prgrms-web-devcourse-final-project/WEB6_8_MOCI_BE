@@ -104,7 +104,7 @@ public class MentorChatRoom {
     }
 
     public void updateLastAt(User sender) {
-        if(sender.getId().equals(mentor.getId())) {
+        if(mentor!=null && sender.getId().equals(mentor.getId())) {
             this.mentorLastAt = LocalDateTime.now();
         } else if (sender.getId().equals(mentee.getId())) {
             this.menteeLastAt = LocalDateTime.now();
