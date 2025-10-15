@@ -617,40 +617,84 @@ spring:
 
 ### **3. 환경변수 설정**
 
-프로젝트 루트 디렉토리에 `.env` 파일을 생성하고 아래 내용을 작성하세요:
+프로젝트 루트의 `.env.example` 파일을 복사하여 `.env` 파일을 생성하고 실제 값을 입력하세요:
+
+```bash
+# .env.example을 복사하여 .env 파일 생성
+cp .env.example .env
+```
+
+**`.env.example` 파일 내용:**
 
 ```properties
-# JWT 시크릿 키 (임의의 긴 문자열)
-JWT_SECRET_KEY=your-super-secret-jwt-key-here-min-256-bits
+# ========================================
+# MOCI-3D Backend 환경변수 설정 파일
+# ========================================
+# 이 파일을 복사해서 .env 파일로 만들고 실제 값을 입력
+# EC2 배포 시 Terraform output에서 값을 가져와서 설정
+# 로컬 개발 시 dev 프로필 사용 (H2 DB)
 
-# Gemini AI API
-GEMINI_API_KEY=your-gemini-api-key
-GEMINI_API_URL=https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent
-GEMINI_API_URL_STREAM=https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent
+# ========================================
+# Spring Profile
+# ========================================
+SPRING_PROFILES_ACTIVE=YOUR_SPRING_PROFILE
 
-# OAuth2 소셜 로그인
-# Kakao
-SPRING__SECURITY__OAUTH2__CLIENT__REGISTRATION__KAKAO__CLIENT_ID=your-kakao-client-id
+# ========================================
+# Database (RDS MySQL) - Terraform으로 생성 후 값 입력
+# ========================================
+DB_HOST=YOUR_DB_HOST
+DB_PORT=YOUR_DB_PORT
+DB_NAME=YOUR_DB_NAME
+DB_USERNAME=YOUR_DB_USERNAME
+DB_PASSWORD=YOUR_DB_PASSWORD
 
-# Google
-SPRING__SECURITY__OAUTH2__CLIENT__REGISTRATION__GOOGLE__CLIENT_ID=your-google-client-id
-SPRING__SECURITY__OAUTH2__CLIENT__REGISTRATION__GOOGLE__CLIENT_SECRET=your-google-client-secret
+# ========================================
+# JPA Settings
+# ========================================
+JPA_DDL_AUTO=YOUR_JPA_DDL_AUTO
 
-# Naver
-SPRING__SECURITY__OAUTH2__CLIENT__REGISTRATION__NAVER__CLIENT_ID=your-naver-client-id
-SPRING__SECURITY__OAUTH2__CLIENT__REGISTRATION__NAVER__CLIENT_SECRET=your-naver-client-secret
+# ========================================
+# AWS S3 - Terraform으로 생성 후 값 입력
+# ========================================
+S3_BUCKET_NAME=YOUR_S3_BUCKET_NAME
+AWS_ACCESS_KEY_ID=YOUR_AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY=YOUR_AWS_SECRET_ACCESS_KEY
+AWS_REGION=YOUR_AWS_REGION
+FILE_STORAGE_TYPE=YOUR_FILE_STORAGE_TYPE
 
-# AWS S3 설정
-S3_BUCKET_NAME=your-s3-bucket-name
-AWS_REGION=ap-northeast-2
-AWS_ACCESS_KEY_ID=your-aws-access-key-id
-AWS_SECRET_ACCESS_KEY=your-aws-secret-access-key
+# ========================================
+# JWT
+# ========================================
+JWT_SECRET_KEY=YOUR_JWT_SECRET_KEY
+
+# ========================================
+# OAuth2
+# ========================================
+SPRING__SECURITY__OAUTH2__CLIENT__REGISTRATION__KAKAO__CLIENT_ID=YOUR_KAKAO_CLIENT_ID
+SPRING__SECURITY__OAUTH2__CLIENT__REGISTRATION__NAVER__CLIENT_ID=YOUR_NAVER_CLIENT_ID
+SPRING__SECURITY__OAUTH2__CLIENT__REGISTRATION__NAVER__CLIENT_SECRET=YOUR_NAVER_CLIENT_SECRET
+SPRING__SECURITY__OAUTH2__CLIENT__REGISTRATION__GOOGLE__CLIENT_ID=YOUR_GOOGLE_CLIENT_ID
+SPRING__SECURITY__OAUTH2__CLIENT__REGISTRATION__GOOGLE__CLIENT_SECRET=YOUR_GOOGLE_CLIENT_SECRET
+
+# ========================================
+# Gemini API
+# ========================================
+GEMINI_API_KEY=YOUR_GEMINI_API_KEY
+GEMINI_API_URL=YOUR_GEMINI_API_URL
+
+# ========================================
+# Domain & CORS
+# ========================================
+COOKIE_DOMAIN=YOUR_COOKIE_DOMAIN
+FRONT_URL=YOUR_FRONT_URL
+BACK_URL=YOUR_BACK_URL
 ```
 
 > **⚠️ 보안 주의사항**
 > - `.env` 파일은 절대 Git에 커밋하지 마세요!
 > - `.gitignore`에 `.env`가 포함되어 있는지 확인하세요.
-> - 운영 환경에서는 환경변수를 서버에 직접 설정하세요.
+> - 운영 환경에서는 환경변수를 EC2 서버에 직접 설정하세요.
+> - Terraform을 사용하여 인프라를 배포한 경우, `terraform output`에서 RDS 엔드포인트와 S3 버킷명을 확인할 수 있습니다.
 
 ### **4. 애플리케이션 실행**
 
