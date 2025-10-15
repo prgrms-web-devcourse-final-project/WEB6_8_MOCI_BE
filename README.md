@@ -144,9 +144,8 @@
 - **RESTful API** - 표준 HTTP 메서드
 
 ### **DevOps**
-- **Docker** - 컨테이너화
 - **Gradle** - 빌드 도구
-- **GitHub Actions** - CI/CD (예정)
+- **GitHub Actions** - CI/CD
 
 ### **Libraries & Tools**
 - **Lombok** - 보일러플레이트 코드 제거
@@ -413,7 +412,6 @@ flowchart TD
     Profile --> ProfileAction{작업 선택}
     ProfileAction -->|정보 수정| UpdateInfo[이메일/이름 수정]
     ProfileAction -->|비밀번호| ChangePwd[🔒 비밀번호 변경]
-    ProfileAction -->|레벨 확인| ViewLevel[디지털 레벨 조회]
     ProfileAction -->|탈퇴| Withdraw[⚠️ 회원 탈퇴]
     ChangePwd --> VerifyPwd[현재 비밀번호 확인]
     VerifyPwd --> UpdatePwd[새 비밀번호 설정]
@@ -600,7 +598,7 @@ sequenceDiagram
 
 #### MySQL 사용 (권장):
 ```bash
-# Docker로 MySQL 실행
+# MySQL 실행
 docker run -d \
   --name moci-mysql \
   -e MYSQL_ROOT_PASSWORD=root \
@@ -617,7 +615,44 @@ spring:
     url: jdbc:h2:./db_dev
 ```
 
-### **3. 애플리케이션 실행**
+### **3. 환경변수 설정**
+
+프로젝트 루트 디렉토리에 `.env` 파일을 생성하고 아래 내용을 작성하세요:
+
+```properties
+# JWT 시크릿 키 (임의의 긴 문자열)
+JWT_SECRET_KEY=your-super-secret-jwt-key-here-min-256-bits
+
+# Gemini AI API
+GEMINI_API_KEY=your-gemini-api-key
+GEMINI_API_URL=https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent
+GEMINI_API_URL_STREAM=https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent
+
+# OAuth2 소셜 로그인
+# Kakao
+SPRING__SECURITY__OAUTH2__CLIENT__REGISTRATION__KAKAO__CLIENT_ID=your-kakao-client-id
+
+# Google
+SPRING__SECURITY__OAUTH2__CLIENT__REGISTRATION__GOOGLE__CLIENT_ID=your-google-client-id
+SPRING__SECURITY__OAUTH2__CLIENT__REGISTRATION__GOOGLE__CLIENT_SECRET=your-google-client-secret
+
+# Naver
+SPRING__SECURITY__OAUTH2__CLIENT__REGISTRATION__NAVER__CLIENT_ID=your-naver-client-id
+SPRING__SECURITY__OAUTH2__CLIENT__REGISTRATION__NAVER__CLIENT_SECRET=your-naver-client-secret
+
+# AWS S3 설정
+S3_BUCKET_NAME=your-s3-bucket-name
+AWS_REGION=ap-northeast-2
+AWS_ACCESS_KEY_ID=your-aws-access-key-id
+AWS_SECRET_ACCESS_KEY=your-aws-secret-access-key
+```
+
+> **⚠️ 보안 주의사항**
+> - `.env` 파일은 절대 Git에 커밋하지 마세요!
+> - `.gitignore`에 `.env`가 포함되어 있는지 확인하세요.
+> - 운영 환경에서는 환경변수를 서버에 직접 설정하세요.
+
+### **4. 애플리케이션 실행**
 
 ```bash
 # 1. 프로젝트 클론
@@ -634,7 +669,7 @@ cd moci-3d-backend
 java -jar build/libs/MOCI_3D_BACKEND-0.0.1-SNAPSHOT.jar --spring.profiles.active=dev
 ```
 
-### **4. 접속 확인**
+### **5. 접속 확인**
 
 #### **운영 환경 (배포)**
 - **웹 애플리케이션**: https://www.mydidimdol.com
@@ -892,13 +927,6 @@ spring.profiles.active: prod
 ./gradlew jacocoTestReport
 ```
 
----
-
-## 📝 라이센스
-
-This project is licensed under the MIT License.
-
----
 
 ## 📞 문의
 
@@ -918,5 +946,3 @@ This project is licensed under the MIT License.
 ---
 
 **© 2025 MOCI 3D Team. All rights reserved.**
-
-돌
