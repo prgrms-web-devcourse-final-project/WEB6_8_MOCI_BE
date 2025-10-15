@@ -117,11 +117,7 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
             user = userService
                     .findByRefreshToken(refreshToken)
                     .orElseThrow(() -> new ServiceException(401, "API 키가 유효하지 않습니다."));
-        }
-
-        if (isAccessTokenExists && !isAccessTokenValid) {
             String actorAccessToken = userService.genAccessToken(user);
-
             rq.setCookie("accessToken", actorAccessToken, accessTokenExpirationSeconds);
             rq.setHeader("Authorization", "Bearer " + refreshToken + " " + actorAccessToken);
         }
