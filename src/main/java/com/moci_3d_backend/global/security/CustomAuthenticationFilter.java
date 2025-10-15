@@ -25,6 +25,9 @@ import java.util.Map;
 public class CustomAuthenticationFilter extends OncePerRequestFilter {
     private final UserService userService;
     private final Rq rq;
+    
+    @org.springframework.beans.factory.annotation.Value("${custom.accessToken.expirationSeconds}")
+    private int accessTokenExpirationSeconds;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -119,7 +122,7 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
         if (isAccessTokenExists && !isAccessTokenValid) {
             String actorAccessToken = userService.genAccessToken(user);
 
-            rq.setCookie("accessToken", actorAccessToken);
+            rq.setCookie("accessToken", actorAccessToken, accessTokenExpirationSeconds);
             rq.setHeader("Authorization", "Bearer " + refreshToken + " " + actorAccessToken);
         }
 

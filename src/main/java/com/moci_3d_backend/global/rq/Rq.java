@@ -50,18 +50,20 @@ public class Rq {
         return defaultValue;
     }
 
-    // 쿠키 설정하기
+    // 쿠키 설정하기 (기본값: 7일)
     public void setCookie(String name, String value) {
+        setCookie(name, value, 60 * 60 * 24 * 7);  // 기본 7일
+    }
+    
+    // 쿠키 설정하기 (만료시간 지정)
+    public void setCookie(String name, String value, int maxAgeSeconds) {
         Cookie cookie = new Cookie(name, value != null ? value : "");
         cookie.setPath("/");
         cookie.setHttpOnly(true);
         //cookie.setDomain("localhost");
         cookie.setSecure(true);
-        cookie.setMaxAge((value == null || value.isBlank()) ? 0 : 60 * 60 * 24 * 365);
+        cookie.setMaxAge((value == null || value.isBlank()) ? 0 : maxAgeSeconds);
 
-        // SameSite 설정 (Servlet Cookie API에는 직접 없으므로 response header 조작 필요)
-        // Servlet 6.0 이상에서는 cookie.setAttribute("SameSite", "Strict") 가능
-        //cookie.setAttribute("SameSite", "Strict");
 
         resp.addCookie(cookie);
     }
