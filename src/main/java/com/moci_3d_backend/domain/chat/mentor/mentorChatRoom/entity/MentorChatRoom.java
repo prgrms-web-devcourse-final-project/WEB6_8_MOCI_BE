@@ -1,0 +1,115 @@
+package com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.entity;
+
+import com.moci_3d_backend.domain.chat.mentor.mentorChatMessage.entity.MentorChatMessage;
+import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.dto.CreateMentorChatRoom;
+import com.moci_3d_backend.domain.user.entity.User;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Entity
+@Getter
+@NoArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
+public class MentorChatRoom {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name="question", length=255)
+    private String question;
+
+    @Column(name="category",length = 255)
+    private String category;
+
+    @Column(name="sub_category" ,length = 255, nullable = true)
+    private String subCategory;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "mentor_id", nullable = true)
+    // @Setter removed to protect encapsulation
+    private User mentor;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "mentee_id")
+    // @Setter removed to protect encapsulation
+    private User mentee;
+
+    private boolean status;
+
+    @CreationTimestamp
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+
+    private LocalDateTime matchedAt;
+
+    private LocalDateTime lastMessageAt;
+
+    private LocalDateTime mentorLastAt;
+
+    private LocalDateTime menteeLastAt;
+
+    @Setter
+    private boolean menteeLeft;
+
+    @Setter
+    private boolean mentorLeft;
+
+    @OneToMany(mappedBy = "room", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    List<MentorChatMessage> mentorChatMessageList;
+
+
+    public MentorChatRoom(String category,  User mentee){
+        this.category = category;
+        this.mentee = mentee;
+        this.status = true;
+        this.menteeLastAt = LocalDateTime.now();
+        this.setMenteeLeft(false);
+        this.setMentorLeft(false);
+    }
+
+    public MentorChatRoom(CreateMentorChatRoom createMentorChatRoom, User mentee){
+        this.category = createMentorChatRoom.getCategory();
+        this.question = createMentorChatRoom.getQuestion();
+        this.status = true;
+        this.mentee = mentee;
+        this.menteeLastAt = LocalDateTime.now();
+        this.setMenteeLeft(false);
+        this.setMentorLeft(false);
+    }
+
+    public void joinMentor(User mentor){
+        this.mentor = mentor;
+        this.matchedAt = LocalDateTime.now();
+        this.mentorLastAt = LocalDateTime.now();
+    }
+
+    public void updateMentorLastAt(){
+        this.mentorLastAt = LocalDateTime.now();
+    }
+
+    public void updateMenteeLastAt(){
+        this.menteeLastAt = LocalDateTime.now();
+    }
+
+    public void updateLastMessageAt(){
+        this.lastMessageAt = LocalDateTime.now();
+    }
+
+    public void updateLastAt(User sender) {
+        if(mentor!=null && sender.getId().equals(mentor.getId())) {
+            this.mentorLastAt = LocalDateTime.now();
+        } else if (sender.getId().equals(mentee.getId())) {
+            this.menteeLastAt = LocalDateTime.now();
+        } else {
+            throw new IllegalArgumentException("Sender is neither mentor nor mentee in this chat room.");
+        }
+    }
+}

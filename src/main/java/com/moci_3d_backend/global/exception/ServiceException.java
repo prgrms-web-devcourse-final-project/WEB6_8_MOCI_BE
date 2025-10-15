@@ -1,6 +1,7 @@
 package com.moci_3d_backend.global.exception;
 
 import com.moci_3d_backend.global.rsData.RsData;
+import lombok.Getter;
 
 /**
  * 서비스 예외를 나타내는 클래스
@@ -8,7 +9,7 @@ import com.moci_3d_backend.global.rsData.RsData;
  * @param code 오류 코드
  * @param msg 오류 메시지
  */
-
+@Getter
 public class ServiceException extends RuntimeException {
     private final int code;
     private final String msg;

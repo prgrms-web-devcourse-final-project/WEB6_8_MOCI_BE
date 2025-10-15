@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: moci_3d_backend:latest
+    container_name: moci_3d_backend_prod
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    volumes:
+      - ./uploads:/app/uploads  # 파일 업로드 경로 (로컬 저장 시)
+      - ./logs:/app/logs        # 로그 저장
+    networks:
+      - moci-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  moci-network:
+    driver: bridge

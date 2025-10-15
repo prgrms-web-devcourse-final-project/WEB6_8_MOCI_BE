@@ -1,0 +1,18 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+.terraform.lock.hcl
+
+# 환경변수 파일
+*.auto.tfvars
+secrets.tfvars
+
+# 백업 파일
+*.backup
+*.bak
+
+# SSH 키
+*.pem
+*.ppk

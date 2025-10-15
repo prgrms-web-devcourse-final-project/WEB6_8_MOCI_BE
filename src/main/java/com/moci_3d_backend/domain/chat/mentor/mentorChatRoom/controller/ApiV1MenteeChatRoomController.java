@@ -1,0 +1,76 @@
+package com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.controller;
+
+import com.moci_3d_backend.domain.chat.mentor.mentorChatMessage.dto.ChatReceiveMessage;
+import com.moci_3d_backend.domain.chat.mentor.mentorChatMessage.service.MentorChatMessageService;
+import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.dto.CreateMentorChatRoom;
+import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.dto.MentorChatRoomResponse;
+import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.dto.SimpleMentorChatRoom;
+import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.service.MenteeChatRoomService;
+import com.moci_3d_backend.domain.user.entity.User;
+import com.moci_3d_backend.global.rq.Rq;
+import com.moci_3d_backend.global.rsData.RsData;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
+
+import static com.moci_3d_backend.domain.chat.mentor.mentorChatMessage.service.MentorChatMessageService.MENTEE_LEFT_MESSAGE;
+
+@RestController
+@RequestMapping("/api/v1/chat/mentor/mentee/room")
+@RequiredArgsConstructor
+@Tag(name="멘티의 채팅방", description = "멘티의 채팅방 관련 API")
+public class ApiV1MenteeChatRoomController {
+    private final MenteeChatRoomService menteeChatRoomService;
+    private final Rq rq;
+    private final MentorChatMessageService mentorChatMessageService;
+
+    @PostMapping()
+    @Operation(summary = "[멘티] 채팅방 생성", description = "멘티가 채팅방을 생성합니다.")
+    public RsData<MentorChatRoomResponse> createMentorChatRoom(
+            @Valid @RequestBody CreateMentorChatRoom createMentorChatRoom
+    ) {
+        User user = rq.getActor();
+        MentorChatRoomResponse response = menteeChatRoomService.createMenteeChatRoom(createMentorChatRoom, user);
+        return RsData.of(201, "success to create chat room", response);
+    }
+
+    @GetMapping()
+    @Operation(summary = "[멘티] 채팅방을 조회합니다.", description = "멘티가 참여한 채팅방을 조회합니다.")
+    public RsData<List<MentorChatRoomResponse>> getMenteeChatRooms(){
+        User user = rq.getActor();
+        List<MentorChatRoomResponse> mentorChatRoomResponsePage = menteeChatRoomService.getMenteeChatRooms(user);
+        return RsData.of(200, "success to get chat rooms", mentorChatRoomResponsePage);
+    }
+
+    @GetMapping("{room_id}")
+    @Operation(summary ="[멘티] 채팅방 하나를 조회합니다.", description = "멘티가 참여한 채팅방을 조회합니다.")
+    public RsData<SimpleMentorChatRoom> getMenteeChatRoom(
+            @PathVariable("room_id") Long roomId
+    ){
+        User user = rq.getActor();
+        SimpleMentorChatRoom detailMentorChatRoom = menteeChatRoomService.getSimpleMenteeChatRoom(roomId, user);
+        return RsData.of(200, "success to get chat room", detailMentorChatRoom);
+    }
+
+    @DeleteMapping("{room_id}")
+    @Operation(summary = "[멘티] 채팅방을 나갑니다.", description = "멘티가 참여한 채팅방을 나갑니다.")
+    public RsData<Void> deleteMenteeChatRoom(
+            @PathVariable("room_id") Long roomId,
+            @RequestParam(value = "movedToAI", required = false, defaultValue = "false") Boolean movedToAI
+    ){
+        User user = rq.getActor();
+        if (movedToAI){
+            menteeChatRoomService.deleteMenteeChatRoom(roomId, user);
+            return RsData.of(200, "Chat room deleted successfully");
+        }
+        menteeChatRoomService.menteeLeftChatRoom(roomId, user);
+        ChatReceiveMessage chatReceiveMessage = new ChatReceiveMessage(MENTEE_LEFT_MESSAGE, 0L);
+        mentorChatMessageService.sendMessage(roomId, chatReceiveMessage, Optional.empty());
+        return RsData.of(200, "Left chat room successfully");
+    }
+}

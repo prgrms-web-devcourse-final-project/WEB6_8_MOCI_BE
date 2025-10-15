@@ -4,3 +4,27 @@ spring:
     username: sa
     password:
     driver-class-name: org.h2.Driver
+
+custom:
+  jwt:
+    secretKey: abcdefghijklmnopqrstuvwxyz1234567890
+  frontend:
+    baseUrl: "http://localhost:3000"
+    registerPath: "/register/ox-test"
+    mainPath: "/main"
+
+gemini:
+  api:
+    key: dummy-key
+    url: http://dummy-url
+    url-stream: http://dummy-stream
+
+cloud:
+  aws:
+    s3:
+      bucket: dummy-bucket
+    region:
+      static: ap-northeast-2
+    credentials:
+      access-key: dummy
+      secret-key: dummy

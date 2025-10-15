@@ -1,0 +1,92 @@
+package com.moci_3d_backend.domain.chat.mentor.mentorChatMessage.service;
+
+import com.moci_3d_backend.domain.chat.mentor.mentorChatMessage.dto.ChatReceiveMessage;
+import com.moci_3d_backend.domain.chat.mentor.mentorChatMessage.dto.ChatSendMessage;
+import com.moci_3d_backend.domain.chat.mentor.mentorChatMessage.entity.MentorChatMessage;
+import com.moci_3d_backend.domain.chat.mentor.mentorChatMessage.repository.MentorChatMessageRepository;
+import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.entity.MentorChatRoom;
+import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.service.MenteeChatRoomService;
+import com.moci_3d_backend.domain.chat.mentor.mentorChatRoom.service.MentorChatRoomService;
+import com.moci_3d_backend.domain.fileUpload.entity.FileUpload;
+import com.moci_3d_backend.domain.fileUpload.repository.FileUploadRepository;
+import com.moci_3d_backend.domain.user.entity.User;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
+
+@Service
+@RequiredArgsConstructor
+public class MentorChatMessageService {
+
+    private final MentorChatMessageRepository mentorChatMessageRepository;
+    private final MenteeChatRoomService menteeChatRoomService;
+    private final MentorChatRoomService mentorChatRoomService;
+    private final FileUploadRepository fileUploadRepository;
+    private final MentorChatMessageDtoService mentorChatMessageDtoService;
+    private final SimpMessagingTemplate messagingTemplate;
+    @Autowired
+    @Lazy
+    private MentorChatMessageService self;
+    public static final String MENTOR_LEFT_MESSAGE = "멘토님이 채팅방을 나가셨습니다.";
+    public static final String MENTEE_LEFT_MESSAGE = "멘티님이 채팅방을 나가셨습니다.";
+
+    private MentorChatRoom getChatRoomByUser(Long roomId, User user){
+        return switch (user.getRole()){
+            case MENTOR -> mentorChatRoomService.getMentorChatRoom(roomId, user);
+            case USER -> menteeChatRoomService.getMenteeChatRoom(roomId, user);
+            case ADMIN -> mentorChatRoomService.getChatRoomById(roomId).orElseThrow(() -> new IllegalArgumentException("No chat room found"));
+            default -> throw new IllegalArgumentException("Unsupported user role: " + user.getRole());
+        };
+    }
+
+
+    @Transactional
+    public ChatSendMessage saveMentorChatMessage(ChatReceiveMessage message, User sender, Long roomId){
+        MentorChatRoom mentorChatRoom = mentorChatRoomService.getChatRoomById(roomId).orElseThrow(() -> new IllegalArgumentException("No chat room found"));
+        if (mentorChatRoom.isMenteeLeft() || mentorChatRoom.isMentorLeft()){
+            throw new IllegalArgumentException("The chat room is read-only");
+        }
+        FileUpload fileUpload = fileUploadRepository.findById(message.getAttachmentId()).orElse(null);
+        MentorChatMessage mentorChatMessage = mentorChatMessageDtoService.toEntity(message, sender, mentorChatRoom, fileUpload);
+        mentorChatMessage = mentorChatMessageRepository.save(mentorChatMessage);
+        mentorChatRoom.updateLastMessageAt();
+        mentorChatRoom.updateLastAt(sender);
+        return mentorChatMessageDtoService.toSendMessage(mentorChatMessage);
+    }
+
+    public List<ChatSendMessage> getMentorChatMessages(Long roomId, User user){
+        MentorChatRoom mentorChatRoom = getChatRoomByUser(roomId, user);
+        if (mentorChatRoom == null){
+            throw new IllegalArgumentException("The user is not a member of the chat room");
+        }
+        List<MentorChatMessage> chats = mentorChatMessageRepository.findByRoomIdOrderByCreatedAtAsc(roomId);
+        if (mentorChatRoom.isMentorLeft()){
+            chats.add(new MentorChatMessage(mentorChatRoom, user, MENTOR_LEFT_MESSAGE, null));
+        }
+        if (mentorChatRoom.isMenteeLeft()){
+            chats.add(new MentorChatMessage(mentorChatRoom, user, MENTEE_LEFT_MESSAGE, null));
+        }
+        return mentorChatMessageDtoService.toSendMessages(chats);
+    }
+
+    public void sendMessage(Long roomId, ChatReceiveMessage message, Optional<User> user){
+        ChatSendMessage chatSendMessage;
+        if (user.isEmpty()){
+            String nickname = "System";
+            chatSendMessage = new ChatSendMessage(nickname, message);
+        }else{
+            chatSendMessage = self.saveMentorChatMessage(message, user.get(), roomId);
+        }
+        messagingTemplate.convertAndSend("/api/v1/chat/topic/%d".formatted(roomId), chatSendMessage);
+    }
+
+    public Long getChatRoomMessageCount(Long roomId){
+        return mentorChatMessageRepository.countByRoomId(roomId);
+    }
+}
