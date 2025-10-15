@@ -243,7 +243,7 @@ public class UserControllerTest {
     }
 
     @Test
-    @DisplayName("비밀번호 변경 - 실패(기존 비밀번호 틀림)")
+    @DisplayName("비밀번호 변경 - 실패(현재 비밀번호 틀림)")
     void t8() throws Exception {
         User user = userService.findByUserId("01012345678");
 
@@ -263,8 +263,60 @@ public class UserControllerTest {
                 .andDo(print());
 
         resultActions
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value("200"))
-                .andExpect(jsonPath("$.message").value("비밀번호가 성공적으로 변경되었습니다."));
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("400"))
+                .andExpect(jsonPath("$.message").value("현재 비밀번호가 일치하지 않습니다."));
+    }
+
+    @Test
+    @DisplayName("비밀번호 변경 - 실패(새 비밀번호가 현재 비밀번호와 같음)")
+    void t9() throws Exception {
+        User user = userService.findByUserId("01012345678");
+
+        ResultActions resultActions = mvc
+                .perform(
+                        patch("/api/v1/users/password")
+                                .header(HttpHeaders.AUTHORIZATION, "Bearer " + user.getRefreshToken())
+                                .contentType(MediaType.APPLICATION_JSON)
+                            .content("""
+                                    {
+                                        "currentPassword": "admin123",
+                                        "newPassword": "admin123",
+                                        "newPasswordConfirm": "admin123"
+                                    }
+                                    """.stripIndent())
+                )
+                .andDo(print());
+
+        resultActions
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("400"))
+                .andExpect(jsonPath("$.message").value("새 비밀번호는 현재 비밀번호와 달라야 합니다."));
+    }
+
+    @Test
+    @DisplayName("비밀번호 변경 - 실패(새 비밀번호와 확인 불일치)")
+    void t10() throws Exception {
+        User user = userService.findByUserId("01012345678");
+
+        ResultActions resultActions = mvc
+                .perform(
+                        patch("/api/v1/users/password")
+                                .header(HttpHeaders.AUTHORIZATION, "Bearer " + user.getRefreshToken())
+                                .contentType(MediaType.APPLICATION_JSON)
+                            .content("""
+                                    {
+                                        "currentPassword": "admin123",
+                                        "newPassword": "newPassword123",
+                                        "newPasswordConfirm": "differentPassword"
+                                    }
+                                    """.stripIndent())
+                )
+                .andDo(print());
+
+        resultActions
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("400"))
+                .andExpect(jsonPath("$.message").value("새 비밀번호와 비밀번호 확인이 일치하지 않습니다."));
     }
 }
