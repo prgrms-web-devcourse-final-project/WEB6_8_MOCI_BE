@@ -26,10 +26,12 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x ./gradlew
     
-    # 4. 빌드 (테스트 제외)
+    # 4. 빌드 (환경변수 주입)
     - name: Build with Gradle
-      run: ./gradlew clean build -x test
-    
+      run: ./gradlew clean build
+      env:
+        SPRING_PROFILES_ACTIVE: test
+
     # 5. JAR 파일명 확인 (plain.jar 제외)
     - name: Get JAR filename
       id: jar

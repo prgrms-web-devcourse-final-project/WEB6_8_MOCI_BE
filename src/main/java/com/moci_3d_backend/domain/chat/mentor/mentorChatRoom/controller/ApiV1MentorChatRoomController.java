@@ -60,7 +60,13 @@ public class ApiV1MentorChatRoomController {
     @PreAuthorize("hasRole('MENTOR')")
     @Operation(summary = "[멘토] 전체 채팅방을 조회합니다.", description = "모든 채팅방을 조회합니다.")
     public RsData<List<DetailMentorChatRoom>> getAllChatRooms(){
-        List<DetailMentorChatRoom> chatRooms = mentorChatRoomService.getAllMentorChatRooms();
+        User mentor = rq.getActor();
+        List<DetailMentorChatRoom> chatRooms;
+        if (mentor.getRole() != User.UserRole.MENTOR){
+            chatRooms = mentorChatRoomService.getAllMentorChatRooms();
+        }else{
+            chatRooms = mentorChatRoomService.getAllFromMentorChatRooms(mentor);
+        }
         return RsData.of(200, "success to load chat rooms", chatRooms);
     }
 

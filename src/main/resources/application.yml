@@ -57,6 +57,10 @@ spring:
       static-locations:
         - classpath:/static/
         - file:./uploads/
+  servlet:
+    multipart:
+      max-file-size: 5MB # 업로드 파일 최대 크기 1개
+      max-request-size: 10MB # 업로드 파일 최대 크기 전체
 
 logging:
   level:
