@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -36,7 +37,8 @@ public class PublicArchive {
     @Column(name = "sub_category", length = 255)
     private String subCategory;
 
-    @OneToMany(mappedBy = "publicArchive",  cascade = CascadeType.ALL, orphanRemoval = true) // 글 삭제시 파일도 같이 삭제(고아 삭제)
+    @OneToMany(mappedBy = "publicArchive", cascade = CascadeType.ALL, orphanRemoval = true)
+    @BatchSize(size = 100) // N+1 문제 해결: 한 번에 최대 100개의 게시물에 대한 파일을 조회
     private List<FileUpload> fileUploads = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
