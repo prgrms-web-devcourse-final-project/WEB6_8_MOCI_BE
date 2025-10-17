@@ -788,9 +788,12 @@ PUT    /api/v1/archives/{id}         # 자료 수정 (ADMIN)
 DELETE /api/v1/archives/{id}         # 자료 삭제 (ADMIN)
 
 # 자료 요청
-POST   /api/v1/archive-requests      # 자료 요청
+POST   /api/v1/archive-requests      # 자료 요청 등록
 GET    /api/v1/archive-requests      # 요청 목록 조회
-PATCH  /api/v1/archive-requests/{id} # 승인/거부 (ADMIN)
+GET    /api/v1/archive-requests/{requestId} # 요청 상세 조회
+PUT    /api/v1/archive-requests/{requestId} # 자료 요청 수정
+DELETE /api/v1/archive-requests/{requestId} # 자료 요청 삭제
+PATCH  /api/v1/archive-requests/{requestId} # 승인/거부 (ADMIN)
 ```
 
 #### 💬 멘토링 채팅 (정주신)
@@ -880,10 +883,12 @@ Peer A ←─ Signaling Server ─→ Peer B
 ```
 
 #### **카테고리 분류**
-- 스마트폰 사용법
-- 인터넷 뱅킹
-- SNS 활용
-- 온라인 쇼핑 등
+- 카카오톡
+- 시외버스
+- 쿠팡
+- 배달의민족
+- KTX
+- 유튜브
 
 ---
 
@@ -988,5 +993,6 @@ spring.profiles.active: prod
 모든 팀원들의 노력과 헌신에 감사드립니다.
 
 ---
+
 
 **© 2025 MOCI 3D Team. All rights reserved.**
