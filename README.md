@@ -886,7 +886,7 @@ Peer A ←─ Signaling Server ─→ Peer B
 - 카카오톡
 - 시외버스
 - 쿠팡
-- 배달의 민족
+- 배달의민족
 - KTX
 - 유튜브
 
