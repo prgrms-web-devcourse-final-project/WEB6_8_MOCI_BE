@@ -793,7 +793,7 @@ GET    /api/v1/archive-requests      # 요청 목록 조회
 GET    /api/v1/archive-requests/{requestId} # 요청 상세 조회
 PUT    /api/v1/archive-requests/{requestId} # 자료 요청 수정
 DELETE /api/v1/archive-requests/{requestId} # 자료 요청 삭제
-PATCH  /api/v1/archive-requests/{id} # 승인/거부 (ADMIN)
+PATCH  /api/v1/archive-requests/{requestId} # 승인/거부 (ADMIN)
 ```
 
 #### 💬 멘토링 채팅 (정주신)
